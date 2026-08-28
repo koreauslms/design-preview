@@ -1,0 +1,1592 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>C2 입학 신청 관리 — 콘솔 목업</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<style>
+:root{
+  --navy:#271971; --navy-soft:#EEF0F9; --red:#D6362F; --red-soft:#FBEBEA;
+  --section:#F7F8FA; --border:#E5E7EB; --text:#111827; --sub:#6B7280;
+  --ok:#0E7A4A; --ok-soft:#E7F5EE; --wait:#B45309; --wait-soft:#FBF3E4;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:Pretendard,-apple-system,'Apple SD Gothic Neo','Noto Sans KR',sans-serif;background:#EDEEF2;color:var(--text)}
+.console{display:flex;min-height:100vh;max-width:1280px;margin:0 auto;background:#fff}
+
+/* ── 사이드바 ─────────────────────── */
+.side{width:220px;flex:none;border-right:1px solid var(--border);display:flex;flex-direction:column}
+.side-logo{padding:18px 20px 14px}
+.side-logo svg{width:124px;height:26px;display:block}
+.side-menu{flex:1;padding:4px 12px 12px}
+.grp{font-size:11px;font-weight:600;color:#9CA3AF;letter-spacing:.4px;padding:14px 8px 6px}
+.mi{display:flex;align-items:center;font-size:14px;color:var(--text);padding:10px 12px;border-radius:6px;cursor:pointer;margin-bottom:2px}
+.mi:hover{background:var(--section)}
+.mi.on{background:var(--navy-soft);color:var(--navy);font-weight:600}
+.mi.dis{color:#9CA3AF;cursor:default}
+.mi.dis:hover{background:none}
+.side-foot{padding:14px 20px;font-size:11px;color:#C4C8CF;border-top:1px solid var(--border)}
+
+/* ── 상단 바 ─────────────────────── */
+.main{flex:1;min-width:0;display:flex;flex-direction:column}
+.topbar{height:60px;flex:none;border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 32px}
+.crumb{font-size:13px;color:var(--sub)}
+.crumb b{color:var(--text);font-weight:600}
+.crumb .sep{margin:0 7px;color:#C4C8CF}
+.crumb a{color:var(--sub);text-decoration:none;cursor:pointer}
+.profile-wrap{margin-left:auto;position:relative}
+.profile-btn{width:38px;height:38px;border-radius:50%;background:var(--section);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0}
+.profile-btn:hover{background:#EDEFF3}
+.profile-btn img{width:30px;height:30px;display:block}
+.profile-menu{position:absolute;top:46px;right:0;width:210px;background:#fff;border:1px solid var(--border);border-radius:8px;box-shadow:0 8px 24px rgba(17,24,39,.12);padding:6px;display:none;z-index:30}
+.profile-menu.open{display:block}
+.pm-head{display:flex;align-items:center;padding:10px;margin-bottom:4px;border-bottom:1px solid var(--border)}
+.pm-avatar{flex:none;width:34px;height:34px;border-radius:50%;background:var(--section);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;margin-right:10px}
+.pm-avatar img{width:24px;height:24px;display:block}
+.pm-info .nm{font-size:14px;font-weight:600;display:block}
+.pm-info .meta{font-size:12px;color:var(--sub);margin-top:2px;display:block}
+.pm-item{display:block;font-size:13px;color:var(--sub);padding:9px 10px;border-radius:6px;cursor:pointer}
+.pm-item:hover{background:var(--section)}
+
+/* ── 콘텐츠 공통 ─────────────────── */
+.content{padding:28px 32px 48px;max-width:1080px}
+.page-title{font-size:26px;font-weight:700;letter-spacing:-.3px}
+.page-desc{font-size:13px;color:var(--sub);margin-top:6px}
+
+/* 탭 */
+.tabs{display:flex;margin-top:22px;border-bottom:1px solid var(--border)}
+.tab{position:relative;font-size:14px;color:var(--sub);padding:10px 2px;margin-right:26px;cursor:pointer;border-bottom:2px solid transparent}
+.tab.on{color:var(--navy);font-weight:600;border-bottom-color:var(--navy)}
+.tab .cnt{position:absolute;top:0;right:-12px;min-width:16px;height:16px;line-height:16px;text-align:center;font-size:10px;font-weight:700;color:#fff;background:var(--red);border-radius:8px;padding:0 4px}
+
+/* 테이블 */
+table{width:100%;border-collapse:collapse;margin-top:20px}
+table.ptable{table-layout:fixed}
+table.dense td,table.dense th{padding-left:10px;padding-right:10px}
+table.ptable td{overflow:hidden;text-overflow:ellipsis}
+td.cell-dh{overflow:visible;text-overflow:clip;padding-right:0}
+tr.rw.dragging{opacity:.45}
+tr.rw.dragging td{background:var(--navy-soft)}
+th{background:var(--section);font-size:13px;font-weight:600;color:var(--sub);text-align:left;padding:11px 14px;white-space:nowrap}
+td{font-size:14px;padding:0 14px;height:48px;border-bottom:1px solid var(--border);white-space:nowrap}
+tr.rw{cursor:pointer}
+tr.rw:hover td{background:var(--section)}
+td.nm{font-weight:600}
+td.sub,th.r,td.r{color:var(--sub)}
+.empty{padding:56px 0;text-align:center;font-size:14px;color:var(--sub)}
+
+/* 뱃지 — 콘솔 한정 시맨틱 3색 예외 */
+.bg{display:inline-block;font-size:12px;font-weight:600;border-radius:4px;padding:3px 8px}
+.bg.wait{background:var(--wait-soft);color:var(--wait)}
+.bg.ok{background:var(--ok-soft);color:var(--ok)}
+.bg.no{background:var(--red-soft);color:var(--red)}
+
+/* ── 상세 ────────────────────────── */
+.det-head{display:flex;align-items:flex-start;margin-top:2px}
+.det-actions{margin-left:auto;display:flex}
+.btn{font-size:14px;font-weight:600;border-radius:6px;padding:9px 16px;cursor:pointer;border:none}
+.btn-pri{background:var(--navy);color:#fff}
+.btn-out{background:#fff;color:var(--navy);border:1px solid var(--navy);margin-right:8px}
+.btn-cxl{background:var(--section);color:var(--text)}
+.card{border:1px solid var(--border);border-radius:8px;padding:20px 22px;margin-top:20px}
+.card h3{font-size:16px;font-weight:700;margin-bottom:14px}
+.fgrid{display:flex;flex-wrap:wrap}
+.fld{width:33.33%;padding:7px 0}
+.fld .lb{font-size:12px;color:var(--sub);margin-bottom:3px}
+.fld .vl{font-size:14px;font-weight:500}
+.hrow{display:flex;align-items:center;padding:13px 2px;border-bottom:1px solid var(--section);font-size:14px}
+.hrow:last-child{border-bottom:none}
+.hrow .ttl{font-weight:600;width:90px;flex:none}
+.hrow .mt{color:var(--sub);font-size:13px}
+.hrow .bg{margin-left:auto}
+
+/* ── C3 학생 관리 ────────────────── */
+.fbar{display:flex;margin-top:22px}
+.inp,.sel{height:40px;padding:0 12px;border:1px solid var(--border);border-radius:6px;font:inherit;font-size:14px;background:#fff;color:var(--text)}
+.inp{width:260px}
+.inp:focus,.sel:focus{outline:none;border-color:var(--navy)}
+.fbar .sel{margin-left:10px;min-width:120px}
+.tab.dis{color:#C4C8CF;cursor:default}
+.tab.dis:hover{border-bottom-color:transparent}
+.sub2{font-size:13px;color:var(--sub);margin-top:6px}
+.card-head{display:flex;align-items:center}
+.card-head h3{margin-bottom:0}
+.card-head .btn{margin-left:auto;padding:7px 14px;font-size:13px}
+.card-head + .fgrid,.card-head + .wlist{margin-top:14px}
+.fld .inp{width:92%;height:40px}
+.fld .sel{width:92%;height:40px}
+.wrow{display:flex;align-items:center;padding:12px 2px;border-bottom:1px solid var(--section)}
+.wrow:last-child{border-bottom:none}
+.wrow .sj{font-size:14px;font-weight:500;width:90px;flex:none}
+.wrow .bal{font-size:15px;font-weight:700;color:var(--navy)}
+.wrow .acts{margin-left:auto}
+.wrow .acts .btn{padding:6px 12px;font-size:13px}
+.mfld{margin-top:14px}
+.mfld .lb{font-size:13px;font-weight:600;margin-bottom:6px}
+.mfld .lb .opt{font-weight:400;color:var(--sub)}
+.lb-s{font-size:12px;font-weight:500;color:var(--sub)}
+.mfld .inp,.mfld .sel{width:100%;height:44px;margin-left:0}
+.mrow2{display:flex;margin-top:14px}
+.mrow2 .mfld{flex:1;margin-top:0}
+.mrow2 .mfld + .mfld{margin-left:10px}
+.err{font-size:12px;color:var(--red);margin-top:6px}
+.btn:disabled{opacity:.4;cursor:default}
+/* ── C1 대시보드 ──────────────── */
+.sec-lb{font-size:16px;font-weight:700;margin-top:28px}
+.stat-grid{display:flex;margin-top:14px}
+.stat-card{flex:1;border:1px solid var(--border);border-radius:8px;padding:20px 22px}
+.stat-card + .stat-card{margin-left:14px}
+.stat-card.link{cursor:pointer}
+.stat-card.link:hover{background:var(--section)}
+.stat-card .lb3{font-size:13px;color:var(--sub);font-weight:600}
+.stat-card .num{font-size:26px;font-weight:700;color:var(--navy);margin-top:8px}
+.stat-card .cap{font-size:12px;color:var(--sub);margin-top:6px}
+
+.amt-p{color:var(--navy);font-weight:600}
+.amt-m{color:var(--sub);font-weight:600}
+
+/* ── C4 콘텐츠 관리 ──────────────── */
+.sw{position:relative;width:40px;height:22px;flex:none;border-radius:11px;background:#D5D8DE;cursor:pointer;border:none;padding:0}
+.sw.on{background:var(--navy)}
+.sw i{position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;background:#fff}
+.sw.on i{left:20px}
+.sw-row{display:flex;align-items:center}
+.sw-row .lb2{font-size:14px;font-weight:500;margin-right:10px}
+.dh{position:relative;display:inline-block;width:14px;height:20px;cursor:grab;user-select:none}
+.dh::before{content:'';position:absolute;left:3px;top:4px;width:3px;height:3px;border-radius:50%;background:#9CA3AF;
+ box-shadow:6px 0 0 #9CA3AF,0 6px 0 #9CA3AF,6px 6px 0 #9CA3AF,0 12px 0 #9CA3AF,6px 12px 0 #9CA3AF}
+.thumb-s{width:44px;height:26px;border-radius:4px;background:#0B0724;color:#fff;display:flex;align-items:center;justify-content:center;font-size:9px}
+.thumb-l{width:180px;height:101px;border-radius:6px;background:#0B0724;color:#fff;display:flex;align-items:center;justify-content:center;font-size:16px}
+.player-mock{height:300px;border-radius:8px;background:#0B0724;color:#fff;display:flex;align-items:center;justify-content:center;font-size:28px;margin-top:14px}
+.upbox{border:1.5px dashed #C9CDD4;border-radius:8px;padding:34px 0;text-align:center;color:var(--sub);font-size:14px;cursor:pointer}
+.upbox:hover{background:var(--section)}
+.pbar{height:8px;background:var(--section);border-radius:4px;overflow:hidden;margin-top:14px}
+.pbar i{display:block;height:100%;background:var(--navy)}
+.upmeta{font-size:13px;color:var(--sub);margin-top:10px}
+.form-col{max-width:460px}
+.form-col > :first-child{margin-top:0}
+.form-acts{display:flex;margin-top:24px;max-width:460px}
+.form-acts .btn{flex:1;padding:12px 0}
+.form-acts .btn + .btn{margin-left:8px}
+.mfld textarea{width:100%;min-height:76px;padding:10px 12px;border:1px solid var(--border);border-radius:6px;font:inherit;font-size:14px;resize:vertical}
+.mfld textarea:focus{outline:none;border-color:var(--navy)}
+
+/* ── C0 인증 ─────────────────────── */
+#v-auth{min-height:100vh;background:#EDEEF2;display:flex;align-items:center;justify-content:center;padding:24px}
+#v-auth.hide{display:none}
+.auth-view{display:none}
+.auth-view.on{display:block}
+.login-box{display:flex;width:920px;min-height:520px;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 12px 32px rgba(17,24,39,.10)}
+.login-hero{width:70%;background:var(--navy);color:#fff;padding:40px;display:flex;flex-direction:column}
+.login-hero .lh-logo-svg{width:150px;height:31px;display:block}
+.login-hero .lh-sub{font-size:13px;opacity:.75;margin-top:12px}
+.login-hero .lh-copy{margin-top:auto}
+.login-hero .lh-tag{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.8px;border:1px solid rgba(255,255,255,.4);border-radius:12px;padding:4px 10px;opacity:.85}
+.login-hero .lh-title{font-size:24px;font-weight:700;line-height:1.45;margin-top:14px}
+.login-hero .lh-foot{font-size:11px;opacity:.5;margin-top:auto}
+.login-side{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 26px}
+.btn-kakao{width:100%;max-width:230px;height:46px;background:#FEE500;color:rgba(0,0,0,.85);border:none;border-radius:6px;font:inherit;font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.btn-kakao svg{margin-right:8px}
+.demo-row{margin-top:26px;font-size:12px;color:#9CA3AF;text-align:center}
+.demo-row a{color:#9CA3AF;text-decoration:underline;cursor:pointer;margin:0 5px}
+.auth-card{width:420px;background:#fff;border-radius:12px;padding:38px 34px;text-align:center;box-shadow:0 12px 32px rgba(17,24,39,.10)}
+.auth-card .ico{width:52px;height:52px;border-radius:50%;background:var(--section);display:flex;align-items:center;justify-content:center;font-size:22px;margin:0 auto 16px}
+.auth-card .ico.warn{color:var(--red);background:var(--red-soft);font-weight:800}
+.auth-card .t1{font-size:18px;font-weight:700}
+.auth-card .t2{font-size:13px;color:var(--sub);margin-top:8px;line-height:1.6}
+.auth-card .inv{border:1px solid var(--border);border-radius:8px;padding:14px;margin-top:18px;text-align:left}
+.auth-card .inv .fld{width:50%;padding:4px 0;display:inline-block}
+.auth-card .btn{width:100%;padding:13px 0;margin-top:20px}
+.auth-card .sub-act{display:block;font-size:13px;color:var(--sub);margin-top:14px;cursor:pointer;text-decoration:underline}
+.console.hide{display:none}
+body.emp .adm-only{display:none}
+
+/* ── 모달 / 토스트 ───────────────── */
+.dim{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(17,24,39,.44);z-index:40;align-items:center;justify-content:center}
+.dim.show{display:flex}
+.modal{width:420px;background:#fff;border-radius:10px;padding:22px 22px 24px;box-shadow:0 12px 32px rgba(17,24,39,.18)}
+.modal h4{font-size:17px;font-weight:700}
+.modal .msg{font-size:14px;margin-top:12px}
+.modal .note{font-size:13px;color:var(--sub);margin-top:8px;line-height:1.6}
+.modal .note:empty{display:none}
+.modal .acts{display:flex;margin-top:20px}
+.modal .acts .btn{flex:1;padding:12px 0}
+.modal .acts .btn + .btn{margin-left:8px}
+.toast{display:none;position:fixed;left:50%;bottom:36px;transform:translateX(-50%);background:rgba(17,24,39,.9);color:#fff;font-size:13px;padding:11px 18px;border-radius:8px;z-index:50}
+.toast.show{display:block}
+.hide{display:none}
+
+/* ── 임시: 로그인 분기 선택 오버레이 — 실제 구현 시 이 블록·마크업·branchGo 제거 ── */
+.demo-branch{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(17,24,39,.44);z-index:80;display:none;align-items:center;justify-content:center}
+.demo-branch.on{display:flex}
+.db-card{width:340px;background:#fff;border-radius:12px;padding:20px 20px 16px;box-shadow:0 12px 32px rgba(17,24,39,.18);font-family:inherit}
+.db-badge{display:inline-block;font-size:11px;font-weight:700;color:#B45309;background:#FBF3E4;border-radius:4px;padding:3px 8px}
+.db-title{font-size:16px;font-weight:700;margin-top:10px;color:#111827}
+.db-opt{display:flex;align-items:center;justify-content:space-between;border:1px solid #E5E7EB;border-radius:8px;padding:12px 14px;margin-top:10px;cursor:pointer}
+.db-opt:hover{background:#F7F8FA}
+.db-opt b{font-size:14px;display:block;color:#111827}
+.db-opt small{font-size:12px;color:#6B7280}
+.db-opt .chv{color:#9CA3AF}
+.db-cancel{text-align:center;font-size:13px;color:#6B7280;margin-top:14px;cursor:pointer;text-decoration:underline}
+</style>
+</head>
+<body>
+<div id="v-auth" class="hide">
+  <!-- C0-1 로그인 -->
+  <div class="auth-view" id="a-login">
+    <div class="login-box">
+      <div class="login-hero">
+        <div><svg class="lh-logo-svg" xmlns="http://www.w3.org/2000/svg" viewBox="249 92 1585 331" fill="none">
+<path d="M 1293.25,118.00 L 1292.50,119.00 L 1287.25,119.00 L 1286.50,120.00 L 1282.25,120.00 L 1281.50,121.00 L 1273.25,122.00 L 1272.50,123.00 L 1270.25,123.00 L 1269.50,124.00 L 1261.25,126.00 L 1260.50,127.00 L 1245.25,134.00 L 1243.50,136.00 L 1242.25,136.00 L 1240.50,138.00 L 1236.25,140.00 L 1233.50,143.00 L 1232.25,143.00 L 1227.50,148.00 L 1226.25,148.00 L 1225.00,149.25 L 1225.00,150.50 L 1218.00,157.25 L 1218.00,158.50 L 1212.00,165.25 L 1211.00,168.50 L 1208.00,171.25 L 1207.00,175.50 L 1205.00,177.25 L 1205.00,178.50 L 1202.00,183.25 L 1201.00,188.50 L 1198.00,194.25 L 1198.00,198.50 L 1197.00,199.25 L 1196.00,207.50 L 1195.00,208.25 L 1195.00,211.50 L 1194.00,212.25 L 1194.00,224.50 L 1195.00,225.25 L 1195.00,231.50 L 1196.00,232.25 L 1196.00,235.50 L 1198.00,239.25 L 1198.00,242.50 L 1199.00,243.25 L 1203.00,252.50 L 1215.25,265.75 L 1216.50,265.75 L 1222.25,270.75 L 1223.50,270.75 L 1224.25,272.75 L 1227.50,272.75 L 1228.25,273.75 L 1229.50,273.75 L 1232.25,275.75 L 1234.50,275.75 L 1241.25,279.75 L 1244.50,279.75 L 1245.25,280.75 L 1247.50,280.75 L 1248.25,281.75 L 1250.50,281.75 L 1254.25,283.75 L 1258.50,283.75 L 1259.25,284.75 L 1262.50,284.75 L 1263.25,285.75 L 1266.50,285.75 L 1267.25,286.75 L 1270.50,286.75 L 1271.25,287.75 L 1274.50,287.75 L 1275.25,288.75 L 1282.50,288.75 L 1283.25,289.75 L 1287.50,289.75 L 1288.25,290.75 L 1291.50,290.75 L 1292.25,291.75 L 1296.50,291.75 L 1297.25,292.75 L 1307.50,293.75 L 1311.25,295.75 L 1314.50,295.75 L 1318.25,297.75 L 1321.50,297.75 L 1322.25,298.75 L 1327.50,300.75 L 1328.25,302.75 L 1331.50,302.75 L 1340.00,310.25 L 1340.00,311.50 L 1342.00,313.25 L 1342.00,314.50 L 1344.00,317.25 L 1344.00,320.50 L 1345.00,321.25 L 1345.00,328.50 L 1344.00,329.25 L 1344.00,331.50 L 1343.00,332.25 L 1343.00,334.50 L 1342.00,335.25 L 1341.00,338.50 L 1332.50,348.00 L 1329.25,349.00 L 1326.50,352.00 L 1324.25,352.00 L 1319.50,355.00 L 1317.25,355.00 L 1313.50,357.00 L 1308.25,357.00 L 1304.50,359.00 L 1299.25,359.00 L 1298.50,360.00 L 1290.25,360.00 L 1289.50,361.00 L 1273.25,361.00 L 1272.50,360.00 L 1266.25,360.00 L 1265.50,359.00 L 1258.25,358.00 L 1254.50,356.00 L 1250.25,356.00 L 1249.50,355.00 L 1246.25,354.00 L 1244.50,352.00 L 1242.25,352.00 L 1238.50,348.00 L 1237.25,348.00 L 1236.75,346.25 L 1231.75,341.50 L 1231.75,340.25 L 1229.75,338.50 L 1229.75,337.25 L 1227.75,334.50 L 1227.75,332.25 L 1225.75,328.50 L 1225.75,325.25 L 1223.75,321.50 L 1223.75,315.25 L 1222.75,314.50 L 1221.75,308.25 L 1219.75,306.50 L 1218.75,303.25 L 1211.50,295.00 L 1209.25,295.00 L 1203.50,292.00 L 1201.25,292.00 L 1200.50,293.00 L 1196.25,293.00 L 1195.50,294.00 L 1192.25,295.00 L 1189.00,299.25 L 1189.00,300.50 L 1186.00,303.25 L 1185.00,307.50 L 1184.00,308.25 L 1184.00,310.50 L 1183.00,311.25 L 1183.00,313.50 L 1182.00,314.25 L 1182.00,329.50 L 1183.00,330.25 L 1183.00,334.50 L 1184.00,335.25 L 1184.00,339.50 L 1185.00,340.25 L 1186.00,346.50 L 1188.00,349.25 L 1188.00,351.50 L 1189.00,352.25 L 1192.00,359.50 L 1194.00,361.25 L 1194.00,363.50 L 1197.00,366.25 L 1199.00,370.50 L 1206.25,377.75 L 1207.50,377.75 L 1211.25,381.75 L 1212.50,381.75 L 1217.25,385.75 L 1218.50,385.75 L 1227.25,390.75 L 1229.50,390.75 L 1234.25,393.75 L 1236.50,393.75 L 1240.25,395.75 L 1243.50,395.75 L 1244.25,396.75 L 1246.50,396.75 L 1250.25,398.75 L 1253.50,398.75 L 1254.25,399.75 L 1260.50,399.75 L 1261.25,400.75 L 1273.50,401.75 L 1274.25,402.75 L 1284.50,402.75 L 1285.25,403.75 L 1304.50,403.75 L 1305.25,402.75 L 1314.50,402.75 L 1315.25,401.75 L 1319.50,401.75 L 1320.25,400.75 L 1329.50,399.75 L 1330.25,398.75 L 1333.50,398.75 L 1336.25,396.75 L 1341.50,395.75 L 1342.25,394.75 L 1355.50,388.75 L 1357.25,386.75 L 1361.50,384.75 L 1364.25,381.75 L 1365.50,381.75 L 1378.75,368.50 L 1378.75,367.25 L 1382.75,363.50 L 1383.75,360.25 L 1385.75,358.50 L 1385.75,357.25 L 1390.75,348.50 L 1391.75,343.25 L 1392.75,342.50 L 1392.75,339.25 L 1393.75,338.50 L 1393.75,336.25 L 1394.75,335.50 L 1394.75,331.25 L 1395.75,330.50 L 1395.75,311.25 L 1394.75,310.50 L 1394.75,307.25 L 1393.75,306.50 L 1392.75,299.25 L 1391.75,298.50 L 1387.75,289.25 L 1372.50,273.00 L 1368.25,271.00 L 1365.50,268.00 L 1362.25,267.00 L 1360.50,265.00 L 1359.25,265.00 L 1348.50,259.00 L 1345.25,259.00 L 1339.50,256.00 L 1337.25,256.00 L 1333.50,254.00 L 1330.25,254.00 L 1329.50,253.00 L 1327.25,253.00 L 1323.50,251.00 L 1320.25,251.00 L 1319.50,250.00 L 1314.25,250.00 L 1313.50,249.00 L 1311.25,249.00 L 1307.50,247.00 L 1304.25,247.00 L 1303.50,246.00 L 1296.25,245.00 L 1293.50,243.00 L 1291.25,243.00 L 1287.50,241.00 L 1284.25,241.00 L 1283.50,240.00 L 1274.25,236.00 L 1271.50,233.00 L 1268.25,232.00 L 1263.75,227.50 L 1263.75,226.25 L 1261.75,223.50 L 1261.75,221.25 L 1260.75,220.50 L 1260.75,215.25 L 1261.75,214.50 L 1263.75,209.25 L 1266.75,206.50 L 1266.75,205.25 L 1269.25,202.75 L 1270.50,202.75 L 1274.25,198.75 L 1275.50,198.75 L 1280.25,195.75 L 1285.50,194.75 L 1286.25,193.75 L 1292.50,193.75 L 1293.25,192.75 L 1295.50,192.75 L 1299.00,195.25 L 1299.00,196.50 L 1301.00,198.25 L 1303.00,202.50 L 1316.25,215.75 L 1320.50,217.75 L 1323.25,220.75 L 1326.50,221.75 L 1329.25,224.75 L 1330.50,224.75 L 1333.25,226.75 L 1335.50,226.75 L 1338.25,228.75 L 1340.50,228.75 L 1341.25,229.75 L 1345.50,229.75 L 1346.25,230.75 L 1356.50,230.75 L 1357.25,229.75 L 1361.50,229.75 L 1369.25,225.75 L 1371.50,225.75 L 1373.25,223.75 L 1377.50,221.75 L 1381.25,217.75 L 1382.50,217.75 L 1389.75,209.50 L 1389.75,208.25 L 1392.75,203.50 L 1392.75,201.25 L 1393.75,200.50 L 1393.75,197.25 L 1394.75,196.50 L 1394.75,178.25 L 1393.75,177.50 L 1393.75,172.25 L 1392.75,171.50 L 1392.75,168.25 L 1390.75,165.50 L 1390.75,163.25 L 1389.75,162.50 L 1387.75,157.25 L 1371.50,143.00 L 1368.25,142.00 L 1366.50,140.00 L 1362.25,138.00 L 1359.50,135.00 L 1349.25,130.00 L 1344.50,126.00 L 1339.25,125.00 L 1336.50,123.00 L 1334.25,123.00 L 1330.50,121.00 L 1322.25,120.00 L 1321.50,119.00 L 1314.25,119.00 L 1313.50,118.00 Z M 954.25,116.00 L 952.50,118.00 L 949.25,119.00 L 948.50,121.00 L 947.00,121.25 L 947.00,122.50 L 945.00,124.25 L 945.00,125.50 L 942.00,130.25 L 942.00,133.50 L 940.00,137.25 L 940.00,145.50 L 939.00,146.25 L 939.00,149.50 L 938.00,150.25 L 938.00,153.50 L 937.00,154.25 L 937.00,158.50 L 936.00,159.25 L 936.00,163.50 L 935.00,164.25 L 935.00,169.50 L 933.00,173.25 L 933.00,177.50 L 932.00,178.25 L 932.00,181.50 L 931.00,182.25 L 931.00,185.50 L 930.00,186.25 L 930.00,192.50 L 928.00,196.25 L 927.00,204.50 L 926.00,205.25 L 926.00,210.50 L 925.00,211.25 L 925.00,214.50 L 924.00,215.25 L 923.00,222.50 L 921.00,223.25 L 922.00,229.50 L 921.00,230.25 L 921.00,233.50 L 920.00,234.25 L 920.00,237.50 L 919.00,238.25 L 919.00,242.50 L 918.00,243.25 L 918.00,250.50 L 917.00,251.25 L 917.00,257.50 L 916.00,258.25 L 916.00,262.50 L 915.00,263.25 L 915.00,267.50 L 914.00,268.25 L 914.00,275.50 L 913.00,276.25 L 913.00,289.50 L 912.00,290.25 L 912.00,311.50 L 913.00,312.25 L 913.00,320.50 L 914.00,321.25 L 914.00,325.50 L 915.00,326.25 L 915.00,328.50 L 916.00,329.25 L 916.00,331.50 L 917.00,332.25 L 919.00,340.50 L 921.00,342.25 L 922.00,346.50 L 926.00,351.25 L 927.00,354.50 L 943.25,371.75 L 944.50,371.75 L 951.25,377.75 L 953.50,377.75 L 956.25,380.75 L 957.50,380.75 L 968.25,386.75 L 970.50,386.75 L 973.25,388.75 L 975.50,388.75 L 979.25,390.75 L 987.50,391.75 L 988.25,392.75 L 990.50,392.75 L 991.25,393.75 L 995.50,393.75 L 996.25,394.75 L 1007.50,394.75 L 1008.25,395.75 L 1032.50,395.75 L 1033.25,394.75 L 1046.50,393.75 L 1047.25,392.75 L 1053.50,391.75 L 1054.25,390.75 L 1057.50,390.75 L 1063.25,387.75 L 1065.50,387.75 L 1068.25,385.75 L 1070.50,385.75 L 1074.25,382.75 L 1078.50,381.75 L 1083.25,377.75 L 1086.50,376.75 L 1090.25,372.75 L 1091.50,372.75 L 1095.25,368.75 L 1096.50,368.75 L 1107.75,357.50 L 1107.75,356.25 L 1115.75,347.50 L 1116.75,344.25 L 1120.75,340.50 L 1120.75,338.25 L 1124.75,333.50 L 1125.75,329.25 L 1127.75,327.50 L 1127.75,326.25 L 1129.75,323.50 L 1129.75,321.25 L 1131.75,318.50 L 1131.75,316.25 L 1133.75,314.50 L 1134.75,308.25 L 1136.75,305.50 L 1136.75,303.25 L 1138.75,299.50 L 1138.75,296.25 L 1140.75,292.50 L 1140.75,289.25 L 1142.75,285.50 L 1142.75,282.25 L 1143.75,281.50 L 1143.75,276.25 L 1144.75,275.50 L 1144.75,272.25 L 1145.75,271.50 L 1145.75,268.25 L 1146.75,267.50 L 1146.75,264.25 L 1147.75,263.50 L 1148.75,253.25 L 1149.75,252.50 L 1149.75,248.25 L 1150.75,247.50 L 1150.75,244.25 L 1151.75,243.50 L 1151.75,236.25 L 1152.75,235.50 L 1152.75,226.25 L 1153.75,225.50 L 1154.75,207.25 L 1155.75,206.50 L 1155.75,156.25 L 1157.75,153.50 L 1157.75,146.25 L 1155.75,142.50 L 1154.75,136.25 L 1153.75,135.50 L 1151.75,130.25 L 1144.50,123.00 L 1143.25,123.00 L 1140.50,121.00 L 1138.25,121.00 L 1137.50,120.00 L 1135.25,120.00 L 1134.50,119.00 L 1129.25,119.00 L 1128.50,120.00 L 1123.25,121.00 L 1118.00,125.25 L 1118.00,126.50 L 1115.50,129.00 L 1113.00,129.25 L 1113.00,135.50 L 1112.00,136.25 L 1112.00,140.50 L 1111.00,141.25 L 1111.00,151.50 L 1112.00,152.25 L 1112.00,157.50 L 1113.00,158.25 L 1113.00,168.50 L 1114.00,169.25 L 1114.00,201.50 L 1113.00,202.25 L 1113.00,216.50 L 1112.00,217.25 L 1111.00,234.50 L 1110.00,235.25 L 1110.00,240.50 L 1109.00,241.25 L 1109.00,249.50 L 1108.00,250.25 L 1108.00,253.50 L 1107.00,254.25 L 1107.00,257.50 L 1106.00,258.25 L 1106.00,261.50 L 1105.00,262.25 L 1105.00,267.50 L 1104.00,268.25 L 1104.00,271.50 L 1103.00,272.25 L 1103.00,275.50 L 1102.00,276.25 L 1102.00,279.50 L 1100.00,283.25 L 1099.00,289.50 L 1097.00,292.25 L 1096.00,297.50 L 1093.00,301.25 L 1087.00,313.50 L 1082.00,319.25 L 1082.00,320.50 L 1072.50,330.00 L 1071.25,330.00 L 1067.50,334.00 L 1062.25,336.00 L 1058.50,339.00 L 1056.25,339.00 L 1053.50,341.00 L 1047.25,342.00 L 1046.50,343.00 L 1037.25,343.00 L 1036.50,344.00 L 1016.25,344.00 L 1015.50,343.00 L 1009.25,343.00 L 1008.50,342.00 L 1005.25,342.00 L 1004.50,341.00 L 1002.25,341.00 L 1001.50,340.00 L 999.25,340.00 L 998.50,339.00 L 995.25,338.00 L 992.75,335.50 L 992.75,334.25 L 991.25,334.00 L 987.75,329.50 L 987.75,326.25 L 986.75,325.50 L 986.75,322.25 L 985.75,321.50 L 985.75,315.25 L 984.75,314.50 L 984.75,295.25 L 985.75,294.50 L 985.75,285.25 L 986.75,284.50 L 986.75,277.25 L 987.75,276.50 L 988.75,262.25 L 989.75,261.50 L 989.75,258.25 L 990.75,257.50 L 990.75,253.25 L 991.75,252.50 L 991.75,248.25 L 992.75,247.50 L 992.75,242.25 L 993.75,241.50 L 993.75,238.25 L 995.75,234.50 L 995.75,230.25 L 996.75,229.50 L 996.75,223.25 L 997.75,222.50 L 997.75,219.25 L 998.75,218.50 L 998.75,214.25 L 1000.75,210.50 L 1000.75,205.25 L 1001.75,204.50 L 1001.75,201.25 L 1003.75,197.50 L 1003.75,194.25 L 1004.75,193.50 L 1004.75,190.25 L 1005.75,189.50 L 1005.75,185.25 L 1006.75,184.50 L 1006.75,181.25 L 1007.75,180.50 L 1007.75,177.25 L 1008.75,176.50 L 1008.75,173.25 L 1009.75,172.50 L 1009.75,168.25 L 1010.75,167.50 L 1010.75,165.25 L 1012.75,161.50 L 1012.75,157.25 L 1013.75,156.50 L 1013.75,146.25 L 1012.75,145.50 L 1012.75,141.25 L 1009.75,136.50 L 1009.75,134.25 L 1002.50,127.00 L 999.25,126.00 L 997.50,124.00 L 996.25,124.00 L 991.50,121.00 L 989.25,121.00 L 988.50,120.00 L 986.25,120.00 L 982.50,118.00 L 979.25,118.00 L 975.50,116.00 L 969.25,116.00 L 968.50,115.00 L 964.25,115.00 L 963.50,114.00 Z M 607.25,144.00 L 602.00,149.25 L 602.00,150.50 L 599.00,155.25 L 598.00,161.50 L 597.00,162.25 L 598.00,171.50 L 599.00,172.25 L 602.00,179.50 L 606.00,183.25 L 606.00,184.50 L 608.25,186.75 L 609.50,186.75 L 612.25,189.75 L 613.50,189.75 L 618.25,193.75 L 619.50,193.75 L 630.25,199.75 L 632.50,199.75 L 636.00,202.25 L 636.00,205.50 L 633.00,209.25 L 633.00,210.50 L 623.00,220.25 L 623.00,221.50 L 620.00,224.25 L 619.00,227.50 L 616.00,231.25 L 616.00,234.50 L 615.00,235.25 L 615.00,244.50 L 616.00,245.25 L 616.00,248.50 L 617.00,249.25 L 621.00,258.50 L 622.25,259.75 L 623.50,259.75 L 629.25,265.75 L 633.50,266.75 L 634.25,267.75 L 636.50,267.75 L 639.25,269.75 L 652.00,271.25 L 652.00,273.50 L 651.00,274.25 L 649.00,279.50 L 647.00,281.25 L 646.00,284.50 L 644.00,286.25 L 644.00,287.50 L 641.00,292.25 L 641.00,294.50 L 639.00,297.25 L 639.00,299.50 L 637.00,303.25 L 637.00,308.50 L 636.00,309.25 L 636.00,314.50 L 637.00,315.25 L 637.00,318.50 L 638.00,319.25 L 639.00,324.50 L 640.00,325.25 L 641.00,328.50 L 643.00,330.25 L 643.00,331.50 L 646.00,334.25 L 646.00,335.50 L 652.25,341.75 L 653.50,341.75 L 655.25,343.75 L 656.50,343.75 L 660.25,346.75 L 662.50,346.75 L 668.25,349.75 L 682.50,350.75 L 683.25,349.75 L 689.50,349.75 L 690.25,348.75 L 694.50,348.75 L 698.25,346.75 L 702.50,346.75 L 708.25,343.75 L 710.50,343.75 L 713.25,341.75 L 715.50,341.75 L 716.25,340.75 L 719.50,339.75 L 721.25,337.75 L 724.50,337.75 L 727.25,334.75 L 728.50,334.75 L 733.25,330.75 L 736.50,329.75 L 741.75,324.50 L 742.75,320.25 L 743.75,319.50 L 743.75,317.25 L 742.50,315.00 L 741.25,315.00 L 737.75,311.50 L 739.75,303.25 L 735.50,300.00 L 731.25,300.00 L 730.50,301.00 L 722.25,302.00 L 721.50,303.00 L 715.25,303.00 L 714.50,304.00 L 699.25,305.00 L 698.50,306.00 L 687.25,306.00 L 683.75,303.50 L 683.75,300.25 L 684.75,299.50 L 685.75,294.25 L 687.75,292.50 L 690.75,285.25 L 692.75,283.50 L 693.75,280.25 L 697.75,275.50 L 698.75,272.25 L 702.75,267.50 L 702.75,265.25 L 705.75,259.50 L 705.75,250.25 L 704.75,249.50 L 701.75,242.25 L 697.75,238.50 L 697.75,237.25 L 696.50,236.00 L 695.25,236.00 L 691.50,232.00 L 689.75,231.50 L 689.75,229.25 L 696.25,225.75 L 698.50,225.75 L 703.25,222.75 L 705.50,222.75 L 706.25,221.75 L 719.50,215.75 L 721.25,213.75 L 726.50,211.75 L 728.25,209.75 L 733.50,209.75 L 734.75,208.50 L 734.75,205.25 L 738.25,204.75 L 738.00,207.50 L 737.00,208.25 L 737.00,212.50 L 736.00,213.25 L 737.00,225.50 L 738.25,227.75 L 739.50,227.75 L 742.25,230.75 L 745.50,231.75 L 748.25,234.75 L 749.50,234.75 L 754.25,237.75 L 759.50,238.75 L 760.25,239.75 L 764.50,239.75 L 765.25,240.75 L 769.50,240.75 L 770.25,241.75 L 785.50,241.75 L 786.25,240.75 L 791.50,240.75 L 792.25,239.75 L 796.00,240.25 L 795.00,246.50 L 789.25,248.00 L 788.50,250.00 L 787.25,250.00 L 784.50,252.00 L 782.25,252.00 L 778.50,254.00 L 768.25,255.00 L 767.50,256.00 L 751.25,256.00 L 750.50,257.00 L 748.25,257.00 L 747.50,258.00 L 744.25,259.00 L 743.50,261.00 L 741.25,261.00 L 735.00,271.25 L 735.00,281.50 L 737.00,283.25 L 738.00,286.50 L 742.25,290.75 L 746.50,291.75 L 747.25,292.75 L 749.50,292.75 L 750.25,293.75 L 752.50,293.75 L 753.25,294.75 L 770.50,294.75 L 771.25,293.75 L 776.50,293.75 L 777.25,292.75 L 782.50,292.75 L 783.25,293.75 L 786.50,293.75 L 787.00,300.50 L 786.00,301.25 L 786.00,306.50 L 785.00,307.25 L 784.00,323.50 L 783.00,324.25 L 782.00,336.50 L 781.00,337.25 L 781.00,345.50 L 784.00,351.25 L 784.00,357.50 L 786.25,359.75 L 789.50,359.75 L 790.25,358.75 L 801.50,357.75 L 802.25,356.75 L 805.50,355.75 L 807.25,353.75 L 808.50,353.75 L 808.75,352.25 L 813.75,347.50 L 813.75,345.25 L 815.75,342.50 L 815.75,340.25 L 818.75,334.50 L 818.75,330.25 L 820.75,327.50 L 821.75,321.25 L 822.75,320.50 L 822.75,317.25 L 823.75,316.50 L 823.75,313.25 L 825.75,309.50 L 825.75,306.25 L 826.75,305.50 L 826.75,302.25 L 827.75,301.50 L 827.75,296.25 L 828.75,295.50 L 829.75,289.25 L 831.75,285.50 L 831.75,279.25 L 832.75,278.50 L 832.75,275.25 L 833.75,274.50 L 833.75,271.25 L 834.75,270.50 L 834.75,267.25 L 835.75,266.50 L 835.75,262.25 L 836.75,261.50 L 836.75,254.25 L 837.75,253.50 L 837.75,249.25 L 838.75,248.50 L 838.75,244.25 L 839.75,243.50 L 839.75,238.25 L 840.75,237.50 L 840.75,228.25 L 841.75,227.50 L 842.75,215.25 L 843.75,214.50 L 843.75,210.25 L 844.75,209.50 L 844.75,200.25 L 845.75,199.50 L 845.75,172.25 L 844.75,171.50 L 844.75,168.25 L 843.75,167.50 L 840.75,160.25 L 834.50,154.00 L 830.25,153.00 L 823.50,149.00 L 818.25,149.00 L 817.50,150.00 L 814.25,151.00 L 811.00,154.25 L 811.00,155.50 L 807.00,162.25 L 807.00,164.50 L 806.00,165.25 L 806.00,188.50 L 805.00,189.25 L 805.00,195.50 L 804.00,196.25 L 804.00,200.50 L 800.50,204.00 L 792.25,204.00 L 791.50,205.00 L 789.25,205.00 L 788.50,204.00 L 784.25,204.00 L 783.50,203.00 L 780.25,203.00 L 779.50,202.00 L 765.25,202.00 L 764.50,203.00 L 760.25,203.00 L 756.50,201.00 L 752.25,201.00 L 748.50,203.00 L 744.25,203.00 L 742.50,206.00 L 739.50,206.00 L 739.75,201.25 L 740.75,200.50 L 740.75,198.25 L 742.75,194.50 L 742.75,191.25 L 744.75,187.50 L 744.75,172.25 L 743.75,171.50 L 741.75,163.25 L 739.75,161.50 L 737.75,157.25 L 728.50,148.00 L 727.25,148.00 L 722.50,144.00 L 717.25,142.00 L 715.50,140.00 L 713.25,140.00 L 710.50,138.00 L 708.25,138.00 L 707.50,137.00 L 705.25,137.00 L 704.50,136.00 L 702.25,136.00 L 698.50,134.00 L 695.25,134.00 L 694.50,133.00 L 691.25,133.00 L 690.50,132.00 L 686.25,132.00 L 685.50,131.00 L 677.25,131.00 L 676.50,130.00 L 653.25,130.00 L 652.50,131.00 L 645.25,131.00 L 644.50,132.00 L 640.25,132.00 L 639.50,133.00 L 635.25,133.00 L 634.50,134.00 L 630.25,134.00 L 626.50,136.00 L 623.25,136.00 L 617.50,139.00 L 615.25,139.00 L 614.50,140.00 L 611.25,141.00 L 608.50,144.00 Z M 270.25,164.00 L 268.00,166.25 L 267.00,170.50 L 265.00,173.25 L 265.00,176.50 L 267.00,178.25 L 267.00,179.50 L 269.25,181.75 L 270.50,181.75 L 274.25,185.75 L 275.50,185.75 L 281.00,191.25 L 281.00,192.50 L 283.25,194.75 L 284.50,194.75 L 289.25,198.75 L 293.50,199.75 L 301.25,203.75 L 305.50,203.75 L 306.25,204.75 L 310.50,204.75 L 311.25,205.75 L 316.50,205.75 L 317.25,206.75 L 321.50,206.75 L 322.25,207.75 L 324.50,207.75 L 325.25,206.75 L 351.50,206.75 L 352.25,205.75 L 358.50,205.75 L 359.25,204.75 L 372.50,204.75 L 373.25,203.75 L 395.50,203.75 L 396.25,204.75 L 403.50,204.75 L 405.00,206.25 L 405.00,213.50 L 404.00,214.25 L 404.00,218.50 L 403.00,219.25 L 402.00,227.50 L 400.00,228.25 L 401.00,234.50 L 400.00,235.25 L 400.00,238.50 L 399.00,239.25 L 399.00,242.50 L 398.00,243.25 L 398.00,246.50 L 397.00,247.25 L 397.00,252.50 L 396.00,253.25 L 395.00,262.50 L 394.00,263.25 L 394.00,266.50 L 393.00,267.25 L 393.00,273.50 L 392.00,274.25 L 392.00,283.50 L 391.00,284.25 L 391.00,289.50 L 390.00,290.25 L 390.00,298.50 L 389.00,299.25 L 389.00,310.50 L 392.00,314.25 L 392.00,318.50 L 393.00,319.25 L 393.00,321.50 L 394.00,322.25 L 396.00,327.50 L 398.25,328.75 L 404.50,329.75 L 405.25,330.75 L 412.50,330.75 L 416.25,328.75 L 419.50,328.75 L 426.25,324.75 L 428.50,324.75 L 433.25,319.75 L 437.50,319.75 L 439.75,318.50 L 439.75,317.25 L 444.75,312.50 L 444.75,311.25 L 451.75,303.50 L 451.75,302.25 L 453.75,299.50 L 453.75,297.25 L 457.75,290.50 L 457.75,288.25 L 460.75,283.50 L 460.75,281.25 L 461.75,280.50 L 462.75,275.25 L 465.75,270.50 L 466.75,264.25 L 469.75,258.50 L 470.75,252.25 L 471.75,251.50 L 472.75,246.25 L 474.75,243.50 L 475.75,237.25 L 477.75,234.50 L 477.75,232.25 L 479.75,228.50 L 479.75,225.25 L 480.75,224.50 L 480.75,221.25 L 482.75,218.50 L 483.75,212.25 L 484.75,211.50 L 484.75,182.25 L 483.75,181.50 L 483.75,178.25 L 482.75,177.50 L 482.75,175.25 L 479.75,170.50 L 479.75,168.25 L 478.75,167.50 L 477.75,164.25 L 468.50,152.00 L 467.25,152.00 L 460.50,145.00 L 454.25,142.00 L 452.50,140.00 L 451.25,140.00 L 440.50,134.00 L 437.25,134.00 L 433.50,132.00 L 425.25,131.00 L 424.50,130.00 L 419.25,130.00 L 418.50,129.00 L 383.25,129.00 L 382.50,130.00 L 372.25,130.00 L 371.50,131.00 L 364.25,131.00 L 363.50,132.00 L 359.25,132.00 L 358.50,133.00 L 355.25,133.00 L 354.50,134.00 L 345.25,135.00 L 344.50,136.00 L 341.25,136.00 L 337.50,138.00 L 330.25,139.00 L 329.50,140.00 L 324.25,141.00 L 321.50,143.00 L 316.25,144.00 L 313.50,146.00 L 308.25,147.00 L 305.50,149.00 L 303.25,149.00 L 298.50,152.00 L 296.25,152.00 L 289.50,156.00 L 287.25,156.00 L 278.50,161.00 L 276.25,161.00 L 275.50,162.00 Z M 251.00,374.50 L 254.25,377.75 L 264.50,381.75 L 268.00,385.25 L 268.25,386.75 L 271.50,387.75 L 273.25,389.75 L 276.50,389.75 L 277.25,390.75 L 289.50,390.75 L 290.25,389.75 L 299.50,389.75 L 300.25,388.75 L 305.50,388.75 L 306.25,387.75 L 312.50,387.75 L 313.25,386.75 L 322.50,386.75 L 323.25,385.75 L 331.50,385.75 L 332.25,384.75 L 339.50,384.75 L 340.25,383.75 L 354.50,382.75 L 355.25,381.75 L 366.50,381.75 L 367.25,380.75 L 378.50,380.75 L 379.25,379.75 L 390.50,379.75 L 391.25,378.75 L 403.50,378.75 L 404.25,377.75 L 451.50,377.75 L 452.25,378.75 L 459.50,378.75 L 460.25,379.75 L 465.50,379.75 L 466.25,380.75 L 481.50,381.75 L 482.25,382.75 L 486.50,382.75 L 487.25,383.75 L 495.50,384.75 L 496.25,385.75 L 504.50,385.75 L 505.25,384.75 L 508.50,384.75 L 515.25,378.75 L 517.75,378.50 L 517.75,375.25 L 520.25,372.75 L 521.50,372.75 L 528.75,365.50 L 528.75,358.25 L 523.50,352.00 L 521.25,352.00 L 519.50,350.00 L 518.25,350.00 L 515.50,348.00 L 512.25,348.00 L 511.50,347.00 L 509.25,347.00 L 505.50,345.00 L 502.25,345.00 L 501.50,344.00 L 477.25,344.00 L 476.50,343.00 L 454.25,343.00 L 453.50,342.00 L 373.25,343.00 L 372.75,340.25 L 371.75,339.50 L 371.75,337.25 L 370.75,336.50 L 370.75,334.25 L 371.75,333.50 L 371.75,323.25 L 372.75,322.50 L 372.75,311.25 L 373.75,310.50 L 373.75,296.25 L 372.75,295.50 L 371.75,289.25 L 368.75,285.50 L 365.75,279.25 L 360.50,274.00 L 356.25,273.00 L 355.50,272.00 L 353.25,272.00 L 352.50,271.00 L 346.25,271.00 L 345.50,272.00 L 342.25,272.00 L 340.50,274.00 L 339.25,274.00 L 334.00,279.25 L 334.00,280.50 L 332.00,283.25 L 332.00,285.50 L 330.00,288.25 L 330.00,307.50 L 329.00,308.25 L 329.00,336.50 L 328.00,337.25 L 328.00,339.50 L 327.00,340.25 L 326.00,343.50 L 323.50,345.00 L 321.25,345.00 L 320.50,346.00 L 317.25,346.00 L 316.50,347.00 L 302.25,348.00 L 301.50,349.00 L 297.25,349.00 L 293.50,351.00 L 289.25,351.00 L 288.50,352.00 L 280.25,352.00 L 279.50,353.00 L 275.25,353.00 L 274.50,354.00 L 267.25,355.00 L 266.50,357.00 L 263.25,358.00 L 260.50,361.00 L 259.25,361.00 L 253.00,367.25 L 253.00,368.50 L 251.00,370.25 Z" fill="#FFFFFF" fill-rule="evenodd" clip-rule="evenodd"/>
+<path d="M 1755.75,320.25 L 1752.25,320.00 L 1751.75,319.50 L 1751.75,316.25 L 1750.75,315.50 L 1750.75,313.25 L 1749.75,312.50 L 1749.75,311.25 L 1748.75,310.50 L 1748.75,308.25 L 1747.75,307.50 L 1747.75,305.25 L 1745.75,303.50 L 1745.75,302.25 L 1744.75,301.50 L 1744.75,300.25 L 1743.75,299.50 L 1743.75,298.25 L 1742.75,297.50 L 1742.75,296.25 L 1739.75,293.50 L 1739.75,292.25 L 1735.75,288.50 L 1735.75,287.25 L 1720.50,272.00 L 1719.25,272.00 L 1715.50,268.00 L 1714.25,268.00 L 1710.50,264.00 L 1709.25,264.00 L 1706.50,261.00 L 1705.25,261.00 L 1703.50,259.00 L 1702.25,259.00 L 1701.50,258.00 L 1700.25,258.00 L 1698.50,256.00 L 1697.25,256.00 L 1696.50,255.00 L 1694.25,255.00 L 1692.00,257.25 L 1692.00,258.50 L 1690.00,260.25 L 1690.00,261.50 L 1689.00,262.25 L 1689.00,263.50 L 1686.00,266.25 L 1686.00,267.50 L 1685.00,268.25 L 1685.00,269.50 L 1683.00,271.25 L 1683.00,272.50 L 1681.00,274.25 L 1681.00,275.50 L 1680.00,276.25 L 1680.00,277.50 L 1677.00,280.25 L 1677.00,281.50 L 1676.00,282.25 L 1676.00,283.50 L 1674.00,285.25 L 1674.00,286.50 L 1672.00,288.25 L 1672.00,289.50 L 1670.00,291.25 L 1670.00,292.50 L 1669.00,293.25 L 1669.00,294.50 L 1667.00,296.25 L 1667.00,297.50 L 1666.00,298.25 L 1666.00,301.50 L 1672.50,301.75 L 1673.00,302.25 L 1673.25,303.75 L 1676.50,303.75 L 1678.25,305.75 L 1679.50,305.75 L 1680.25,306.75 L 1681.50,306.75 L 1684.25,309.75 L 1685.50,309.75 L 1686.25,310.75 L 1687.50,310.75 L 1688.00,311.25 L 1688.00,312.50 L 1689.25,313.75 L 1690.50,313.75 L 1698.00,321.25 L 1698.00,322.50 L 1701.00,325.25 L 1701.00,326.50 L 1703.00,328.25 L 1703.00,329.50 L 1704.00,330.25 L 1704.00,331.50 L 1705.00,332.25 L 1705.00,333.50 L 1706.00,334.25 L 1706.00,337.50 L 1707.00,338.25 L 1707.00,341.50 L 1708.00,342.25 L 1708.00,346.50 L 1709.00,347.25 L 1709.00,355.50 L 1708.00,356.25 L 1708.00,361.50 L 1707.00,362.25 L 1707.00,365.50 L 1706.00,366.25 L 1706.00,369.50 L 1705.00,370.25 L 1705.00,371.50 L 1704.00,372.25 L 1704.00,373.50 L 1703.00,374.25 L 1703.00,375.50 L 1701.00,377.25 L 1701.00,379.50 L 1697.00,383.25 L 1697.00,384.50 L 1689.50,392.00 L 1688.25,392.00 L 1686.50,394.00 L 1685.25,394.00 L 1684.50,395.00 L 1681.25,395.00 L 1681.00,396.50 L 1679.50,398.00 L 1678.25,398.00 L 1677.50,399.00 L 1676.25,399.00 L 1675.50,400.00 L 1674.25,400.00 L 1673.50,401.00 L 1670.25,401.00 L 1669.50,402.00 L 1666.25,402.00 L 1665.50,403.00 L 1662.25,403.00 L 1661.50,404.00 L 1658.25,404.00 L 1657.50,405.00 L 1635.25,405.00 L 1634.50,404.00 L 1631.25,404.00 L 1630.50,403.00 L 1628.25,403.00 L 1627.50,402.00 L 1625.25,402.00 L 1624.50,401.00 L 1620.25,401.00 L 1618.50,399.00 L 1616.25,399.00 L 1615.50,398.00 L 1614.25,398.00 L 1613.50,397.00 L 1612.25,397.00 L 1611.75,396.50 L 1611.50,395.00 L 1608.25,395.00 L 1607.50,394.00 L 1606.25,394.00 L 1605.50,393.00 L 1604.25,393.00 L 1603.50,392.00 L 1602.25,392.00 L 1599.50,389.00 L 1598.25,389.00 L 1596.50,387.00 L 1595.25,387.00 L 1590.50,382.00 L 1589.25,382.00 L 1588.75,381.50 L 1588.75,380.25 L 1587.50,379.00 L 1586.25,379.00 L 1585.75,378.50 L 1585.75,377.25 L 1581.75,373.50 L 1581.75,372.25 L 1579.75,370.50 L 1579.75,369.25 L 1577.75,367.50 L 1577.75,366.25 L 1575.75,364.50 L 1575.75,363.25 L 1574.50,362.00 L 1567.25,362.00 L 1566.50,361.00 L 1559.25,361.00 L 1558.50,360.00 L 1554.25,360.00 L 1553.50,359.00 L 1550.25,359.00 L 1549.50,358.00 L 1545.25,358.00 L 1545.00,416.50 L 1546.25,417.75 L 1555.50,417.75 L 1556.75,416.50 L 1556.75,415.25 L 1557.75,414.50 L 1557.75,413.25 L 1560.25,410.75 L 1564.50,410.75 L 1564.75,409.25 L 1565.25,408.75 L 1577.50,408.75 L 1578.25,409.75 L 1583.50,409.75 L 1584.25,410.75 L 1587.50,410.75 L 1588.25,411.75 L 1591.50,411.75 L 1592.25,412.75 L 1596.50,412.75 L 1597.25,413.75 L 1601.50,413.75 L 1602.25,414.75 L 1604.50,414.75 L 1605.25,415.75 L 1608.50,415.75 L 1609.25,416.75 L 1613.50,416.75 L 1614.25,417.75 L 1621.50,417.75 L 1622.25,418.75 L 1627.50,418.75 L 1628.25,419.75 L 1635.50,419.75 L 1636.25,420.75 L 1657.50,420.75 L 1658.25,419.75 L 1664.50,419.75 L 1665.25,418.75 L 1669.50,418.75 L 1670.25,417.75 L 1676.50,417.75 L 1677.25,416.75 L 1680.50,416.75 L 1681.25,415.75 L 1683.50,415.75 L 1684.25,414.75 L 1686.50,414.75 L 1687.25,413.75 L 1690.50,413.75 L 1691.25,412.75 L 1693.50,412.75 L 1694.25,411.75 L 1695.50,411.75 L 1696.25,410.75 L 1698.50,410.75 L 1699.25,409.75 L 1700.50,409.75 L 1701.25,408.75 L 1703.50,408.75 L 1704.25,407.75 L 1705.50,407.75 L 1706.25,406.75 L 1707.50,406.75 L 1708.25,405.75 L 1709.50,405.75 L 1710.25,404.75 L 1711.50,404.75 L 1712.25,403.75 L 1713.50,403.75 L 1715.25,401.75 L 1716.50,401.75 L 1718.25,399.75 L 1719.50,399.75 L 1722.25,396.75 L 1723.50,396.75 L 1727.25,392.75 L 1728.50,392.75 L 1731.75,389.50 L 1731.75,388.25 L 1733.25,386.75 L 1734.75,386.50 L 1734.75,385.25 L 1738.75,381.50 L 1738.75,380.25 L 1739.75,379.50 L 1739.75,378.25 L 1742.75,375.50 L 1742.75,374.25 L 1743.75,373.50 L 1743.75,372.25 L 1744.75,371.50 L 1744.75,370.25 L 1745.75,369.50 L 1745.75,368.25 L 1747.75,366.50 L 1747.75,364.25 L 1748.75,363.50 L 1748.75,362.25 L 1749.75,361.50 L 1749.75,359.25 L 1750.75,358.50 L 1750.75,357.25 L 1751.75,356.50 L 1751.75,354.25 L 1752.75,353.50 L 1752.75,350.25 L 1753.75,349.50 L 1753.75,343.25 L 1754.75,342.50 L 1754.50,339.00 L 1752.25,339.00 L 1751.50,338.00 L 1748.25,338.00 L 1747.75,337.50 L 1747.75,335.25 L 1746.75,334.50 L 1746.75,331.25 L 1747.75,330.50 L 1747.75,328.25 L 1752.25,323.75 L 1753.50,323.75 L 1754.25,322.75 L 1755.75,322.50 Z M 1546.00,162.25 L 1546.25,167.75 L 1592.50,167.75 L 1592.75,164.25 L 1591.75,163.50 L 1591.75,155.25 L 1592.75,154.50 L 1592.75,148.25 L 1593.75,147.50 L 1593.75,145.25 L 1594.75,144.50 L 1594.75,143.25 L 1595.75,142.50 L 1595.75,141.25 L 1596.75,140.50 L 1596.75,138.25 L 1597.75,137.50 L 1597.75,136.25 L 1599.75,134.50 L 1599.75,133.25 L 1601.75,131.50 L 1601.75,130.25 L 1606.75,125.50 L 1606.75,124.25 L 1607.25,123.75 L 1608.50,123.75 L 1609.25,122.75 L 1610.50,122.75 L 1613.25,119.75 L 1614.50,119.75 L 1615.25,118.75 L 1616.50,118.75 L 1617.25,117.75 L 1618.50,117.75 L 1620.25,115.75 L 1622.50,115.75 L 1623.25,114.75 L 1625.50,114.75 L 1626.25,113.75 L 1628.50,113.75 L 1629.25,112.75 L 1632.50,112.75 L 1633.25,111.75 L 1637.50,111.75 L 1638.25,110.75 L 1646.50,110.75 L 1647.25,111.75 L 1654.50,111.75 L 1655.25,112.75 L 1658.50,112.75 L 1659.25,113.75 L 1661.50,113.75 L 1662.25,114.75 L 1666.50,114.75 L 1667.25,115.75 L 1668.50,115.75 L 1669.25,116.75 L 1670.50,116.75 L 1671.25,117.75 L 1672.50,117.75 L 1673.00,118.25 L 1673.25,119.75 L 1677.50,119.75 L 1681.25,123.75 L 1682.50,123.75 L 1685.25,126.75 L 1686.50,126.75 L 1692.00,132.25 L 1692.00,133.50 L 1697.00,138.25 L 1697.00,139.50 L 1698.00,140.25 L 1698.00,141.50 L 1700.00,143.25 L 1700.00,144.50 L 1701.00,145.25 L 1701.00,146.50 L 1702.00,147.25 L 1702.00,148.50 L 1704.00,150.25 L 1704.00,151.50 L 1705.00,152.25 L 1705.00,153.50 L 1706.00,154.25 L 1706.00,155.50 L 1707.00,156.25 L 1707.00,157.50 L 1708.00,158.25 L 1708.00,159.50 L 1710.00,161.25 L 1710.00,164.50 L 1711.00,165.25 L 1711.00,166.50 L 1712.00,167.25 L 1712.25,170.75 L 1715.50,170.75 L 1716.25,169.75 L 1719.50,169.75 L 1720.25,168.75 L 1723.50,168.75 L 1724.25,167.75 L 1729.50,167.75 L 1730.75,166.50 L 1730.75,102.25 L 1729.50,101.00 L 1720.25,101.00 L 1719.00,102.25 L 1719.00,103.50 L 1716.50,106.00 L 1713.25,106.00 L 1713.00,107.50 L 1712.50,108.00 L 1703.25,108.00 L 1702.50,107.00 L 1699.25,107.00 L 1698.50,106.00 L 1697.25,106.00 L 1696.50,105.00 L 1695.25,105.00 L 1694.50,104.00 L 1692.25,104.00 L 1691.50,103.00 L 1689.25,103.00 L 1688.50,102.00 L 1686.25,102.00 L 1685.50,101.00 L 1683.25,101.00 L 1682.50,100.00 L 1680.25,100.00 L 1679.50,99.00 L 1676.25,99.00 L 1675.50,98.00 L 1672.25,98.00 L 1671.50,97.00 L 1668.25,97.00 L 1667.50,96.00 L 1663.25,96.00 L 1662.50,95.00 L 1656.25,95.00 L 1655.50,94.00 L 1631.25,94.00 L 1630.50,95.00 L 1625.25,95.00 L 1624.50,96.00 L 1621.25,96.00 L 1620.50,97.00 L 1617.25,97.00 L 1616.50,98.00 L 1613.25,98.00 L 1612.50,99.00 L 1609.25,99.00 L 1608.50,100.00 L 1606.25,100.00 L 1605.50,101.00 L 1604.25,101.00 L 1603.50,102.00 L 1601.25,102.00 L 1600.50,103.00 L 1598.25,103.00 L 1597.50,104.00 L 1596.25,104.00 L 1595.50,105.00 L 1594.25,105.00 L 1593.50,106.00 L 1592.25,106.00 L 1591.50,107.00 L 1590.25,107.00 L 1589.50,108.00 L 1588.25,108.00 L 1587.50,109.00 L 1586.25,109.00 L 1584.50,111.00 L 1583.25,111.00 L 1582.50,112.00 L 1581.25,112.00 L 1579.50,114.00 L 1578.25,114.00 L 1575.50,117.00 L 1574.25,117.00 L 1570.50,121.00 L 1569.25,121.00 L 1567.00,123.25 L 1567.00,124.50 L 1566.50,125.00 L 1565.25,125.00 L 1563.00,127.25 L 1563.00,128.50 L 1560.00,131.25 L 1560.00,132.50 L 1558.00,134.25 L 1558.00,135.50 L 1556.00,137.25 L 1556.00,138.50 L 1554.00,140.25 L 1554.00,142.50 L 1552.00,144.25 L 1552.00,145.50 L 1551.00,146.25 L 1551.00,147.50 L 1550.00,148.25 L 1550.00,151.50 L 1549.00,152.25 L 1549.00,154.50 L 1548.00,155.25 L 1548.00,157.50 L 1547.00,158.25 L 1547.00,161.50 Z M 1544.00,196.25 L 1544.00,198.50 L 1546.50,198.75 L 1548.00,200.25 L 1548.00,202.50 L 1549.00,203.25 L 1549.00,204.50 L 1550.00,205.25 L 1550.00,208.50 L 1551.00,209.25 L 1551.00,211.50 L 1553.00,213.25 L 1553.00,214.50 L 1554.00,215.25 L 1554.00,217.50 L 1555.00,218.25 L 1555.00,219.50 L 1558.00,222.25 L 1558.00,223.50 L 1559.00,224.25 L 1559.00,225.50 L 1564.25,230.75 L 1565.50,230.75 L 1570.25,235.75 L 1571.50,235.75 L 1575.25,239.75 L 1576.50,239.75 L 1577.00,240.25 L 1577.25,241.75 L 1578.50,241.75 L 1580.25,243.75 L 1581.50,243.75 L 1584.25,246.75 L 1585.50,246.75 L 1587.25,248.75 L 1588.50,248.75 L 1591.25,251.75 L 1592.50,251.75 L 1593.00,252.25 L 1593.25,253.75 L 1595.50,253.75 L 1596.25,254.75 L 1597.50,254.75 L 1599.25,256.75 L 1600.50,256.75 L 1602.00,258.25 L 1602.25,259.75 L 1605.50,259.75 L 1607.25,261.75 L 1608.50,261.75 L 1609.25,262.75 L 1610.50,262.75 L 1611.25,263.75 L 1612.50,263.75 L 1614.25,265.75 L 1615.50,265.75 L 1616.25,266.75 L 1617.50,266.75 L 1619.25,268.75 L 1623.50,268.75 L 1624.75,267.50 L 1624.75,266.25 L 1626.75,264.50 L 1626.75,263.25 L 1629.75,260.50 L 1629.75,259.25 L 1631.75,257.50 L 1631.75,256.25 L 1633.75,254.50 L 1633.75,253.25 L 1636.75,250.50 L 1636.75,249.25 L 1638.75,247.50 L 1638.75,246.25 L 1640.75,244.50 L 1640.75,243.25 L 1642.75,241.50 L 1642.75,240.25 L 1644.75,238.50 L 1644.75,237.25 L 1647.75,234.50 L 1647.75,233.25 L 1649.75,231.50 L 1649.75,230.25 L 1651.75,228.50 L 1651.50,226.00 L 1649.25,226.00 L 1648.50,225.00 L 1643.25,225.00 L 1642.75,224.50 L 1642.75,223.25 L 1641.50,222.00 L 1640.25,222.00 L 1639.50,221.00 L 1636.25,221.00 L 1635.50,220.00 L 1634.25,220.00 L 1633.50,219.00 L 1632.25,219.00 L 1631.50,218.00 L 1630.25,218.00 L 1627.50,215.00 L 1626.25,215.00 L 1625.50,214.00 L 1623.25,214.00 L 1621.50,212.00 L 1620.25,212.00 L 1618.50,210.00 L 1617.25,210.00 L 1614.50,207.00 L 1613.25,207.00 L 1611.50,205.00 L 1610.25,205.00 L 1600.75,195.50 L 1600.75,194.25 L 1597.75,191.50 L 1597.75,190.25 L 1596.75,189.50 L 1596.75,188.25 L 1595.75,187.50 L 1595.50,183.00 L 1590.25,183.00 L 1589.50,184.00 L 1586.25,184.00 L 1585.50,185.00 L 1582.25,185.00 L 1581.50,186.00 L 1577.25,186.00 L 1576.50,187.00 L 1573.25,187.00 L 1572.50,188.00 L 1569.25,188.00 L 1568.50,189.00 L 1565.25,189.00 L 1564.50,190.00 L 1561.25,190.00 L 1560.50,191.00 L 1558.25,191.00 L 1557.50,192.00 L 1555.25,192.00 L 1554.50,193.00 L 1551.25,193.00 L 1550.50,194.00 L 1548.25,194.00 L 1547.50,195.00 L 1545.25,195.00 Z" fill="#FFFFFF" fill-rule="evenodd" clip-rule="evenodd"/>
+<path d="M 1828.75,236.25 L 1827.75,235.50 L 1827.75,233.25 L 1826.75,232.50 L 1826.75,230.25 L 1825.75,229.50 L 1825.75,227.25 L 1823.75,224.50 L 1823.75,222.25 L 1822.75,221.50 L 1822.75,220.25 L 1821.75,219.50 L 1821.75,218.25 L 1820.75,217.50 L 1820.75,216.25 L 1819.75,215.50 L 1819.75,214.25 L 1818.75,213.50 L 1817.75,210.25 L 1815.75,208.50 L 1814.75,205.25 L 1811.75,202.50 L 1811.75,201.25 L 1809.75,199.50 L 1809.75,198.25 L 1797.50,186.00 L 1796.25,186.00 L 1794.50,184.00 L 1793.25,184.00 L 1790.50,181.00 L 1789.25,181.00 L 1788.50,180.00 L 1787.25,180.00 L 1786.50,179.00 L 1783.25,178.00 L 1781.50,176.00 L 1780.25,176.00 L 1779.50,175.00 L 1777.25,175.00 L 1774.50,173.00 L 1772.25,173.00 L 1771.50,172.00 L 1769.25,172.00 L 1768.50,171.00 L 1766.25,171.00 L 1765.50,170.00 L 1762.25,170.00 L 1761.50,169.00 L 1758.25,169.00 L 1757.50,168.00 L 1753.25,168.00 L 1752.50,167.00 L 1730.25,167.00 L 1729.50,168.00 L 1724.25,168.00 L 1723.50,169.00 L 1720.25,169.00 L 1719.50,170.00 L 1716.25,170.00 L 1715.50,171.00 L 1713.25,171.00 L 1712.50,172.00 L 1710.25,172.00 L 1709.50,173.00 L 1707.25,173.00 L 1706.50,174.00 L 1704.25,174.00 L 1703.50,175.00 L 1702.25,175.00 L 1701.50,176.00 L 1700.25,176.00 L 1699.50,177.00 L 1696.25,178.00 L 1694.50,180.00 L 1693.25,180.00 L 1691.50,182.00 L 1690.25,182.00 L 1675.00,197.25 L 1675.00,198.50 L 1671.00,202.25 L 1671.00,203.50 L 1667.00,207.25 L 1667.00,208.50 L 1664.00,211.25 L 1664.00,212.50 L 1661.00,215.25 L 1661.00,216.50 L 1657.00,220.25 L 1657.00,221.50 L 1654.00,224.25 L 1654.00,225.50 L 1652.00,227.25 L 1652.00,228.50 L 1650.00,230.25 L 1650.00,231.50 L 1648.00,233.25 L 1648.00,234.50 L 1645.00,237.25 L 1645.00,238.50 L 1643.00,240.25 L 1643.00,241.50 L 1641.00,243.25 L 1641.00,244.50 L 1639.00,246.25 L 1639.00,247.50 L 1637.00,249.25 L 1637.00,250.50 L 1634.00,253.25 L 1634.00,254.50 L 1632.00,256.25 L 1632.00,257.50 L 1630.00,259.25 L 1630.00,260.50 L 1627.00,263.25 L 1627.00,264.50 L 1625.00,266.25 L 1625.00,267.50 L 1621.00,271.25 L 1621.00,272.50 L 1618.00,275.25 L 1618.00,276.50 L 1615.00,279.25 L 1615.00,280.50 L 1613.00,282.25 L 1613.00,283.50 L 1610.00,286.25 L 1610.00,287.50 L 1608.00,289.25 L 1608.00,290.50 L 1605.00,293.25 L 1605.00,294.50 L 1601.00,298.25 L 1601.00,299.50 L 1591.50,309.00 L 1590.25,309.00 L 1587.50,312.00 L 1586.25,312.00 L 1584.50,314.00 L 1583.25,314.00 L 1580.50,316.00 L 1578.25,316.00 L 1577.50,317.00 L 1575.25,317.00 L 1574.50,318.00 L 1572.25,318.00 L 1571.50,319.00 L 1569.25,319.00 L 1568.50,320.00 L 1563.25,320.00 L 1562.50,321.00 L 1551.25,321.00 L 1550.50,320.00 L 1545.25,320.00 L 1544.50,319.00 L 1541.25,319.00 L 1540.50,318.00 L 1538.25,318.00 L 1537.50,317.00 L 1535.25,317.00 L 1534.50,316.00 L 1532.25,316.00 L 1531.50,315.00 L 1530.25,315.00 L 1529.50,314.00 L 1528.25,314.00 L 1527.50,313.00 L 1524.25,312.00 L 1522.50,310.00 L 1521.25,310.00 L 1519.50,308.00 L 1518.25,308.00 L 1510.75,300.50 L 1510.75,299.25 L 1508.75,297.50 L 1508.75,296.25 L 1507.75,295.50 L 1506.75,292.25 L 1504.75,290.50 L 1504.75,289.25 L 1503.75,288.50 L 1503.75,286.25 L 1502.75,285.50 L 1502.75,284.25 L 1501.75,283.50 L 1501.75,281.25 L 1500.75,280.50 L 1500.75,277.25 L 1499.75,276.50 L 1499.75,273.25 L 1498.75,272.50 L 1498.75,267.25 L 1497.75,266.50 L 1497.75,256.25 L 1498.75,255.50 L 1498.75,250.25 L 1499.75,249.50 L 1499.75,246.25 L 1500.75,245.50 L 1500.75,243.25 L 1501.75,242.50 L 1501.75,240.25 L 1502.75,239.50 L 1502.75,237.25 L 1503.75,236.50 L 1503.75,235.25 L 1504.75,234.50 L 1504.75,233.25 L 1505.75,232.50 L 1505.75,231.25 L 1506.75,230.50 L 1506.75,229.25 L 1507.75,228.50 L 1508.75,225.25 L 1510.75,223.50 L 1510.75,222.25 L 1512.75,220.50 L 1512.75,219.25 L 1516.75,215.50 L 1516.75,214.25 L 1522.25,208.75 L 1523.50,208.75 L 1527.25,204.75 L 1528.50,204.75 L 1531.25,201.75 L 1534.50,200.75 L 1536.25,198.75 L 1537.50,198.75 L 1540.25,196.75 L 1542.50,196.75 L 1545.25,194.75 L 1547.50,194.75 L 1548.25,193.75 L 1550.50,193.75 L 1551.25,192.75 L 1554.50,192.75 L 1555.25,191.75 L 1557.50,191.75 L 1558.25,190.75 L 1560.50,190.75 L 1561.25,189.75 L 1564.50,189.75 L 1565.25,188.75 L 1568.50,188.75 L 1569.25,187.75 L 1572.50,187.75 L 1573.25,186.75 L 1576.50,186.75 L 1577.25,185.75 L 1581.50,185.75 L 1582.25,184.75 L 1585.50,184.75 L 1586.25,183.75 L 1589.50,183.75 L 1590.25,182.75 L 1596.50,182.75 L 1598.75,180.50 L 1598.75,179.25 L 1599.75,178.50 L 1599.75,170.25 L 1598.75,169.50 L 1598.50,168.00 L 1487.00,168.25 L 1487.00,177.50 L 1489.50,177.75 L 1491.25,179.75 L 1492.50,179.75 L 1494.00,181.25 L 1494.00,182.50 L 1496.00,185.25 L 1496.00,198.50 L 1495.00,199.25 L 1495.00,203.50 L 1494.00,204.25 L 1494.00,207.50 L 1493.00,208.25 L 1493.00,211.50 L 1492.00,212.25 L 1492.00,215.50 L 1491.00,216.25 L 1491.00,218.50 L 1490.00,219.25 L 1490.00,222.50 L 1489.00,223.25 L 1489.00,225.50 L 1488.00,226.25 L 1488.00,229.50 L 1487.00,230.25 L 1487.00,233.50 L 1486.00,234.25 L 1486.00,237.50 L 1485.00,238.25 L 1485.00,242.50 L 1484.00,243.25 L 1484.00,251.50 L 1483.00,252.25 L 1483.00,267.50 L 1484.00,268.25 L 1484.00,276.50 L 1485.00,277.25 L 1485.00,281.50 L 1486.00,282.25 L 1486.00,285.50 L 1487.00,286.25 L 1487.00,288.50 L 1488.00,289.25 L 1488.00,292.50 L 1489.00,293.25 L 1489.00,295.50 L 1490.00,296.25 L 1490.00,298.50 L 1491.00,299.25 L 1491.00,300.50 L 1492.00,301.25 L 1492.00,303.50 L 1493.00,304.25 L 1493.00,305.50 L 1494.00,306.25 L 1494.00,307.50 L 1495.00,308.25 L 1495.00,309.50 L 1496.00,310.25 L 1496.00,311.50 L 1497.00,312.25 L 1497.00,313.50 L 1498.00,314.25 L 1499.00,317.50 L 1501.00,319.25 L 1502.00,322.50 L 1504.00,324.25 L 1504.00,325.50 L 1507.00,328.25 L 1507.00,329.50 L 1511.00,333.25 L 1511.00,334.50 L 1517.25,340.75 L 1518.50,340.75 L 1522.25,344.75 L 1523.50,344.75 L 1525.25,346.75 L 1526.50,346.75 L 1528.25,348.75 L 1529.50,348.75 L 1530.25,349.75 L 1533.50,350.75 L 1535.25,352.75 L 1536.50,352.75 L 1537.25,353.75 L 1539.50,353.75 L 1542.25,355.75 L 1544.50,355.75 L 1545.25,356.75 L 1546.50,356.75 L 1547.25,357.75 L 1549.50,357.75 L 1550.25,358.75 L 1553.50,358.75 L 1554.25,359.75 L 1558.50,359.75 L 1559.25,360.75 L 1566.50,360.75 L 1567.25,361.75 L 1578.50,361.75 L 1579.25,360.75 L 1586.50,360.75 L 1587.25,359.75 L 1591.50,359.75 L 1592.25,358.75 L 1595.50,358.75 L 1596.25,357.75 L 1599.50,357.75 L 1602.25,355.75 L 1604.50,355.75 L 1605.25,354.75 L 1607.50,354.75 L 1608.25,353.75 L 1609.50,353.75 L 1610.25,352.75 L 1611.50,352.75 L 1612.25,351.75 L 1613.50,351.75 L 1614.25,350.75 L 1617.50,349.75 L 1619.25,347.75 L 1620.50,347.75 L 1622.25,345.75 L 1625.50,344.75 L 1628.25,341.75 L 1629.50,341.75 L 1634.25,336.75 L 1635.50,336.75 L 1645.75,326.50 L 1645.75,325.25 L 1650.75,320.50 L 1650.75,319.25 L 1654.75,315.50 L 1654.75,314.25 L 1657.75,311.50 L 1657.75,310.25 L 1659.75,308.50 L 1659.75,307.25 L 1661.75,305.50 L 1661.75,304.25 L 1663.75,302.50 L 1663.75,301.25 L 1665.75,299.50 L 1666.75,296.25 L 1668.75,294.50 L 1669.75,291.25 L 1671.75,289.50 L 1671.75,288.25 L 1673.75,286.50 L 1673.75,285.25 L 1675.75,283.50 L 1676.75,280.25 L 1679.75,277.50 L 1680.75,274.25 L 1682.75,272.50 L 1682.75,271.25 L 1684.75,269.50 L 1685.75,266.25 L 1688.75,263.50 L 1689.75,260.25 L 1691.75,258.50 L 1691.75,257.25 L 1694.75,254.50 L 1695.75,251.25 L 1697.75,249.50 L 1697.75,248.25 L 1699.75,246.50 L 1700.75,243.25 L 1702.75,241.50 L 1702.75,240.25 L 1704.75,238.50 L 1705.75,235.25 L 1707.75,233.50 L 1707.75,232.25 L 1711.75,228.50 L 1711.75,227.25 L 1720.25,218.75 L 1721.50,218.75 L 1723.25,216.75 L 1724.50,216.75 L 1725.25,215.75 L 1726.50,215.75 L 1727.25,214.75 L 1728.50,214.75 L 1731.25,212.75 L 1733.50,212.75 L 1734.25,211.75 L 1739.50,211.75 L 1740.25,210.75 L 1744.50,210.75 L 1745.25,209.75 L 1753.50,209.75 L 1754.25,208.75 L 1764.50,208.75 L 1765.25,209.75 L 1770.50,209.75 L 1771.25,210.75 L 1775.50,210.75 L 1776.25,211.75 L 1779.50,211.75 L 1780.25,212.75 L 1782.50,212.75 L 1783.25,213.75 L 1784.50,213.75 L 1785.25,214.75 L 1786.50,214.75 L 1787.25,215.75 L 1790.50,216.75 L 1792.25,218.75 L 1793.50,218.75 L 1795.25,220.75 L 1796.50,220.75 L 1806.00,230.25 L 1806.00,231.50 L 1808.00,233.25 L 1808.00,234.50 L 1809.00,235.25 L 1809.00,236.50 L 1811.00,239.25 L 1811.00,241.50 L 1813.00,244.25 L 1813.00,247.50 L 1814.00,248.25 L 1814.00,252.50 L 1815.00,253.25 L 1815.00,262.50 L 1814.00,263.25 L 1814.00,268.50 L 1813.00,269.25 L 1813.00,273.50 L 1812.00,274.25 L 1812.00,276.50 L 1811.00,277.25 L 1811.00,279.50 L 1809.00,282.25 L 1809.00,284.50 L 1808.00,285.25 L 1808.00,286.50 L 1806.00,288.25 L 1806.00,289.50 L 1804.00,291.25 L 1804.00,292.50 L 1799.00,297.25 L 1799.00,298.50 L 1797.50,300.00 L 1796.25,300.00 L 1790.50,306.00 L 1789.25,306.00 L 1787.50,308.00 L 1784.25,309.00 L 1782.50,311.00 L 1781.25,311.00 L 1780.50,312.00 L 1779.25,312.00 L 1778.50,313.00 L 1777.25,313.00 L 1776.50,314.00 L 1775.25,314.00 L 1774.50,315.00 L 1773.25,315.00 L 1770.50,317.00 L 1768.25,317.00 L 1765.50,319.00 L 1763.25,319.00 L 1762.50,320.00 L 1761.25,320.00 L 1758.50,322.00 L 1756.25,322.00 L 1755.50,323.00 L 1752.25,324.00 L 1748.00,328.25 L 1748.00,330.50 L 1747.00,331.25 L 1747.00,334.50 L 1748.00,335.25 L 1748.00,337.50 L 1751.50,337.75 L 1752.25,338.75 L 1822.50,338.75 L 1823.75,337.50 L 1823.75,331.25 L 1822.50,330.00 L 1821.25,330.00 L 1816.75,325.50 L 1816.75,323.25 L 1815.75,322.50 L 1815.75,316.25 L 1816.75,315.50 L 1816.75,313.25 L 1817.75,312.50 L 1817.75,310.25 L 1818.75,309.50 L 1818.75,307.25 L 1820.75,304.50 L 1820.75,302.25 L 1822.75,299.50 L 1822.75,297.25 L 1823.75,296.50 L 1823.75,294.25 L 1824.75,293.50 L 1824.75,291.25 L 1825.75,290.50 L 1825.75,288.25 L 1826.75,287.50 L 1826.75,285.25 L 1827.75,284.50 L 1827.75,281.25 L 1828.75,280.50 L 1828.75,277.25 L 1829.75,276.50 L 1829.75,273.25 L 1830.75,272.50 L 1830.75,266.25 L 1831.75,265.50 L 1831.75,252.25 L 1830.75,251.50 L 1830.75,244.25 L 1829.75,243.50 L 1829.75,240.25 L 1828.75,239.50 Z" fill="#CE241F" fill-rule="evenodd" clip-rule="evenodd"/>
+</svg><div class="lh-sub">학습의 모든 운영을 하나의 콘솔에서 연결해요.</div></div>
+        <div class="lh-copy"><span class="lh-tag">ACADEMY MANAGEMENT</span>
+          <div class="lh-title">학생과 콘텐츠 운영을<br>더 명확하고 빠르게.</div></div>
+        <div class="lh-foot">© 2026 고려US 아카데미. All rights reserved.</div>
+      </div>
+      <div class="login-side">
+        <button class="btn-kakao" onclick="kakaoLogin()"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 1.5C4.58 1.5 1 4.31 1 7.78c0 2.22 1.47 4.17 3.68 5.28l-.94 3.46c-.08.3.26.54.52.37l4.1-2.72c.21.02.42.03.64.03 4.42 0 8-2.81 8-6.28S13.42 1.5 9 1.5Z" fill="rgba(0,0,0,.85)"/></svg>카카오 로그인</button>
+
+      </div>
+    </div>
+  </div>
+  <!-- C0-2 초대 계정 연결 -->
+  <div class="auth-view" id="a-invite">
+    <div class="auth-card">
+      <div class="ico">✉</div>
+      <div class="t1">초대 링크를 확인했어요</div>
+      <div class="t2">아래 계정으로 콘솔을 이용할 수 있어요.<br>카카오 로그인으로 계정을 연결하면 시작돼요.</div>
+      <div class="inv">
+        <span class="fld"><span class="lb" style="font-size:12px;color:var(--sub)">이름</span><br><b style="font-size:14px">최과학</b></span><span class="fld"><span class="lb" style="font-size:12px;color:var(--sub)">역할</span><br><b style="font-size:14px">EMPLOYEE</b></span><span class="fld" style="width:100%;margin-top:8px"><span class="lb" style="font-size:12px;color:var(--sub)">초대 이메일</span><br><b style="font-size:14px">science@koreaus.kr</b></span>
+      </div>
+      <button class="btn-kakao" style="width:100%;max-width:none;margin-top:20px" onclick="connectInvite()"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 1.5C4.58 1.5 1 4.31 1 7.78c0 2.22 1.47 4.17 3.68 5.28l-.94 3.46c-.08.3.26.54.52.37l4.1-2.72c.21.02.42.03.64.03 4.42 0 8-2.81 8-6.28S13.42 1.5 9 1.5Z" fill="rgba(0,0,0,.85)"/></svg>카카오 로그인</button>
+      <span class="sub-act" onclick="showAuth('a-login')">돌아가기</span>
+    </div>
+  </div>
+  <!-- C0-3 접근 차단 -->
+  <div class="auth-view" id="a-block">
+    <div class="auth-card">
+      <div class="ico warn">!</div>
+      <div class="t1" id="bk-title"></div>
+      <div class="t2" id="bk-sub"></div>
+      <button class="btn btn-cxl" onclick="showAuth('a-login')">로그아웃</button>
+    </div>
+  </div>
+</div>
+
+<div class="console">
+  <aside class="side">
+    <div class="side-logo"><svg class="logo-svg" xmlns="http://www.w3.org/2000/svg" viewBox="249 92 1585 331" fill="none">
+<path d="M 1293.25,118.00 L 1292.50,119.00 L 1287.25,119.00 L 1286.50,120.00 L 1282.25,120.00 L 1281.50,121.00 L 1273.25,122.00 L 1272.50,123.00 L 1270.25,123.00 L 1269.50,124.00 L 1261.25,126.00 L 1260.50,127.00 L 1245.25,134.00 L 1243.50,136.00 L 1242.25,136.00 L 1240.50,138.00 L 1236.25,140.00 L 1233.50,143.00 L 1232.25,143.00 L 1227.50,148.00 L 1226.25,148.00 L 1225.00,149.25 L 1225.00,150.50 L 1218.00,157.25 L 1218.00,158.50 L 1212.00,165.25 L 1211.00,168.50 L 1208.00,171.25 L 1207.00,175.50 L 1205.00,177.25 L 1205.00,178.50 L 1202.00,183.25 L 1201.00,188.50 L 1198.00,194.25 L 1198.00,198.50 L 1197.00,199.25 L 1196.00,207.50 L 1195.00,208.25 L 1195.00,211.50 L 1194.00,212.25 L 1194.00,224.50 L 1195.00,225.25 L 1195.00,231.50 L 1196.00,232.25 L 1196.00,235.50 L 1198.00,239.25 L 1198.00,242.50 L 1199.00,243.25 L 1203.00,252.50 L 1215.25,265.75 L 1216.50,265.75 L 1222.25,270.75 L 1223.50,270.75 L 1224.25,272.75 L 1227.50,272.75 L 1228.25,273.75 L 1229.50,273.75 L 1232.25,275.75 L 1234.50,275.75 L 1241.25,279.75 L 1244.50,279.75 L 1245.25,280.75 L 1247.50,280.75 L 1248.25,281.75 L 1250.50,281.75 L 1254.25,283.75 L 1258.50,283.75 L 1259.25,284.75 L 1262.50,284.75 L 1263.25,285.75 L 1266.50,285.75 L 1267.25,286.75 L 1270.50,286.75 L 1271.25,287.75 L 1274.50,287.75 L 1275.25,288.75 L 1282.50,288.75 L 1283.25,289.75 L 1287.50,289.75 L 1288.25,290.75 L 1291.50,290.75 L 1292.25,291.75 L 1296.50,291.75 L 1297.25,292.75 L 1307.50,293.75 L 1311.25,295.75 L 1314.50,295.75 L 1318.25,297.75 L 1321.50,297.75 L 1322.25,298.75 L 1327.50,300.75 L 1328.25,302.75 L 1331.50,302.75 L 1340.00,310.25 L 1340.00,311.50 L 1342.00,313.25 L 1342.00,314.50 L 1344.00,317.25 L 1344.00,320.50 L 1345.00,321.25 L 1345.00,328.50 L 1344.00,329.25 L 1344.00,331.50 L 1343.00,332.25 L 1343.00,334.50 L 1342.00,335.25 L 1341.00,338.50 L 1332.50,348.00 L 1329.25,349.00 L 1326.50,352.00 L 1324.25,352.00 L 1319.50,355.00 L 1317.25,355.00 L 1313.50,357.00 L 1308.25,357.00 L 1304.50,359.00 L 1299.25,359.00 L 1298.50,360.00 L 1290.25,360.00 L 1289.50,361.00 L 1273.25,361.00 L 1272.50,360.00 L 1266.25,360.00 L 1265.50,359.00 L 1258.25,358.00 L 1254.50,356.00 L 1250.25,356.00 L 1249.50,355.00 L 1246.25,354.00 L 1244.50,352.00 L 1242.25,352.00 L 1238.50,348.00 L 1237.25,348.00 L 1236.75,346.25 L 1231.75,341.50 L 1231.75,340.25 L 1229.75,338.50 L 1229.75,337.25 L 1227.75,334.50 L 1227.75,332.25 L 1225.75,328.50 L 1225.75,325.25 L 1223.75,321.50 L 1223.75,315.25 L 1222.75,314.50 L 1221.75,308.25 L 1219.75,306.50 L 1218.75,303.25 L 1211.50,295.00 L 1209.25,295.00 L 1203.50,292.00 L 1201.25,292.00 L 1200.50,293.00 L 1196.25,293.00 L 1195.50,294.00 L 1192.25,295.00 L 1189.00,299.25 L 1189.00,300.50 L 1186.00,303.25 L 1185.00,307.50 L 1184.00,308.25 L 1184.00,310.50 L 1183.00,311.25 L 1183.00,313.50 L 1182.00,314.25 L 1182.00,329.50 L 1183.00,330.25 L 1183.00,334.50 L 1184.00,335.25 L 1184.00,339.50 L 1185.00,340.25 L 1186.00,346.50 L 1188.00,349.25 L 1188.00,351.50 L 1189.00,352.25 L 1192.00,359.50 L 1194.00,361.25 L 1194.00,363.50 L 1197.00,366.25 L 1199.00,370.50 L 1206.25,377.75 L 1207.50,377.75 L 1211.25,381.75 L 1212.50,381.75 L 1217.25,385.75 L 1218.50,385.75 L 1227.25,390.75 L 1229.50,390.75 L 1234.25,393.75 L 1236.50,393.75 L 1240.25,395.75 L 1243.50,395.75 L 1244.25,396.75 L 1246.50,396.75 L 1250.25,398.75 L 1253.50,398.75 L 1254.25,399.75 L 1260.50,399.75 L 1261.25,400.75 L 1273.50,401.75 L 1274.25,402.75 L 1284.50,402.75 L 1285.25,403.75 L 1304.50,403.75 L 1305.25,402.75 L 1314.50,402.75 L 1315.25,401.75 L 1319.50,401.75 L 1320.25,400.75 L 1329.50,399.75 L 1330.25,398.75 L 1333.50,398.75 L 1336.25,396.75 L 1341.50,395.75 L 1342.25,394.75 L 1355.50,388.75 L 1357.25,386.75 L 1361.50,384.75 L 1364.25,381.75 L 1365.50,381.75 L 1378.75,368.50 L 1378.75,367.25 L 1382.75,363.50 L 1383.75,360.25 L 1385.75,358.50 L 1385.75,357.25 L 1390.75,348.50 L 1391.75,343.25 L 1392.75,342.50 L 1392.75,339.25 L 1393.75,338.50 L 1393.75,336.25 L 1394.75,335.50 L 1394.75,331.25 L 1395.75,330.50 L 1395.75,311.25 L 1394.75,310.50 L 1394.75,307.25 L 1393.75,306.50 L 1392.75,299.25 L 1391.75,298.50 L 1387.75,289.25 L 1372.50,273.00 L 1368.25,271.00 L 1365.50,268.00 L 1362.25,267.00 L 1360.50,265.00 L 1359.25,265.00 L 1348.50,259.00 L 1345.25,259.00 L 1339.50,256.00 L 1337.25,256.00 L 1333.50,254.00 L 1330.25,254.00 L 1329.50,253.00 L 1327.25,253.00 L 1323.50,251.00 L 1320.25,251.00 L 1319.50,250.00 L 1314.25,250.00 L 1313.50,249.00 L 1311.25,249.00 L 1307.50,247.00 L 1304.25,247.00 L 1303.50,246.00 L 1296.25,245.00 L 1293.50,243.00 L 1291.25,243.00 L 1287.50,241.00 L 1284.25,241.00 L 1283.50,240.00 L 1274.25,236.00 L 1271.50,233.00 L 1268.25,232.00 L 1263.75,227.50 L 1263.75,226.25 L 1261.75,223.50 L 1261.75,221.25 L 1260.75,220.50 L 1260.75,215.25 L 1261.75,214.50 L 1263.75,209.25 L 1266.75,206.50 L 1266.75,205.25 L 1269.25,202.75 L 1270.50,202.75 L 1274.25,198.75 L 1275.50,198.75 L 1280.25,195.75 L 1285.50,194.75 L 1286.25,193.75 L 1292.50,193.75 L 1293.25,192.75 L 1295.50,192.75 L 1299.00,195.25 L 1299.00,196.50 L 1301.00,198.25 L 1303.00,202.50 L 1316.25,215.75 L 1320.50,217.75 L 1323.25,220.75 L 1326.50,221.75 L 1329.25,224.75 L 1330.50,224.75 L 1333.25,226.75 L 1335.50,226.75 L 1338.25,228.75 L 1340.50,228.75 L 1341.25,229.75 L 1345.50,229.75 L 1346.25,230.75 L 1356.50,230.75 L 1357.25,229.75 L 1361.50,229.75 L 1369.25,225.75 L 1371.50,225.75 L 1373.25,223.75 L 1377.50,221.75 L 1381.25,217.75 L 1382.50,217.75 L 1389.75,209.50 L 1389.75,208.25 L 1392.75,203.50 L 1392.75,201.25 L 1393.75,200.50 L 1393.75,197.25 L 1394.75,196.50 L 1394.75,178.25 L 1393.75,177.50 L 1393.75,172.25 L 1392.75,171.50 L 1392.75,168.25 L 1390.75,165.50 L 1390.75,163.25 L 1389.75,162.50 L 1387.75,157.25 L 1371.50,143.00 L 1368.25,142.00 L 1366.50,140.00 L 1362.25,138.00 L 1359.50,135.00 L 1349.25,130.00 L 1344.50,126.00 L 1339.25,125.00 L 1336.50,123.00 L 1334.25,123.00 L 1330.50,121.00 L 1322.25,120.00 L 1321.50,119.00 L 1314.25,119.00 L 1313.50,118.00 Z M 954.25,116.00 L 952.50,118.00 L 949.25,119.00 L 948.50,121.00 L 947.00,121.25 L 947.00,122.50 L 945.00,124.25 L 945.00,125.50 L 942.00,130.25 L 942.00,133.50 L 940.00,137.25 L 940.00,145.50 L 939.00,146.25 L 939.00,149.50 L 938.00,150.25 L 938.00,153.50 L 937.00,154.25 L 937.00,158.50 L 936.00,159.25 L 936.00,163.50 L 935.00,164.25 L 935.00,169.50 L 933.00,173.25 L 933.00,177.50 L 932.00,178.25 L 932.00,181.50 L 931.00,182.25 L 931.00,185.50 L 930.00,186.25 L 930.00,192.50 L 928.00,196.25 L 927.00,204.50 L 926.00,205.25 L 926.00,210.50 L 925.00,211.25 L 925.00,214.50 L 924.00,215.25 L 923.00,222.50 L 921.00,223.25 L 922.00,229.50 L 921.00,230.25 L 921.00,233.50 L 920.00,234.25 L 920.00,237.50 L 919.00,238.25 L 919.00,242.50 L 918.00,243.25 L 918.00,250.50 L 917.00,251.25 L 917.00,257.50 L 916.00,258.25 L 916.00,262.50 L 915.00,263.25 L 915.00,267.50 L 914.00,268.25 L 914.00,275.50 L 913.00,276.25 L 913.00,289.50 L 912.00,290.25 L 912.00,311.50 L 913.00,312.25 L 913.00,320.50 L 914.00,321.25 L 914.00,325.50 L 915.00,326.25 L 915.00,328.50 L 916.00,329.25 L 916.00,331.50 L 917.00,332.25 L 919.00,340.50 L 921.00,342.25 L 922.00,346.50 L 926.00,351.25 L 927.00,354.50 L 943.25,371.75 L 944.50,371.75 L 951.25,377.75 L 953.50,377.75 L 956.25,380.75 L 957.50,380.75 L 968.25,386.75 L 970.50,386.75 L 973.25,388.75 L 975.50,388.75 L 979.25,390.75 L 987.50,391.75 L 988.25,392.75 L 990.50,392.75 L 991.25,393.75 L 995.50,393.75 L 996.25,394.75 L 1007.50,394.75 L 1008.25,395.75 L 1032.50,395.75 L 1033.25,394.75 L 1046.50,393.75 L 1047.25,392.75 L 1053.50,391.75 L 1054.25,390.75 L 1057.50,390.75 L 1063.25,387.75 L 1065.50,387.75 L 1068.25,385.75 L 1070.50,385.75 L 1074.25,382.75 L 1078.50,381.75 L 1083.25,377.75 L 1086.50,376.75 L 1090.25,372.75 L 1091.50,372.75 L 1095.25,368.75 L 1096.50,368.75 L 1107.75,357.50 L 1107.75,356.25 L 1115.75,347.50 L 1116.75,344.25 L 1120.75,340.50 L 1120.75,338.25 L 1124.75,333.50 L 1125.75,329.25 L 1127.75,327.50 L 1127.75,326.25 L 1129.75,323.50 L 1129.75,321.25 L 1131.75,318.50 L 1131.75,316.25 L 1133.75,314.50 L 1134.75,308.25 L 1136.75,305.50 L 1136.75,303.25 L 1138.75,299.50 L 1138.75,296.25 L 1140.75,292.50 L 1140.75,289.25 L 1142.75,285.50 L 1142.75,282.25 L 1143.75,281.50 L 1143.75,276.25 L 1144.75,275.50 L 1144.75,272.25 L 1145.75,271.50 L 1145.75,268.25 L 1146.75,267.50 L 1146.75,264.25 L 1147.75,263.50 L 1148.75,253.25 L 1149.75,252.50 L 1149.75,248.25 L 1150.75,247.50 L 1150.75,244.25 L 1151.75,243.50 L 1151.75,236.25 L 1152.75,235.50 L 1152.75,226.25 L 1153.75,225.50 L 1154.75,207.25 L 1155.75,206.50 L 1155.75,156.25 L 1157.75,153.50 L 1157.75,146.25 L 1155.75,142.50 L 1154.75,136.25 L 1153.75,135.50 L 1151.75,130.25 L 1144.50,123.00 L 1143.25,123.00 L 1140.50,121.00 L 1138.25,121.00 L 1137.50,120.00 L 1135.25,120.00 L 1134.50,119.00 L 1129.25,119.00 L 1128.50,120.00 L 1123.25,121.00 L 1118.00,125.25 L 1118.00,126.50 L 1115.50,129.00 L 1113.00,129.25 L 1113.00,135.50 L 1112.00,136.25 L 1112.00,140.50 L 1111.00,141.25 L 1111.00,151.50 L 1112.00,152.25 L 1112.00,157.50 L 1113.00,158.25 L 1113.00,168.50 L 1114.00,169.25 L 1114.00,201.50 L 1113.00,202.25 L 1113.00,216.50 L 1112.00,217.25 L 1111.00,234.50 L 1110.00,235.25 L 1110.00,240.50 L 1109.00,241.25 L 1109.00,249.50 L 1108.00,250.25 L 1108.00,253.50 L 1107.00,254.25 L 1107.00,257.50 L 1106.00,258.25 L 1106.00,261.50 L 1105.00,262.25 L 1105.00,267.50 L 1104.00,268.25 L 1104.00,271.50 L 1103.00,272.25 L 1103.00,275.50 L 1102.00,276.25 L 1102.00,279.50 L 1100.00,283.25 L 1099.00,289.50 L 1097.00,292.25 L 1096.00,297.50 L 1093.00,301.25 L 1087.00,313.50 L 1082.00,319.25 L 1082.00,320.50 L 1072.50,330.00 L 1071.25,330.00 L 1067.50,334.00 L 1062.25,336.00 L 1058.50,339.00 L 1056.25,339.00 L 1053.50,341.00 L 1047.25,342.00 L 1046.50,343.00 L 1037.25,343.00 L 1036.50,344.00 L 1016.25,344.00 L 1015.50,343.00 L 1009.25,343.00 L 1008.50,342.00 L 1005.25,342.00 L 1004.50,341.00 L 1002.25,341.00 L 1001.50,340.00 L 999.25,340.00 L 998.50,339.00 L 995.25,338.00 L 992.75,335.50 L 992.75,334.25 L 991.25,334.00 L 987.75,329.50 L 987.75,326.25 L 986.75,325.50 L 986.75,322.25 L 985.75,321.50 L 985.75,315.25 L 984.75,314.50 L 984.75,295.25 L 985.75,294.50 L 985.75,285.25 L 986.75,284.50 L 986.75,277.25 L 987.75,276.50 L 988.75,262.25 L 989.75,261.50 L 989.75,258.25 L 990.75,257.50 L 990.75,253.25 L 991.75,252.50 L 991.75,248.25 L 992.75,247.50 L 992.75,242.25 L 993.75,241.50 L 993.75,238.25 L 995.75,234.50 L 995.75,230.25 L 996.75,229.50 L 996.75,223.25 L 997.75,222.50 L 997.75,219.25 L 998.75,218.50 L 998.75,214.25 L 1000.75,210.50 L 1000.75,205.25 L 1001.75,204.50 L 1001.75,201.25 L 1003.75,197.50 L 1003.75,194.25 L 1004.75,193.50 L 1004.75,190.25 L 1005.75,189.50 L 1005.75,185.25 L 1006.75,184.50 L 1006.75,181.25 L 1007.75,180.50 L 1007.75,177.25 L 1008.75,176.50 L 1008.75,173.25 L 1009.75,172.50 L 1009.75,168.25 L 1010.75,167.50 L 1010.75,165.25 L 1012.75,161.50 L 1012.75,157.25 L 1013.75,156.50 L 1013.75,146.25 L 1012.75,145.50 L 1012.75,141.25 L 1009.75,136.50 L 1009.75,134.25 L 1002.50,127.00 L 999.25,126.00 L 997.50,124.00 L 996.25,124.00 L 991.50,121.00 L 989.25,121.00 L 988.50,120.00 L 986.25,120.00 L 982.50,118.00 L 979.25,118.00 L 975.50,116.00 L 969.25,116.00 L 968.50,115.00 L 964.25,115.00 L 963.50,114.00 Z M 607.25,144.00 L 602.00,149.25 L 602.00,150.50 L 599.00,155.25 L 598.00,161.50 L 597.00,162.25 L 598.00,171.50 L 599.00,172.25 L 602.00,179.50 L 606.00,183.25 L 606.00,184.50 L 608.25,186.75 L 609.50,186.75 L 612.25,189.75 L 613.50,189.75 L 618.25,193.75 L 619.50,193.75 L 630.25,199.75 L 632.50,199.75 L 636.00,202.25 L 636.00,205.50 L 633.00,209.25 L 633.00,210.50 L 623.00,220.25 L 623.00,221.50 L 620.00,224.25 L 619.00,227.50 L 616.00,231.25 L 616.00,234.50 L 615.00,235.25 L 615.00,244.50 L 616.00,245.25 L 616.00,248.50 L 617.00,249.25 L 621.00,258.50 L 622.25,259.75 L 623.50,259.75 L 629.25,265.75 L 633.50,266.75 L 634.25,267.75 L 636.50,267.75 L 639.25,269.75 L 652.00,271.25 L 652.00,273.50 L 651.00,274.25 L 649.00,279.50 L 647.00,281.25 L 646.00,284.50 L 644.00,286.25 L 644.00,287.50 L 641.00,292.25 L 641.00,294.50 L 639.00,297.25 L 639.00,299.50 L 637.00,303.25 L 637.00,308.50 L 636.00,309.25 L 636.00,314.50 L 637.00,315.25 L 637.00,318.50 L 638.00,319.25 L 639.00,324.50 L 640.00,325.25 L 641.00,328.50 L 643.00,330.25 L 643.00,331.50 L 646.00,334.25 L 646.00,335.50 L 652.25,341.75 L 653.50,341.75 L 655.25,343.75 L 656.50,343.75 L 660.25,346.75 L 662.50,346.75 L 668.25,349.75 L 682.50,350.75 L 683.25,349.75 L 689.50,349.75 L 690.25,348.75 L 694.50,348.75 L 698.25,346.75 L 702.50,346.75 L 708.25,343.75 L 710.50,343.75 L 713.25,341.75 L 715.50,341.75 L 716.25,340.75 L 719.50,339.75 L 721.25,337.75 L 724.50,337.75 L 727.25,334.75 L 728.50,334.75 L 733.25,330.75 L 736.50,329.75 L 741.75,324.50 L 742.75,320.25 L 743.75,319.50 L 743.75,317.25 L 742.50,315.00 L 741.25,315.00 L 737.75,311.50 L 739.75,303.25 L 735.50,300.00 L 731.25,300.00 L 730.50,301.00 L 722.25,302.00 L 721.50,303.00 L 715.25,303.00 L 714.50,304.00 L 699.25,305.00 L 698.50,306.00 L 687.25,306.00 L 683.75,303.50 L 683.75,300.25 L 684.75,299.50 L 685.75,294.25 L 687.75,292.50 L 690.75,285.25 L 692.75,283.50 L 693.75,280.25 L 697.75,275.50 L 698.75,272.25 L 702.75,267.50 L 702.75,265.25 L 705.75,259.50 L 705.75,250.25 L 704.75,249.50 L 701.75,242.25 L 697.75,238.50 L 697.75,237.25 L 696.50,236.00 L 695.25,236.00 L 691.50,232.00 L 689.75,231.50 L 689.75,229.25 L 696.25,225.75 L 698.50,225.75 L 703.25,222.75 L 705.50,222.75 L 706.25,221.75 L 719.50,215.75 L 721.25,213.75 L 726.50,211.75 L 728.25,209.75 L 733.50,209.75 L 734.75,208.50 L 734.75,205.25 L 738.25,204.75 L 738.00,207.50 L 737.00,208.25 L 737.00,212.50 L 736.00,213.25 L 737.00,225.50 L 738.25,227.75 L 739.50,227.75 L 742.25,230.75 L 745.50,231.75 L 748.25,234.75 L 749.50,234.75 L 754.25,237.75 L 759.50,238.75 L 760.25,239.75 L 764.50,239.75 L 765.25,240.75 L 769.50,240.75 L 770.25,241.75 L 785.50,241.75 L 786.25,240.75 L 791.50,240.75 L 792.25,239.75 L 796.00,240.25 L 795.00,246.50 L 789.25,248.00 L 788.50,250.00 L 787.25,250.00 L 784.50,252.00 L 782.25,252.00 L 778.50,254.00 L 768.25,255.00 L 767.50,256.00 L 751.25,256.00 L 750.50,257.00 L 748.25,257.00 L 747.50,258.00 L 744.25,259.00 L 743.50,261.00 L 741.25,261.00 L 735.00,271.25 L 735.00,281.50 L 737.00,283.25 L 738.00,286.50 L 742.25,290.75 L 746.50,291.75 L 747.25,292.75 L 749.50,292.75 L 750.25,293.75 L 752.50,293.75 L 753.25,294.75 L 770.50,294.75 L 771.25,293.75 L 776.50,293.75 L 777.25,292.75 L 782.50,292.75 L 783.25,293.75 L 786.50,293.75 L 787.00,300.50 L 786.00,301.25 L 786.00,306.50 L 785.00,307.25 L 784.00,323.50 L 783.00,324.25 L 782.00,336.50 L 781.00,337.25 L 781.00,345.50 L 784.00,351.25 L 784.00,357.50 L 786.25,359.75 L 789.50,359.75 L 790.25,358.75 L 801.50,357.75 L 802.25,356.75 L 805.50,355.75 L 807.25,353.75 L 808.50,353.75 L 808.75,352.25 L 813.75,347.50 L 813.75,345.25 L 815.75,342.50 L 815.75,340.25 L 818.75,334.50 L 818.75,330.25 L 820.75,327.50 L 821.75,321.25 L 822.75,320.50 L 822.75,317.25 L 823.75,316.50 L 823.75,313.25 L 825.75,309.50 L 825.75,306.25 L 826.75,305.50 L 826.75,302.25 L 827.75,301.50 L 827.75,296.25 L 828.75,295.50 L 829.75,289.25 L 831.75,285.50 L 831.75,279.25 L 832.75,278.50 L 832.75,275.25 L 833.75,274.50 L 833.75,271.25 L 834.75,270.50 L 834.75,267.25 L 835.75,266.50 L 835.75,262.25 L 836.75,261.50 L 836.75,254.25 L 837.75,253.50 L 837.75,249.25 L 838.75,248.50 L 838.75,244.25 L 839.75,243.50 L 839.75,238.25 L 840.75,237.50 L 840.75,228.25 L 841.75,227.50 L 842.75,215.25 L 843.75,214.50 L 843.75,210.25 L 844.75,209.50 L 844.75,200.25 L 845.75,199.50 L 845.75,172.25 L 844.75,171.50 L 844.75,168.25 L 843.75,167.50 L 840.75,160.25 L 834.50,154.00 L 830.25,153.00 L 823.50,149.00 L 818.25,149.00 L 817.50,150.00 L 814.25,151.00 L 811.00,154.25 L 811.00,155.50 L 807.00,162.25 L 807.00,164.50 L 806.00,165.25 L 806.00,188.50 L 805.00,189.25 L 805.00,195.50 L 804.00,196.25 L 804.00,200.50 L 800.50,204.00 L 792.25,204.00 L 791.50,205.00 L 789.25,205.00 L 788.50,204.00 L 784.25,204.00 L 783.50,203.00 L 780.25,203.00 L 779.50,202.00 L 765.25,202.00 L 764.50,203.00 L 760.25,203.00 L 756.50,201.00 L 752.25,201.00 L 748.50,203.00 L 744.25,203.00 L 742.50,206.00 L 739.50,206.00 L 739.75,201.25 L 740.75,200.50 L 740.75,198.25 L 742.75,194.50 L 742.75,191.25 L 744.75,187.50 L 744.75,172.25 L 743.75,171.50 L 741.75,163.25 L 739.75,161.50 L 737.75,157.25 L 728.50,148.00 L 727.25,148.00 L 722.50,144.00 L 717.25,142.00 L 715.50,140.00 L 713.25,140.00 L 710.50,138.00 L 708.25,138.00 L 707.50,137.00 L 705.25,137.00 L 704.50,136.00 L 702.25,136.00 L 698.50,134.00 L 695.25,134.00 L 694.50,133.00 L 691.25,133.00 L 690.50,132.00 L 686.25,132.00 L 685.50,131.00 L 677.25,131.00 L 676.50,130.00 L 653.25,130.00 L 652.50,131.00 L 645.25,131.00 L 644.50,132.00 L 640.25,132.00 L 639.50,133.00 L 635.25,133.00 L 634.50,134.00 L 630.25,134.00 L 626.50,136.00 L 623.25,136.00 L 617.50,139.00 L 615.25,139.00 L 614.50,140.00 L 611.25,141.00 L 608.50,144.00 Z M 270.25,164.00 L 268.00,166.25 L 267.00,170.50 L 265.00,173.25 L 265.00,176.50 L 267.00,178.25 L 267.00,179.50 L 269.25,181.75 L 270.50,181.75 L 274.25,185.75 L 275.50,185.75 L 281.00,191.25 L 281.00,192.50 L 283.25,194.75 L 284.50,194.75 L 289.25,198.75 L 293.50,199.75 L 301.25,203.75 L 305.50,203.75 L 306.25,204.75 L 310.50,204.75 L 311.25,205.75 L 316.50,205.75 L 317.25,206.75 L 321.50,206.75 L 322.25,207.75 L 324.50,207.75 L 325.25,206.75 L 351.50,206.75 L 352.25,205.75 L 358.50,205.75 L 359.25,204.75 L 372.50,204.75 L 373.25,203.75 L 395.50,203.75 L 396.25,204.75 L 403.50,204.75 L 405.00,206.25 L 405.00,213.50 L 404.00,214.25 L 404.00,218.50 L 403.00,219.25 L 402.00,227.50 L 400.00,228.25 L 401.00,234.50 L 400.00,235.25 L 400.00,238.50 L 399.00,239.25 L 399.00,242.50 L 398.00,243.25 L 398.00,246.50 L 397.00,247.25 L 397.00,252.50 L 396.00,253.25 L 395.00,262.50 L 394.00,263.25 L 394.00,266.50 L 393.00,267.25 L 393.00,273.50 L 392.00,274.25 L 392.00,283.50 L 391.00,284.25 L 391.00,289.50 L 390.00,290.25 L 390.00,298.50 L 389.00,299.25 L 389.00,310.50 L 392.00,314.25 L 392.00,318.50 L 393.00,319.25 L 393.00,321.50 L 394.00,322.25 L 396.00,327.50 L 398.25,328.75 L 404.50,329.75 L 405.25,330.75 L 412.50,330.75 L 416.25,328.75 L 419.50,328.75 L 426.25,324.75 L 428.50,324.75 L 433.25,319.75 L 437.50,319.75 L 439.75,318.50 L 439.75,317.25 L 444.75,312.50 L 444.75,311.25 L 451.75,303.50 L 451.75,302.25 L 453.75,299.50 L 453.75,297.25 L 457.75,290.50 L 457.75,288.25 L 460.75,283.50 L 460.75,281.25 L 461.75,280.50 L 462.75,275.25 L 465.75,270.50 L 466.75,264.25 L 469.75,258.50 L 470.75,252.25 L 471.75,251.50 L 472.75,246.25 L 474.75,243.50 L 475.75,237.25 L 477.75,234.50 L 477.75,232.25 L 479.75,228.50 L 479.75,225.25 L 480.75,224.50 L 480.75,221.25 L 482.75,218.50 L 483.75,212.25 L 484.75,211.50 L 484.75,182.25 L 483.75,181.50 L 483.75,178.25 L 482.75,177.50 L 482.75,175.25 L 479.75,170.50 L 479.75,168.25 L 478.75,167.50 L 477.75,164.25 L 468.50,152.00 L 467.25,152.00 L 460.50,145.00 L 454.25,142.00 L 452.50,140.00 L 451.25,140.00 L 440.50,134.00 L 437.25,134.00 L 433.50,132.00 L 425.25,131.00 L 424.50,130.00 L 419.25,130.00 L 418.50,129.00 L 383.25,129.00 L 382.50,130.00 L 372.25,130.00 L 371.50,131.00 L 364.25,131.00 L 363.50,132.00 L 359.25,132.00 L 358.50,133.00 L 355.25,133.00 L 354.50,134.00 L 345.25,135.00 L 344.50,136.00 L 341.25,136.00 L 337.50,138.00 L 330.25,139.00 L 329.50,140.00 L 324.25,141.00 L 321.50,143.00 L 316.25,144.00 L 313.50,146.00 L 308.25,147.00 L 305.50,149.00 L 303.25,149.00 L 298.50,152.00 L 296.25,152.00 L 289.50,156.00 L 287.25,156.00 L 278.50,161.00 L 276.25,161.00 L 275.50,162.00 Z M 251.00,374.50 L 254.25,377.75 L 264.50,381.75 L 268.00,385.25 L 268.25,386.75 L 271.50,387.75 L 273.25,389.75 L 276.50,389.75 L 277.25,390.75 L 289.50,390.75 L 290.25,389.75 L 299.50,389.75 L 300.25,388.75 L 305.50,388.75 L 306.25,387.75 L 312.50,387.75 L 313.25,386.75 L 322.50,386.75 L 323.25,385.75 L 331.50,385.75 L 332.25,384.75 L 339.50,384.75 L 340.25,383.75 L 354.50,382.75 L 355.25,381.75 L 366.50,381.75 L 367.25,380.75 L 378.50,380.75 L 379.25,379.75 L 390.50,379.75 L 391.25,378.75 L 403.50,378.75 L 404.25,377.75 L 451.50,377.75 L 452.25,378.75 L 459.50,378.75 L 460.25,379.75 L 465.50,379.75 L 466.25,380.75 L 481.50,381.75 L 482.25,382.75 L 486.50,382.75 L 487.25,383.75 L 495.50,384.75 L 496.25,385.75 L 504.50,385.75 L 505.25,384.75 L 508.50,384.75 L 515.25,378.75 L 517.75,378.50 L 517.75,375.25 L 520.25,372.75 L 521.50,372.75 L 528.75,365.50 L 528.75,358.25 L 523.50,352.00 L 521.25,352.00 L 519.50,350.00 L 518.25,350.00 L 515.50,348.00 L 512.25,348.00 L 511.50,347.00 L 509.25,347.00 L 505.50,345.00 L 502.25,345.00 L 501.50,344.00 L 477.25,344.00 L 476.50,343.00 L 454.25,343.00 L 453.50,342.00 L 373.25,343.00 L 372.75,340.25 L 371.75,339.50 L 371.75,337.25 L 370.75,336.50 L 370.75,334.25 L 371.75,333.50 L 371.75,323.25 L 372.75,322.50 L 372.75,311.25 L 373.75,310.50 L 373.75,296.25 L 372.75,295.50 L 371.75,289.25 L 368.75,285.50 L 365.75,279.25 L 360.50,274.00 L 356.25,273.00 L 355.50,272.00 L 353.25,272.00 L 352.50,271.00 L 346.25,271.00 L 345.50,272.00 L 342.25,272.00 L 340.50,274.00 L 339.25,274.00 L 334.00,279.25 L 334.00,280.50 L 332.00,283.25 L 332.00,285.50 L 330.00,288.25 L 330.00,307.50 L 329.00,308.25 L 329.00,336.50 L 328.00,337.25 L 328.00,339.50 L 327.00,340.25 L 326.00,343.50 L 323.50,345.00 L 321.25,345.00 L 320.50,346.00 L 317.25,346.00 L 316.50,347.00 L 302.25,348.00 L 301.50,349.00 L 297.25,349.00 L 293.50,351.00 L 289.25,351.00 L 288.50,352.00 L 280.25,352.00 L 279.50,353.00 L 275.25,353.00 L 274.50,354.00 L 267.25,355.00 L 266.50,357.00 L 263.25,358.00 L 260.50,361.00 L 259.25,361.00 L 253.00,367.25 L 253.00,368.50 L 251.00,370.25 Z" fill="#271971" fill-rule="evenodd" clip-rule="evenodd"/>
+<path d="M 1755.75,320.25 L 1752.25,320.00 L 1751.75,319.50 L 1751.75,316.25 L 1750.75,315.50 L 1750.75,313.25 L 1749.75,312.50 L 1749.75,311.25 L 1748.75,310.50 L 1748.75,308.25 L 1747.75,307.50 L 1747.75,305.25 L 1745.75,303.50 L 1745.75,302.25 L 1744.75,301.50 L 1744.75,300.25 L 1743.75,299.50 L 1743.75,298.25 L 1742.75,297.50 L 1742.75,296.25 L 1739.75,293.50 L 1739.75,292.25 L 1735.75,288.50 L 1735.75,287.25 L 1720.50,272.00 L 1719.25,272.00 L 1715.50,268.00 L 1714.25,268.00 L 1710.50,264.00 L 1709.25,264.00 L 1706.50,261.00 L 1705.25,261.00 L 1703.50,259.00 L 1702.25,259.00 L 1701.50,258.00 L 1700.25,258.00 L 1698.50,256.00 L 1697.25,256.00 L 1696.50,255.00 L 1694.25,255.00 L 1692.00,257.25 L 1692.00,258.50 L 1690.00,260.25 L 1690.00,261.50 L 1689.00,262.25 L 1689.00,263.50 L 1686.00,266.25 L 1686.00,267.50 L 1685.00,268.25 L 1685.00,269.50 L 1683.00,271.25 L 1683.00,272.50 L 1681.00,274.25 L 1681.00,275.50 L 1680.00,276.25 L 1680.00,277.50 L 1677.00,280.25 L 1677.00,281.50 L 1676.00,282.25 L 1676.00,283.50 L 1674.00,285.25 L 1674.00,286.50 L 1672.00,288.25 L 1672.00,289.50 L 1670.00,291.25 L 1670.00,292.50 L 1669.00,293.25 L 1669.00,294.50 L 1667.00,296.25 L 1667.00,297.50 L 1666.00,298.25 L 1666.00,301.50 L 1672.50,301.75 L 1673.00,302.25 L 1673.25,303.75 L 1676.50,303.75 L 1678.25,305.75 L 1679.50,305.75 L 1680.25,306.75 L 1681.50,306.75 L 1684.25,309.75 L 1685.50,309.75 L 1686.25,310.75 L 1687.50,310.75 L 1688.00,311.25 L 1688.00,312.50 L 1689.25,313.75 L 1690.50,313.75 L 1698.00,321.25 L 1698.00,322.50 L 1701.00,325.25 L 1701.00,326.50 L 1703.00,328.25 L 1703.00,329.50 L 1704.00,330.25 L 1704.00,331.50 L 1705.00,332.25 L 1705.00,333.50 L 1706.00,334.25 L 1706.00,337.50 L 1707.00,338.25 L 1707.00,341.50 L 1708.00,342.25 L 1708.00,346.50 L 1709.00,347.25 L 1709.00,355.50 L 1708.00,356.25 L 1708.00,361.50 L 1707.00,362.25 L 1707.00,365.50 L 1706.00,366.25 L 1706.00,369.50 L 1705.00,370.25 L 1705.00,371.50 L 1704.00,372.25 L 1704.00,373.50 L 1703.00,374.25 L 1703.00,375.50 L 1701.00,377.25 L 1701.00,379.50 L 1697.00,383.25 L 1697.00,384.50 L 1689.50,392.00 L 1688.25,392.00 L 1686.50,394.00 L 1685.25,394.00 L 1684.50,395.00 L 1681.25,395.00 L 1681.00,396.50 L 1679.50,398.00 L 1678.25,398.00 L 1677.50,399.00 L 1676.25,399.00 L 1675.50,400.00 L 1674.25,400.00 L 1673.50,401.00 L 1670.25,401.00 L 1669.50,402.00 L 1666.25,402.00 L 1665.50,403.00 L 1662.25,403.00 L 1661.50,404.00 L 1658.25,404.00 L 1657.50,405.00 L 1635.25,405.00 L 1634.50,404.00 L 1631.25,404.00 L 1630.50,403.00 L 1628.25,403.00 L 1627.50,402.00 L 1625.25,402.00 L 1624.50,401.00 L 1620.25,401.00 L 1618.50,399.00 L 1616.25,399.00 L 1615.50,398.00 L 1614.25,398.00 L 1613.50,397.00 L 1612.25,397.00 L 1611.75,396.50 L 1611.50,395.00 L 1608.25,395.00 L 1607.50,394.00 L 1606.25,394.00 L 1605.50,393.00 L 1604.25,393.00 L 1603.50,392.00 L 1602.25,392.00 L 1599.50,389.00 L 1598.25,389.00 L 1596.50,387.00 L 1595.25,387.00 L 1590.50,382.00 L 1589.25,382.00 L 1588.75,381.50 L 1588.75,380.25 L 1587.50,379.00 L 1586.25,379.00 L 1585.75,378.50 L 1585.75,377.25 L 1581.75,373.50 L 1581.75,372.25 L 1579.75,370.50 L 1579.75,369.25 L 1577.75,367.50 L 1577.75,366.25 L 1575.75,364.50 L 1575.75,363.25 L 1574.50,362.00 L 1567.25,362.00 L 1566.50,361.00 L 1559.25,361.00 L 1558.50,360.00 L 1554.25,360.00 L 1553.50,359.00 L 1550.25,359.00 L 1549.50,358.00 L 1545.25,358.00 L 1545.00,416.50 L 1546.25,417.75 L 1555.50,417.75 L 1556.75,416.50 L 1556.75,415.25 L 1557.75,414.50 L 1557.75,413.25 L 1560.25,410.75 L 1564.50,410.75 L 1564.75,409.25 L 1565.25,408.75 L 1577.50,408.75 L 1578.25,409.75 L 1583.50,409.75 L 1584.25,410.75 L 1587.50,410.75 L 1588.25,411.75 L 1591.50,411.75 L 1592.25,412.75 L 1596.50,412.75 L 1597.25,413.75 L 1601.50,413.75 L 1602.25,414.75 L 1604.50,414.75 L 1605.25,415.75 L 1608.50,415.75 L 1609.25,416.75 L 1613.50,416.75 L 1614.25,417.75 L 1621.50,417.75 L 1622.25,418.75 L 1627.50,418.75 L 1628.25,419.75 L 1635.50,419.75 L 1636.25,420.75 L 1657.50,420.75 L 1658.25,419.75 L 1664.50,419.75 L 1665.25,418.75 L 1669.50,418.75 L 1670.25,417.75 L 1676.50,417.75 L 1677.25,416.75 L 1680.50,416.75 L 1681.25,415.75 L 1683.50,415.75 L 1684.25,414.75 L 1686.50,414.75 L 1687.25,413.75 L 1690.50,413.75 L 1691.25,412.75 L 1693.50,412.75 L 1694.25,411.75 L 1695.50,411.75 L 1696.25,410.75 L 1698.50,410.75 L 1699.25,409.75 L 1700.50,409.75 L 1701.25,408.75 L 1703.50,408.75 L 1704.25,407.75 L 1705.50,407.75 L 1706.25,406.75 L 1707.50,406.75 L 1708.25,405.75 L 1709.50,405.75 L 1710.25,404.75 L 1711.50,404.75 L 1712.25,403.75 L 1713.50,403.75 L 1715.25,401.75 L 1716.50,401.75 L 1718.25,399.75 L 1719.50,399.75 L 1722.25,396.75 L 1723.50,396.75 L 1727.25,392.75 L 1728.50,392.75 L 1731.75,389.50 L 1731.75,388.25 L 1733.25,386.75 L 1734.75,386.50 L 1734.75,385.25 L 1738.75,381.50 L 1738.75,380.25 L 1739.75,379.50 L 1739.75,378.25 L 1742.75,375.50 L 1742.75,374.25 L 1743.75,373.50 L 1743.75,372.25 L 1744.75,371.50 L 1744.75,370.25 L 1745.75,369.50 L 1745.75,368.25 L 1747.75,366.50 L 1747.75,364.25 L 1748.75,363.50 L 1748.75,362.25 L 1749.75,361.50 L 1749.75,359.25 L 1750.75,358.50 L 1750.75,357.25 L 1751.75,356.50 L 1751.75,354.25 L 1752.75,353.50 L 1752.75,350.25 L 1753.75,349.50 L 1753.75,343.25 L 1754.75,342.50 L 1754.50,339.00 L 1752.25,339.00 L 1751.50,338.00 L 1748.25,338.00 L 1747.75,337.50 L 1747.75,335.25 L 1746.75,334.50 L 1746.75,331.25 L 1747.75,330.50 L 1747.75,328.25 L 1752.25,323.75 L 1753.50,323.75 L 1754.25,322.75 L 1755.75,322.50 Z M 1546.00,162.25 L 1546.25,167.75 L 1592.50,167.75 L 1592.75,164.25 L 1591.75,163.50 L 1591.75,155.25 L 1592.75,154.50 L 1592.75,148.25 L 1593.75,147.50 L 1593.75,145.25 L 1594.75,144.50 L 1594.75,143.25 L 1595.75,142.50 L 1595.75,141.25 L 1596.75,140.50 L 1596.75,138.25 L 1597.75,137.50 L 1597.75,136.25 L 1599.75,134.50 L 1599.75,133.25 L 1601.75,131.50 L 1601.75,130.25 L 1606.75,125.50 L 1606.75,124.25 L 1607.25,123.75 L 1608.50,123.75 L 1609.25,122.75 L 1610.50,122.75 L 1613.25,119.75 L 1614.50,119.75 L 1615.25,118.75 L 1616.50,118.75 L 1617.25,117.75 L 1618.50,117.75 L 1620.25,115.75 L 1622.50,115.75 L 1623.25,114.75 L 1625.50,114.75 L 1626.25,113.75 L 1628.50,113.75 L 1629.25,112.75 L 1632.50,112.75 L 1633.25,111.75 L 1637.50,111.75 L 1638.25,110.75 L 1646.50,110.75 L 1647.25,111.75 L 1654.50,111.75 L 1655.25,112.75 L 1658.50,112.75 L 1659.25,113.75 L 1661.50,113.75 L 1662.25,114.75 L 1666.50,114.75 L 1667.25,115.75 L 1668.50,115.75 L 1669.25,116.75 L 1670.50,116.75 L 1671.25,117.75 L 1672.50,117.75 L 1673.00,118.25 L 1673.25,119.75 L 1677.50,119.75 L 1681.25,123.75 L 1682.50,123.75 L 1685.25,126.75 L 1686.50,126.75 L 1692.00,132.25 L 1692.00,133.50 L 1697.00,138.25 L 1697.00,139.50 L 1698.00,140.25 L 1698.00,141.50 L 1700.00,143.25 L 1700.00,144.50 L 1701.00,145.25 L 1701.00,146.50 L 1702.00,147.25 L 1702.00,148.50 L 1704.00,150.25 L 1704.00,151.50 L 1705.00,152.25 L 1705.00,153.50 L 1706.00,154.25 L 1706.00,155.50 L 1707.00,156.25 L 1707.00,157.50 L 1708.00,158.25 L 1708.00,159.50 L 1710.00,161.25 L 1710.00,164.50 L 1711.00,165.25 L 1711.00,166.50 L 1712.00,167.25 L 1712.25,170.75 L 1715.50,170.75 L 1716.25,169.75 L 1719.50,169.75 L 1720.25,168.75 L 1723.50,168.75 L 1724.25,167.75 L 1729.50,167.75 L 1730.75,166.50 L 1730.75,102.25 L 1729.50,101.00 L 1720.25,101.00 L 1719.00,102.25 L 1719.00,103.50 L 1716.50,106.00 L 1713.25,106.00 L 1713.00,107.50 L 1712.50,108.00 L 1703.25,108.00 L 1702.50,107.00 L 1699.25,107.00 L 1698.50,106.00 L 1697.25,106.00 L 1696.50,105.00 L 1695.25,105.00 L 1694.50,104.00 L 1692.25,104.00 L 1691.50,103.00 L 1689.25,103.00 L 1688.50,102.00 L 1686.25,102.00 L 1685.50,101.00 L 1683.25,101.00 L 1682.50,100.00 L 1680.25,100.00 L 1679.50,99.00 L 1676.25,99.00 L 1675.50,98.00 L 1672.25,98.00 L 1671.50,97.00 L 1668.25,97.00 L 1667.50,96.00 L 1663.25,96.00 L 1662.50,95.00 L 1656.25,95.00 L 1655.50,94.00 L 1631.25,94.00 L 1630.50,95.00 L 1625.25,95.00 L 1624.50,96.00 L 1621.25,96.00 L 1620.50,97.00 L 1617.25,97.00 L 1616.50,98.00 L 1613.25,98.00 L 1612.50,99.00 L 1609.25,99.00 L 1608.50,100.00 L 1606.25,100.00 L 1605.50,101.00 L 1604.25,101.00 L 1603.50,102.00 L 1601.25,102.00 L 1600.50,103.00 L 1598.25,103.00 L 1597.50,104.00 L 1596.25,104.00 L 1595.50,105.00 L 1594.25,105.00 L 1593.50,106.00 L 1592.25,106.00 L 1591.50,107.00 L 1590.25,107.00 L 1589.50,108.00 L 1588.25,108.00 L 1587.50,109.00 L 1586.25,109.00 L 1584.50,111.00 L 1583.25,111.00 L 1582.50,112.00 L 1581.25,112.00 L 1579.50,114.00 L 1578.25,114.00 L 1575.50,117.00 L 1574.25,117.00 L 1570.50,121.00 L 1569.25,121.00 L 1567.00,123.25 L 1567.00,124.50 L 1566.50,125.00 L 1565.25,125.00 L 1563.00,127.25 L 1563.00,128.50 L 1560.00,131.25 L 1560.00,132.50 L 1558.00,134.25 L 1558.00,135.50 L 1556.00,137.25 L 1556.00,138.50 L 1554.00,140.25 L 1554.00,142.50 L 1552.00,144.25 L 1552.00,145.50 L 1551.00,146.25 L 1551.00,147.50 L 1550.00,148.25 L 1550.00,151.50 L 1549.00,152.25 L 1549.00,154.50 L 1548.00,155.25 L 1548.00,157.50 L 1547.00,158.25 L 1547.00,161.50 Z M 1544.00,196.25 L 1544.00,198.50 L 1546.50,198.75 L 1548.00,200.25 L 1548.00,202.50 L 1549.00,203.25 L 1549.00,204.50 L 1550.00,205.25 L 1550.00,208.50 L 1551.00,209.25 L 1551.00,211.50 L 1553.00,213.25 L 1553.00,214.50 L 1554.00,215.25 L 1554.00,217.50 L 1555.00,218.25 L 1555.00,219.50 L 1558.00,222.25 L 1558.00,223.50 L 1559.00,224.25 L 1559.00,225.50 L 1564.25,230.75 L 1565.50,230.75 L 1570.25,235.75 L 1571.50,235.75 L 1575.25,239.75 L 1576.50,239.75 L 1577.00,240.25 L 1577.25,241.75 L 1578.50,241.75 L 1580.25,243.75 L 1581.50,243.75 L 1584.25,246.75 L 1585.50,246.75 L 1587.25,248.75 L 1588.50,248.75 L 1591.25,251.75 L 1592.50,251.75 L 1593.00,252.25 L 1593.25,253.75 L 1595.50,253.75 L 1596.25,254.75 L 1597.50,254.75 L 1599.25,256.75 L 1600.50,256.75 L 1602.00,258.25 L 1602.25,259.75 L 1605.50,259.75 L 1607.25,261.75 L 1608.50,261.75 L 1609.25,262.75 L 1610.50,262.75 L 1611.25,263.75 L 1612.50,263.75 L 1614.25,265.75 L 1615.50,265.75 L 1616.25,266.75 L 1617.50,266.75 L 1619.25,268.75 L 1623.50,268.75 L 1624.75,267.50 L 1624.75,266.25 L 1626.75,264.50 L 1626.75,263.25 L 1629.75,260.50 L 1629.75,259.25 L 1631.75,257.50 L 1631.75,256.25 L 1633.75,254.50 L 1633.75,253.25 L 1636.75,250.50 L 1636.75,249.25 L 1638.75,247.50 L 1638.75,246.25 L 1640.75,244.50 L 1640.75,243.25 L 1642.75,241.50 L 1642.75,240.25 L 1644.75,238.50 L 1644.75,237.25 L 1647.75,234.50 L 1647.75,233.25 L 1649.75,231.50 L 1649.75,230.25 L 1651.75,228.50 L 1651.50,226.00 L 1649.25,226.00 L 1648.50,225.00 L 1643.25,225.00 L 1642.75,224.50 L 1642.75,223.25 L 1641.50,222.00 L 1640.25,222.00 L 1639.50,221.00 L 1636.25,221.00 L 1635.50,220.00 L 1634.25,220.00 L 1633.50,219.00 L 1632.25,219.00 L 1631.50,218.00 L 1630.25,218.00 L 1627.50,215.00 L 1626.25,215.00 L 1625.50,214.00 L 1623.25,214.00 L 1621.50,212.00 L 1620.25,212.00 L 1618.50,210.00 L 1617.25,210.00 L 1614.50,207.00 L 1613.25,207.00 L 1611.50,205.00 L 1610.25,205.00 L 1600.75,195.50 L 1600.75,194.25 L 1597.75,191.50 L 1597.75,190.25 L 1596.75,189.50 L 1596.75,188.25 L 1595.75,187.50 L 1595.50,183.00 L 1590.25,183.00 L 1589.50,184.00 L 1586.25,184.00 L 1585.50,185.00 L 1582.25,185.00 L 1581.50,186.00 L 1577.25,186.00 L 1576.50,187.00 L 1573.25,187.00 L 1572.50,188.00 L 1569.25,188.00 L 1568.50,189.00 L 1565.25,189.00 L 1564.50,190.00 L 1561.25,190.00 L 1560.50,191.00 L 1558.25,191.00 L 1557.50,192.00 L 1555.25,192.00 L 1554.50,193.00 L 1551.25,193.00 L 1550.50,194.00 L 1548.25,194.00 L 1547.50,195.00 L 1545.25,195.00 Z" fill="#271971" fill-rule="evenodd" clip-rule="evenodd"/>
+<path d="M 1828.75,236.25 L 1827.75,235.50 L 1827.75,233.25 L 1826.75,232.50 L 1826.75,230.25 L 1825.75,229.50 L 1825.75,227.25 L 1823.75,224.50 L 1823.75,222.25 L 1822.75,221.50 L 1822.75,220.25 L 1821.75,219.50 L 1821.75,218.25 L 1820.75,217.50 L 1820.75,216.25 L 1819.75,215.50 L 1819.75,214.25 L 1818.75,213.50 L 1817.75,210.25 L 1815.75,208.50 L 1814.75,205.25 L 1811.75,202.50 L 1811.75,201.25 L 1809.75,199.50 L 1809.75,198.25 L 1797.50,186.00 L 1796.25,186.00 L 1794.50,184.00 L 1793.25,184.00 L 1790.50,181.00 L 1789.25,181.00 L 1788.50,180.00 L 1787.25,180.00 L 1786.50,179.00 L 1783.25,178.00 L 1781.50,176.00 L 1780.25,176.00 L 1779.50,175.00 L 1777.25,175.00 L 1774.50,173.00 L 1772.25,173.00 L 1771.50,172.00 L 1769.25,172.00 L 1768.50,171.00 L 1766.25,171.00 L 1765.50,170.00 L 1762.25,170.00 L 1761.50,169.00 L 1758.25,169.00 L 1757.50,168.00 L 1753.25,168.00 L 1752.50,167.00 L 1730.25,167.00 L 1729.50,168.00 L 1724.25,168.00 L 1723.50,169.00 L 1720.25,169.00 L 1719.50,170.00 L 1716.25,170.00 L 1715.50,171.00 L 1713.25,171.00 L 1712.50,172.00 L 1710.25,172.00 L 1709.50,173.00 L 1707.25,173.00 L 1706.50,174.00 L 1704.25,174.00 L 1703.50,175.00 L 1702.25,175.00 L 1701.50,176.00 L 1700.25,176.00 L 1699.50,177.00 L 1696.25,178.00 L 1694.50,180.00 L 1693.25,180.00 L 1691.50,182.00 L 1690.25,182.00 L 1675.00,197.25 L 1675.00,198.50 L 1671.00,202.25 L 1671.00,203.50 L 1667.00,207.25 L 1667.00,208.50 L 1664.00,211.25 L 1664.00,212.50 L 1661.00,215.25 L 1661.00,216.50 L 1657.00,220.25 L 1657.00,221.50 L 1654.00,224.25 L 1654.00,225.50 L 1652.00,227.25 L 1652.00,228.50 L 1650.00,230.25 L 1650.00,231.50 L 1648.00,233.25 L 1648.00,234.50 L 1645.00,237.25 L 1645.00,238.50 L 1643.00,240.25 L 1643.00,241.50 L 1641.00,243.25 L 1641.00,244.50 L 1639.00,246.25 L 1639.00,247.50 L 1637.00,249.25 L 1637.00,250.50 L 1634.00,253.25 L 1634.00,254.50 L 1632.00,256.25 L 1632.00,257.50 L 1630.00,259.25 L 1630.00,260.50 L 1627.00,263.25 L 1627.00,264.50 L 1625.00,266.25 L 1625.00,267.50 L 1621.00,271.25 L 1621.00,272.50 L 1618.00,275.25 L 1618.00,276.50 L 1615.00,279.25 L 1615.00,280.50 L 1613.00,282.25 L 1613.00,283.50 L 1610.00,286.25 L 1610.00,287.50 L 1608.00,289.25 L 1608.00,290.50 L 1605.00,293.25 L 1605.00,294.50 L 1601.00,298.25 L 1601.00,299.50 L 1591.50,309.00 L 1590.25,309.00 L 1587.50,312.00 L 1586.25,312.00 L 1584.50,314.00 L 1583.25,314.00 L 1580.50,316.00 L 1578.25,316.00 L 1577.50,317.00 L 1575.25,317.00 L 1574.50,318.00 L 1572.25,318.00 L 1571.50,319.00 L 1569.25,319.00 L 1568.50,320.00 L 1563.25,320.00 L 1562.50,321.00 L 1551.25,321.00 L 1550.50,320.00 L 1545.25,320.00 L 1544.50,319.00 L 1541.25,319.00 L 1540.50,318.00 L 1538.25,318.00 L 1537.50,317.00 L 1535.25,317.00 L 1534.50,316.00 L 1532.25,316.00 L 1531.50,315.00 L 1530.25,315.00 L 1529.50,314.00 L 1528.25,314.00 L 1527.50,313.00 L 1524.25,312.00 L 1522.50,310.00 L 1521.25,310.00 L 1519.50,308.00 L 1518.25,308.00 L 1510.75,300.50 L 1510.75,299.25 L 1508.75,297.50 L 1508.75,296.25 L 1507.75,295.50 L 1506.75,292.25 L 1504.75,290.50 L 1504.75,289.25 L 1503.75,288.50 L 1503.75,286.25 L 1502.75,285.50 L 1502.75,284.25 L 1501.75,283.50 L 1501.75,281.25 L 1500.75,280.50 L 1500.75,277.25 L 1499.75,276.50 L 1499.75,273.25 L 1498.75,272.50 L 1498.75,267.25 L 1497.75,266.50 L 1497.75,256.25 L 1498.75,255.50 L 1498.75,250.25 L 1499.75,249.50 L 1499.75,246.25 L 1500.75,245.50 L 1500.75,243.25 L 1501.75,242.50 L 1501.75,240.25 L 1502.75,239.50 L 1502.75,237.25 L 1503.75,236.50 L 1503.75,235.25 L 1504.75,234.50 L 1504.75,233.25 L 1505.75,232.50 L 1505.75,231.25 L 1506.75,230.50 L 1506.75,229.25 L 1507.75,228.50 L 1508.75,225.25 L 1510.75,223.50 L 1510.75,222.25 L 1512.75,220.50 L 1512.75,219.25 L 1516.75,215.50 L 1516.75,214.25 L 1522.25,208.75 L 1523.50,208.75 L 1527.25,204.75 L 1528.50,204.75 L 1531.25,201.75 L 1534.50,200.75 L 1536.25,198.75 L 1537.50,198.75 L 1540.25,196.75 L 1542.50,196.75 L 1545.25,194.75 L 1547.50,194.75 L 1548.25,193.75 L 1550.50,193.75 L 1551.25,192.75 L 1554.50,192.75 L 1555.25,191.75 L 1557.50,191.75 L 1558.25,190.75 L 1560.50,190.75 L 1561.25,189.75 L 1564.50,189.75 L 1565.25,188.75 L 1568.50,188.75 L 1569.25,187.75 L 1572.50,187.75 L 1573.25,186.75 L 1576.50,186.75 L 1577.25,185.75 L 1581.50,185.75 L 1582.25,184.75 L 1585.50,184.75 L 1586.25,183.75 L 1589.50,183.75 L 1590.25,182.75 L 1596.50,182.75 L 1598.75,180.50 L 1598.75,179.25 L 1599.75,178.50 L 1599.75,170.25 L 1598.75,169.50 L 1598.50,168.00 L 1487.00,168.25 L 1487.00,177.50 L 1489.50,177.75 L 1491.25,179.75 L 1492.50,179.75 L 1494.00,181.25 L 1494.00,182.50 L 1496.00,185.25 L 1496.00,198.50 L 1495.00,199.25 L 1495.00,203.50 L 1494.00,204.25 L 1494.00,207.50 L 1493.00,208.25 L 1493.00,211.50 L 1492.00,212.25 L 1492.00,215.50 L 1491.00,216.25 L 1491.00,218.50 L 1490.00,219.25 L 1490.00,222.50 L 1489.00,223.25 L 1489.00,225.50 L 1488.00,226.25 L 1488.00,229.50 L 1487.00,230.25 L 1487.00,233.50 L 1486.00,234.25 L 1486.00,237.50 L 1485.00,238.25 L 1485.00,242.50 L 1484.00,243.25 L 1484.00,251.50 L 1483.00,252.25 L 1483.00,267.50 L 1484.00,268.25 L 1484.00,276.50 L 1485.00,277.25 L 1485.00,281.50 L 1486.00,282.25 L 1486.00,285.50 L 1487.00,286.25 L 1487.00,288.50 L 1488.00,289.25 L 1488.00,292.50 L 1489.00,293.25 L 1489.00,295.50 L 1490.00,296.25 L 1490.00,298.50 L 1491.00,299.25 L 1491.00,300.50 L 1492.00,301.25 L 1492.00,303.50 L 1493.00,304.25 L 1493.00,305.50 L 1494.00,306.25 L 1494.00,307.50 L 1495.00,308.25 L 1495.00,309.50 L 1496.00,310.25 L 1496.00,311.50 L 1497.00,312.25 L 1497.00,313.50 L 1498.00,314.25 L 1499.00,317.50 L 1501.00,319.25 L 1502.00,322.50 L 1504.00,324.25 L 1504.00,325.50 L 1507.00,328.25 L 1507.00,329.50 L 1511.00,333.25 L 1511.00,334.50 L 1517.25,340.75 L 1518.50,340.75 L 1522.25,344.75 L 1523.50,344.75 L 1525.25,346.75 L 1526.50,346.75 L 1528.25,348.75 L 1529.50,348.75 L 1530.25,349.75 L 1533.50,350.75 L 1535.25,352.75 L 1536.50,352.75 L 1537.25,353.75 L 1539.50,353.75 L 1542.25,355.75 L 1544.50,355.75 L 1545.25,356.75 L 1546.50,356.75 L 1547.25,357.75 L 1549.50,357.75 L 1550.25,358.75 L 1553.50,358.75 L 1554.25,359.75 L 1558.50,359.75 L 1559.25,360.75 L 1566.50,360.75 L 1567.25,361.75 L 1578.50,361.75 L 1579.25,360.75 L 1586.50,360.75 L 1587.25,359.75 L 1591.50,359.75 L 1592.25,358.75 L 1595.50,358.75 L 1596.25,357.75 L 1599.50,357.75 L 1602.25,355.75 L 1604.50,355.75 L 1605.25,354.75 L 1607.50,354.75 L 1608.25,353.75 L 1609.50,353.75 L 1610.25,352.75 L 1611.50,352.75 L 1612.25,351.75 L 1613.50,351.75 L 1614.25,350.75 L 1617.50,349.75 L 1619.25,347.75 L 1620.50,347.75 L 1622.25,345.75 L 1625.50,344.75 L 1628.25,341.75 L 1629.50,341.75 L 1634.25,336.75 L 1635.50,336.75 L 1645.75,326.50 L 1645.75,325.25 L 1650.75,320.50 L 1650.75,319.25 L 1654.75,315.50 L 1654.75,314.25 L 1657.75,311.50 L 1657.75,310.25 L 1659.75,308.50 L 1659.75,307.25 L 1661.75,305.50 L 1661.75,304.25 L 1663.75,302.50 L 1663.75,301.25 L 1665.75,299.50 L 1666.75,296.25 L 1668.75,294.50 L 1669.75,291.25 L 1671.75,289.50 L 1671.75,288.25 L 1673.75,286.50 L 1673.75,285.25 L 1675.75,283.50 L 1676.75,280.25 L 1679.75,277.50 L 1680.75,274.25 L 1682.75,272.50 L 1682.75,271.25 L 1684.75,269.50 L 1685.75,266.25 L 1688.75,263.50 L 1689.75,260.25 L 1691.75,258.50 L 1691.75,257.25 L 1694.75,254.50 L 1695.75,251.25 L 1697.75,249.50 L 1697.75,248.25 L 1699.75,246.50 L 1700.75,243.25 L 1702.75,241.50 L 1702.75,240.25 L 1704.75,238.50 L 1705.75,235.25 L 1707.75,233.50 L 1707.75,232.25 L 1711.75,228.50 L 1711.75,227.25 L 1720.25,218.75 L 1721.50,218.75 L 1723.25,216.75 L 1724.50,216.75 L 1725.25,215.75 L 1726.50,215.75 L 1727.25,214.75 L 1728.50,214.75 L 1731.25,212.75 L 1733.50,212.75 L 1734.25,211.75 L 1739.50,211.75 L 1740.25,210.75 L 1744.50,210.75 L 1745.25,209.75 L 1753.50,209.75 L 1754.25,208.75 L 1764.50,208.75 L 1765.25,209.75 L 1770.50,209.75 L 1771.25,210.75 L 1775.50,210.75 L 1776.25,211.75 L 1779.50,211.75 L 1780.25,212.75 L 1782.50,212.75 L 1783.25,213.75 L 1784.50,213.75 L 1785.25,214.75 L 1786.50,214.75 L 1787.25,215.75 L 1790.50,216.75 L 1792.25,218.75 L 1793.50,218.75 L 1795.25,220.75 L 1796.50,220.75 L 1806.00,230.25 L 1806.00,231.50 L 1808.00,233.25 L 1808.00,234.50 L 1809.00,235.25 L 1809.00,236.50 L 1811.00,239.25 L 1811.00,241.50 L 1813.00,244.25 L 1813.00,247.50 L 1814.00,248.25 L 1814.00,252.50 L 1815.00,253.25 L 1815.00,262.50 L 1814.00,263.25 L 1814.00,268.50 L 1813.00,269.25 L 1813.00,273.50 L 1812.00,274.25 L 1812.00,276.50 L 1811.00,277.25 L 1811.00,279.50 L 1809.00,282.25 L 1809.00,284.50 L 1808.00,285.25 L 1808.00,286.50 L 1806.00,288.25 L 1806.00,289.50 L 1804.00,291.25 L 1804.00,292.50 L 1799.00,297.25 L 1799.00,298.50 L 1797.50,300.00 L 1796.25,300.00 L 1790.50,306.00 L 1789.25,306.00 L 1787.50,308.00 L 1784.25,309.00 L 1782.50,311.00 L 1781.25,311.00 L 1780.50,312.00 L 1779.25,312.00 L 1778.50,313.00 L 1777.25,313.00 L 1776.50,314.00 L 1775.25,314.00 L 1774.50,315.00 L 1773.25,315.00 L 1770.50,317.00 L 1768.25,317.00 L 1765.50,319.00 L 1763.25,319.00 L 1762.50,320.00 L 1761.25,320.00 L 1758.50,322.00 L 1756.25,322.00 L 1755.50,323.00 L 1752.25,324.00 L 1748.00,328.25 L 1748.00,330.50 L 1747.00,331.25 L 1747.00,334.50 L 1748.00,335.25 L 1748.00,337.50 L 1751.50,337.75 L 1752.25,338.75 L 1822.50,338.75 L 1823.75,337.50 L 1823.75,331.25 L 1822.50,330.00 L 1821.25,330.00 L 1816.75,325.50 L 1816.75,323.25 L 1815.75,322.50 L 1815.75,316.25 L 1816.75,315.50 L 1816.75,313.25 L 1817.75,312.50 L 1817.75,310.25 L 1818.75,309.50 L 1818.75,307.25 L 1820.75,304.50 L 1820.75,302.25 L 1822.75,299.50 L 1822.75,297.25 L 1823.75,296.50 L 1823.75,294.25 L 1824.75,293.50 L 1824.75,291.25 L 1825.75,290.50 L 1825.75,288.25 L 1826.75,287.50 L 1826.75,285.25 L 1827.75,284.50 L 1827.75,281.25 L 1828.75,280.50 L 1828.75,277.25 L 1829.75,276.50 L 1829.75,273.25 L 1830.75,272.50 L 1830.75,266.25 L 1831.75,265.50 L 1831.75,252.25 L 1830.75,251.50 L 1830.75,244.25 L 1829.75,243.50 L 1829.75,240.25 L 1828.75,239.50 Z" fill="#CE241F" fill-rule="evenodd" clip-rule="evenodd"/>
+</svg></div>
+    <nav class="side-menu">
+      <div class="grp adm-only">개요</div>
+      <div class="mi adm-only" id="mi-dash" onclick="renderDash()">대시보드</div>
+      <div class="grp adm-only">학생 운영</div>
+      <div class="mi adm-only" id="mi-apps" onclick="renderList()">입학 신청 관리</div>
+      <div class="mi adm-only" id="mi-students" onclick="renderSList()">학생 관리</div>
+      <div class="grp">콘텐츠</div>
+      <div class="mi" id="mi-currs" onclick="renderCList()">커리큘럼 관리</div>
+      <div class="mi adm-only" id="mi-subs" onclick="renderSubList()">과목 관리</div>
+      <div class="mi adm-only" id="mi-grad" onclick="renderGradList()">졸업생 성과 관리</div>
+      <div class="grp adm-only">학원</div>
+      <div class="mi adm-only" id="mi-staff" onclick="renderStaffList()">선생님 관리</div>
+      <div class="grp adm-only">설정</div>
+      <div class="mi adm-only" id="mi-set" onclick="renderSet()">서비스 설정</div>
+    </nav>
+    <div class="side-foot">고려US 아카데미 콘솔 · b48</div>
+  </aside>
+
+  <div class="main">
+    <div class="topbar">
+      <div class="crumb" id="crumb"></div>
+      <div class="profile-wrap"><button class="profile-btn" onclick="toggleMenu()"><img src="data:image/png;base64,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" alt=""></button><div class="profile-menu" id="pmenu"><div class="pm-head"><span class="pm-avatar"><img src="data:image/png;base64,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" alt=""></span><div class="pm-info"><span class="nm" id="pm-nm">김원장</span><span class="meta" id="pm-role">ADMIN</span></div></div><div class="pm-item" onclick="authLogout()">로그아웃</div></div></div>
+    </div>
+
+    <!-- ── C1 대시보드 ── -->
+    <div class="content hide" id="v-dash">
+      <div class="page-title">대시보드</div>
+      <div class="page-desc">학생 운영 현황과 콘텐츠 상태를 한눈에 확인해요.</div>
+      <div class="sec-lb">학생 현황</div>
+      <div class="stat-grid" id="dashStu"></div>
+      <div class="sec-lb">콘텐츠 현황</div>
+      <div class="fbar" style="margin-top:14px">
+        <select class="sel" id="d-gr" style="margin-left:0" onchange="renderDashContent()"></select>
+        <select class="sel" id="d-sub" onchange="renderDashContent()"></select>
+        <select class="sel" id="d-ow" onchange="renderDashContent()"></select>
+      </div>
+      <div class="stat-grid" id="dashCont"></div>
+    </div>
+
+    <!-- ── C2-1 목록 ── -->
+    <div class="content" id="v-list">
+      <div class="page-title">입학 신청 관리</div>
+      <div class="page-desc">신청 상태별로 학생의 입학 신청을 확인하고 처리해요.</div>
+      <div class="tabs" id="tabs"></div>
+      <div id="tbl"></div>
+    </div>
+
+    <!-- ── C2-2 상세 ── -->
+    <div class="content hide" id="v-det"></div>
+
+    <!-- ── C3-1 학생 목록 ── -->
+    <div class="content hide" id="v-slist">
+      <div class="page-title">학생 관리</div>
+      <div class="page-desc">학생을 검색하고 정보·포인트·구매 내역을 관리해요.</div>
+      <div class="fbar">
+        <input class="inp" id="f-q" placeholder="이름 또는 학교" oninput="renderSTable()">
+        <select class="sel" id="f-gr" onchange="renderSTable()"><option value="">전체 학년</option><option>초1</option><option>초2</option><option>초3</option><option>초4</option><option>초5</option><option>초6</option><option>중1</option><option>중2</option><option>중3</option><option>고1</option><option>고2</option><option>고3</option><option>졸업</option></select>
+      </div>
+      <div id="stbl"></div>
+    </div>
+
+    <!-- ── C3-2 학생 상세 ── -->
+    <div class="content hide" id="v-sdet"></div>
+
+    <!-- ── C4-1 커리큘럼 목록 ── -->
+    <div class="content hide" id="v-clist">
+      <div class="det-head"><div>
+        <div class="page-title">커리큘럼 관리</div>
+        <div class="page-desc">커리큘럼을 조회하고 공개 상태로 학생 노출을 제어해요.</div>
+      </div><div class="det-actions"><button class="btn btn-pri" onclick="openCNew()">커리큘럼 생성</button></div></div>
+      <div class="fbar">
+        <input class="inp" id="c-q" style="width:200px" placeholder="커리큘럼명" oninput="renderCTable()">
+        <select class="sel" id="c-gr" onchange="renderCTable()"><option value="">전체 학년</option><option>초1</option><option>초2</option><option>초3</option><option>초4</option><option>초5</option><option>초6</option><option>중1</option><option>중2</option><option>중3</option><option>고1</option><option>고2</option><option>고3</option></select>
+        <select class="sel" id="c-sub" onchange="renderCTable()"><option value="">전체 과목</option></select>
+        <select class="sel" id="c-op" onchange="renderCTable()"><option value="">전체 상태</option><option value="1">공개</option><option value="0">비공개</option></select>
+      </div>
+      <div id="ctbl"></div>
+    </div>
+
+    <!-- ── C5 과목 관리 ── -->
+    <div class="content hide" id="v-sub">
+      <div class="det-head"><div>
+        <div class="page-title">과목 관리</div>
+        <div class="page-desc">커리큘럼에서 사용하는 과목을 관리해요.</div>
+      </div><div class="det-actions"><button class="btn btn-pri" onclick="openSubNew()">과목 생성</button></div></div>
+      <div id="subtbl"></div>
+    </div>
+
+    <!-- ── C6 선생님 관리 ── -->
+    <div class="content hide" id="v-staff">
+      <div class="det-head"><div>
+        <div class="page-title">선생님 관리</div>
+        <div class="page-desc">선생님의 역할과 계정 상태를 관리해요.</div>
+      </div><div class="det-actions"><button class="btn btn-pri" onclick="openInvite()">선생님 초대</button></div></div>
+      <div class="fbar">
+        <select class="sel" id="st-role" style="margin-left:0" onchange="renderStaffTable()"><option value="">전체 역할</option><option>ADMIN</option><option>EMPLOYEE</option></select>
+        <select class="sel" id="st-st" onchange="renderStaffTable()"><option value="">전체 상태</option><option>INVITED</option><option>ACTIVE</option><option>INACTIVE</option></select>
+      </div>
+      <div id="stftbl"></div>
+    </div>
+
+    <!-- ── C6-2 선생님 상세 ── -->
+    <div class="content hide" id="v-stdet"></div>
+
+    <!-- ── C7 졸업생 성과 관리 ── -->
+    <div class="content hide" id="v-grad">
+      <div class="det-head"><div>
+        <div class="page-title">졸업생 성과 관리</div>
+        <div class="page-desc">학생 웹 랜딩에 노출되는 졸업생 성과를 관리해요.</div>
+      </div><div class="det-actions"><button class="btn btn-pri" onclick="openGradNew()">성과 등록</button></div></div>
+      <div id="gradtbl"></div>
+    </div>
+
+    <!-- ── C8 서비스 설정 ── -->
+    <div class="content hide" id="v-set">
+      <div class="page-title">서비스 설정</div>
+      <div class="card">
+        <div class="card-head"><h3>자동 진급</h3></div>
+        <div class="form-col" style="margin-top:14px">
+          <div class="mfld" style="margin-top:0"><div class="lb">진급 기준일</div><input class="inp" type="date" id="set-date"></div>
+          <div class="upmeta">기준일에 전체 재학생이 한 학년씩 진급해요. (초1 → … → 고3 → 졸업, 졸업은 유지)</div>
+        </div>
+        <div style="display:flex;margin-top:16px"><button class="btn btn-pri" onclick="savePromo()">저장</button></div>
+      </div>
+      <div class="card">
+        <div class="card-head"><h3>포인트 문의</h3></div>
+        <div class="form-col" style="margin-top:14px">
+          <div class="mfld" style="margin-top:0"><div class="lb">학원 문의 전화번호</div><input class="inp" id="set-phone"></div>
+          <div class="upmeta">학생 서비스의 포인트 부족·충전 안내에 노출돼요.</div>
+        </div>
+        <div style="display:flex;margin-top:16px"><button class="btn btn-pri" onclick="savePhone()">저장</button></div>
+      </div>
+    </div>
+
+    <!-- ── C4-2 커리큘럼 생성 / C4-3 상세 / C4-4 강의 생성 / C4-5 강의 상세 ── -->
+    <div class="content hide" id="v-cnew"></div>
+    <div class="content hide" id="v-cdet"></div>
+    <div class="content hide" id="v-lnew"></div>
+    <div class="content hide" id="v-ldet"></div>
+  </div>
+</div>
+
+<!-- 모달 -->
+<div class="dim" id="dim">
+  <div class="modal">
+    <h4 id="m-title"></h4>
+    <div class="msg" id="m-msg"></div>
+    <div class="note" id="m-note"></div>
+    <div class="acts">
+      <button class="btn btn-cxl" onclick="closeModal()">취소</button>
+      <button class="btn btn-pri" id="m-go"></button>
+    </div>
+  </div>
+</div>
+<div class="dim" id="pdim">
+  <div class="modal">
+    <h4 id="p-title"></h4>
+    <div class="mrow2">
+      <div class="mfld"><div class="lb">학년</div><select class="sel" id="p-g" onchange="pCheck()"><option>초1</option><option>초2</option><option>초3</option><option>초4</option><option>초5</option><option>초6</option><option>중1</option><option>중2</option><option>중3</option><option>고1</option><option>고2</option><option>고3</option></select></div>
+      <div class="mfld"><div class="lb">과목</div><select class="sel" id="p-s" onchange="pCheck()"></select></div>
+    </div>
+    <div class="mfld"><div class="lb">포인트</div><input class="inp" id="p-amt" type="number" min="1" placeholder="0" oninput="pCheck()"><div class="err hide" id="p-err"></div></div>
+    <div class="mfld"><div class="lb">사유 <span class="opt">(선택)</span></div><input class="inp" id="p-rs"></div>
+    <div class="acts"><button class="btn btn-cxl" onclick="closePModal()">취소</button><button class="btn btn-pri" id="p-go"></button></div>
+  </div>
+</div>
+<div class="dim" id="sdim">
+  <div class="modal">
+    <h4 id="s-title"></h4>
+    <div class="mfld"><div class="lb">과목명</div><input class="inp" id="s-nm" oninput="subCheck()" placeholder="예: 수학"><div class="err hide" id="s-err"></div></div>
+    <div class="note hide" id="s-note" style="font-size:13px;color:var(--sub);margin-top:10px;line-height:1.6">이름을 바꿔도 기존 포인트와 강의는 그대로 유지돼요.</div>
+    <div class="acts"><button class="btn btn-cxl" onclick="closeSubModal()">취소</button><button class="btn btn-pri" id="s-go" onclick="subSubmit()"></button></div>
+  </div>
+</div>
+<div class="dim" id="idim">
+  <div class="modal">
+    <h4>선생님 초대</h4>
+    <div class="mrow2">
+      <div class="mfld"><div class="lb">이름</div><input class="inp" id="i-nm" oninput="invCheck()" placeholder="예: 김수학"></div>
+      <div class="mfld"><div class="lb">역할</div><select class="sel" id="i-role"><option>EMPLOYEE</option><option>ADMIN</option></select></div>
+    </div>
+    <div class="mfld"><div class="lb">이메일</div><input class="inp" id="i-email" oninput="invCheck()" placeholder="예: teacher@example.com"><div class="err hide" id="i-err"></div></div>
+    <div style="font-size:13px;color:var(--sub);margin-top:10px;line-height:1.6">보낸 초대는 취소할 수 없어요.</div>
+    <div class="acts"><button class="btn btn-cxl" onclick="closeInvite()">취소</button><button class="btn btn-pri" id="i-go" onclick="invSubmit()">초대</button></div>
+  </div>
+</div>
+<div class="dim" id="gdim">
+  <div class="modal">
+    <h4 id="g-title"></h4>
+    <div class="mfld"><div class="lb">이름</div><input class="inp" id="g-nm" oninput="gradCheck()"></div>
+    <div class="mfld"><div class="lb">학교</div><input class="inp" id="g-sc" oninput="gradCheck()" placeholder="예: 고려대학교"></div>
+    <div class="mfld"><div class="lb">학과</div><input class="inp" id="g-dept" oninput="gradCheck()"></div>
+    <div class="mfld"><div class="lb">학원 다닌 기간</div>
+      <div class="mrow2" style="margin-top:8px">
+        <div class="mfld" style="margin-top:0"><div class="lb lb-s">시작</div><input class="inp" id="g-y1" type="number" oninput="gradCheck()" placeholder="예: 2019"></div>
+        <div class="mfld" style="margin-top:0"><div class="lb lb-s">종료</div><input class="inp" id="g-y2" type="number" oninput="gradCheck()" placeholder="예: 2022"></div>
+      </div>
+    </div>
+    <div class="err hide" id="g-err"></div>
+    <div class="mfld"><div class="lb">졸업 연도</div><input class="inp" id="g-gy" type="number" oninput="gradCheck()" placeholder="예: 2023"></div>
+    <div style="font-size:13px;color:var(--sub);margin-top:10px;line-height:1.6">저장하면 학생 웹 랜딩에 바로 노출돼요.</div>
+    <div class="acts"><button class="btn btn-cxl" onclick="closeGradModal()">취소</button><button class="btn btn-pri" id="g-go" onclick="gradSubmit()"></button></div>
+  </div>
+</div>
+<div class="demo-branch" id="demoBranch">
+  <div class="db-card">
+    <div class="db-badge">임시 화면 · 실제 구현 시 제거</div>
+    <div class="db-title">어떤 사용자로 들어갈까요?</div>
+<div class="db-opt" onclick="branchGo('admin')"><div><b>김원장 · ADMIN</b><small>활성 관리자 — 콘솔로 진입해요</small></div><span class="chv">›</span></div><div class="db-opt" onclick="branchGo('emp')"><div><b>박수학 · EMPLOYEE</b><small>담당 커리큘럼만 관리하는 선생님이에요</small></div><span class="chv">›</span></div><div class="db-opt" onclick="branchGo('invite')"><div><b>최과학 · 초대 링크 클릭</b><small>이메일의 초대 링크로 들어온 상황이에요</small></div><span class="chv">›</span></div><div class="db-opt" onclick="branchGo('none')"><div><b>미초대 사용자</b><small>접근 차단 화면을 확인해요</small></div><span class="chv">›</span></div><div class="db-opt" onclick="branchGo('inactive')"><div><b>정관리 · ADMIN 중지</b><small>이용 중지 차단 화면을 확인해요</small></div><span class="chv">›</span></div>
+    <div class="db-cancel" onclick="closeBranch()">취소</div>
+  </div>
+</div>
+<div class="dim" id="ndim">
+  <div class="modal">
+    <h4>정보 수정</h4>
+    <div class="mrow2">
+      <div class="mfld"><div class="lb">이름</div><input class="inp" id="n-nm" oninput="nmCheck()"></div>
+      <div class="mfld"><div class="lb">역할</div><select class="sel" id="n-role"><option>EMPLOYEE</option><option>ADMIN</option></select></div>
+    </div>
+    <div class="err hide" id="n-guard" style="margin-top:8px">마지막 관리자의 역할은 바꿀 수 없어요</div>
+    <div style="font-size:13px;color:var(--sub);margin-top:10px;line-height:1.6">담당자·처리자로 표시되는 이름이 함께 바뀌어요.</div>
+    <div class="acts"><button class="btn btn-cxl" onclick="closeNmEdit()">취소</button><button class="btn btn-pri" id="n-go" onclick="nmSubmit()">저장</button></div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+// ── 데모 데이터: 행 = 신청 건 (재신청 시 새 행) ──
+var apps = [
+ {id:1, st:'PENDING',  nm:'윤서아', sc:'푸른초등학교', gr:'초6', ph:'010-4444-5555', gph:'010-4444-6666', n:1, at:'2026-08-25 14:02', done:null,
+  hist:[]},
+ {id:2, st:'PENDING',  nm:'최유진', sc:'새봄고등학교', gr:'고2', ph:'010-3333-4444', gph:'010-3333-5555', n:2, at:'2026-08-26 10:31', done:null,
+  hist:[{n:1, at:'2026-08-19 09:12', done:'2026-08-20 11:40', st:'REJECTED'}]},
+ {id:3, st:'APPROVED', nm:'박준서', sc:'미래중학교', gr:'중3', ph:'010-2222-3333', gph:'010-2222-4444', n:1, at:'2026-08-18 16:20', done:'2026-08-19 09:05', hist:[]},
+ {id:4, st:'APPROVED', nm:'이도현', sc:'한빛초등학교', gr:'초3', ph:'010-7777-8888', gph:'010-7777-9999', n:1, at:'2026-08-12 11:03', done:'2026-08-12 15:44', hist:[]},
+ {id:5, st:'REJECTED', nm:'최유진', sc:'새봄고등학교', gr:'고2', ph:'010-3333-4444', gph:'010-3333-5555', n:1, at:'2026-08-19 09:12', done:'2026-08-20 11:40', hist:[]},
+ {id:6, st:'REJECTED', nm:'강지우', sc:'솔빛초등학교', gr:'초4', ph:'010-6666-7777', gph:'010-6666-8888', n:1, at:'2026-08-15 13:55', done:'2026-08-16 10:02', hist:[]}
+];
+var TAB = [
+ {k:'PENDING',  lb:'승인 대기'},
+ {k:'APPROVED', lb:'승인 완료'},
+ {k:'REJECTED', lb:'거절'}
+];
+var BG = {PENDING:['wait','승인 대기'], APPROVED:['ok','승인 완료'], REJECTED:['no','거절']};
+// 공용 인물 목록 테이블 — C2·C3 공용, 열 위치 고정 (이름14/학교26/학년10/전화24/일시)
+function personTable(rows, dateLb, click){
+  var h='<table class="ptable">'
+    +'<col style="width:14%"><col style="width:26%"><col style="width:10%"><col style="width:24%"><col>'
+    +'<tr><th>이름</th><th>학교</th><th>학년</th><th>학생 전화번호</th><th>'+dateLb+'</th></tr>';
+  rows.forEach(function(r){
+    h+='<tr class="rw" onclick="'+click+'('+r.id+')"><td class="nm">'+r.nm+'</td>'
+      +'<td class="sub">'+r.sc+'</td><td>'+r.gr+'</td><td class="sub">'+r.ph+'</td>'
+      +'<td class="sub">'+r.dt+'</td></tr>';
+  });
+  return h+'</table>';
+}
+var curTab = 'PENDING', curId = null;
+
+function crumb(html){ document.getElementById('crumb').innerHTML = html; }
+function rows(k){
+  var r = apps.filter(function(a){return a.st===k});
+  // 전 탭 공통: 신청 일시 최신순
+  r.sort(function(a,b){return a.at>b.at?-1:1});
+  return r;
+}
+function renderTabs(){
+  var h='';
+  TAB.forEach(function(t){
+    var c = rows(t.k).length;
+    h+='<div class="tab'+(curTab===t.k?' on':'')+'" onclick="setTab(\''+t.k+'\')">'+t.lb
+      +(t.k==='PENDING'&&c>0?'<span class="cnt">'+c+'</span>':'')+'</div>';
+  });
+  document.getElementById('tabs').innerHTML=h;
+}
+function renderList(){
+  renderTabs();
+  var r = rows(curTab), h;
+  if(!r.length){
+    h='<div class="empty">'+(curTab==='PENDING'?'처리할 신청이 없어요':'아직 없어요')+'</div>';
+  } else {
+    h=personTable(r.map(function(a){return {id:a.id, nm:a.nm, sc:a.sc, gr:a.gr, ph:a.ph, dt:a.at}}), '신청 일시', 'openDet');
+  }
+  document.getElementById('tbl').innerHTML=h;
+  crumb('<b>입학 신청 관리</b>');
+  show('v-list');
+}
+function fld(lb,vl){return '<div class="fld"><div class="lb">'+lb+'</div><div class="vl">'+vl+'</div></div>'}
+function openDet(id){
+  curId=id;
+  var a=apps.filter(function(x){return x.id===id})[0], h='';
+  h+='<div class="det-head"><div><div class="page-title">'+a.nm
+    +' <span class="bg '+BG[a.st][0]+'" style="vertical-align:4px;margin-left:6px">'+BG[a.st][1]+'</span></div>'
+    +'</div>';
+  if(a.st==='PENDING'){
+    h+='<div class="det-actions"><button class="btn btn-out" onclick="ask(\'REJ\')">거절</button>'
+      +'<button class="btn btn-pri" onclick="ask(\'APR\')">승인</button></div>';
+  }
+  h+='</div>';
+  h+='<div class="card"><h3>신청 정보</h3><div class="fgrid">'
+    +fld('이름',a.nm)+fld('학교',a.sc)+fld('학년',a.gr)
+    +fld('학생 전화번호',a.ph)+fld('보호자 전화번호',a.gph)
+    +'</div></div>';
+  var hist = [{n:a.n, at:a.at, done:a.done, st:a.st}].concat(a.hist);
+  hist.sort(function(x,y){return y.n-x.n});
+  h+='<div class="card"><h3>신청 이력</h3>';
+  hist.forEach(function(x){
+    h+='<div class="hrow"><span class="ttl">'+x.n+'차 신청</span>'
+      +'<span class="mt">'+x.at+' 신청'+(x.done?' · '+x.done+' 처리':'')+'</span>'
+      +'<span class="bg '+BG[x.st][0]+'">'+BG[x.st][1]+'</span></div>';
+  });
+  h+='</div>';
+  document.getElementById('v-det').innerHTML=h;
+  crumb('<a onclick="renderList()">입학 신청 관리</a> <span class="sep">›</span> <b>'+a.nm+'</b>');
+  show('v-det');
+}
+var VIEWS=['v-dash','v-list','v-det','v-slist','v-sdet','v-clist','v-cnew','v-cdet','v-lnew','v-ldet','v-sub','v-staff','v-stdet','v-set','v-grad'];
+var VMENU={'v-dash':'mi-dash','v-list':'mi-apps','v-det':'mi-apps','v-slist':'mi-students','v-sdet':'mi-students',
+           'v-clist':'mi-currs','v-cnew':'mi-currs','v-cdet':'mi-currs','v-lnew':'mi-currs','v-ldet':'mi-currs','v-sub':'mi-subs','v-staff':'mi-staff','v-stdet':'mi-staff','v-set':'mi-set','v-grad':'mi-grad'};
+function show(id){
+  VIEWS.forEach(function(v){document.getElementById(v).classList.add('hide')});
+  document.getElementById(id).classList.remove('hide');
+  ['mi-dash','mi-apps','mi-students','mi-currs','mi-subs','mi-staff','mi-set','mi-grad'].forEach(function(m){
+    var el=document.getElementById(m);
+    el.classList[VMENU[id]===m?'add':'remove']('on');
+  });
+}
+
+// ── 승인/거절 모달 ──
+var mode=null;
+function ask(m){
+  mode=m;
+  var a=apps.filter(function(x){return x.id===curId})[0];
+  if(m==='APR'){
+    set('승인 확인', a.nm+' 학생을 승인할까요?', '', '승인하기');
+  } else {
+    set('거절 확인', a.nm+' 학생의 신청을 거절할까요?', '', '거절하기');
+  }
+  document.getElementById('dim').classList.add('show');
+}
+function set(t,m,n,b){
+  document.getElementById('m-title').textContent=t;
+  document.getElementById('m-msg').textContent=m;
+  document.getElementById('m-note').textContent=n;
+  document.getElementById('m-go').textContent=b;
+}
+function closeModal(){gCb=null;document.getElementById('dim').classList.remove('show')}
+var gCb=null;
+function gConfirm(t,msg,btn,fn,note){
+  gCb=fn; set(t,msg,note||'',btn);
+  document.getElementById('dim').classList.add('show');
+}
+document.getElementById('m-go').onclick=function(){
+  if(gCb){var f=gCb; gCb=null; closeModal(); f(); return;}
+  var a=apps.filter(function(x){return x.id===curId})[0];
+  var now='2026-08-27 15:20';
+  a.st = mode==='APR' ? 'APPROVED' : 'REJECTED';
+  a.done = now;
+  var s = students.filter(function(x){return x.id===APPSID[a.id]})[0];
+  if(s) s.st = a.st;
+  closeModal();
+  renderList();
+  toast(mode==='APR'?'승인했어요':'거절했어요');
+};
+function toast(t){
+  var el=document.getElementById('toast');
+  el.textContent=t; el.classList.add('show');
+  setTimeout(function(){el.classList.remove('show')},1800);
+}
+function toggleMenu(){document.getElementById('pmenu').classList.toggle('open')}
+document.addEventListener('click',function(e){
+  if(!e.target.closest('.profile-wrap')) document.getElementById('pmenu').classList.remove('open');
+});
+function setTab(k){curTab=k;renderList()}
+// ═══════ C3 학생 관리 ═══════
+var SUBJECTS=['수학','영어','국어','과학'];
+var APPSID={1:105,2:106,3:102,4:103,5:106,6:107};
+var students=[
+ {id:101, st:'APPROVED', nm:'김하늘', sc:'고려중학교',   gr:'중2', ph:'010-1234-5678', gph:'010-1234-9999', jd:'2026-07-02'},
+ {id:102, st:'APPROVED', nm:'박준서', sc:'미래중학교',   gr:'중3', ph:'010-2222-3333', gph:'010-2222-4444', jd:'2026-08-18'},
+ {id:103, st:'APPROVED', nm:'이도현', sc:'한빛초등학교', gr:'초3', ph:'010-7777-8888', gph:'010-7777-9999', jd:'2026-08-12'},
+ {id:104, st:'APPROVED', nm:'정민아', sc:'한국고등학교', gr:'졸업', ph:'010-5555-6666', gph:'010-5555-7777', jd:'2026-03-02'},
+ {id:105, st:'PENDING',  nm:'윤서아', sc:'푸른초등학교', gr:'초6', ph:'010-4444-5555', gph:'010-4444-6666', jd:'2026-08-25'},
+ {id:106, st:'PENDING',  nm:'최유진', sc:'새봄고등학교', gr:'고2', ph:'010-3333-4444', gph:'010-3333-5555', jd:'2026-08-19'},
+ {id:107, st:'REJECTED', nm:'강지우', sc:'솔빛초등학교', gr:'초4', ph:'010-6666-7777', gph:'010-6666-8888', jd:'2026-08-15'}
+];
+var wallets={101:{'중2|수학':300,'중2|영어':50,'중1|수학':100}};
+function wbal(sid,g,sub){var w=wallets[sid]||{};return w[g+'|'+sub]||0}
+function wset(sid,g,sub,v){if(!wallets[sid])wallets[sid]={};wallets[sid][g+'|'+sub]=v}
+var ledger=[
+ {sid:101, at:'2026-08-01 10:22', g:'중1', sub:'수학', tp:'지급', amt:100,  after:100, rs:'교차 수강',                by:'김원장'},
+ {sid:101, at:'2026-07-20 20:41', g:'중2', sub:'영어', tp:'구매', amt:-100, after:50,  rs:'2학기 중간 대비 독해 1강', by:'—'},
+ {sid:101, at:'2026-07-15 21:03', g:'중2', sub:'수학', tp:'구매', amt:-100, after:300, rs:'연립방정식 활용 1강',      by:'—'},
+ {sid:101, at:'2026-07-02 18:11', g:'중2', sub:'영어', tp:'지급', amt:150,  after:150, rs:'',                        by:'김원장'},
+ {sid:101, at:'2026-07-02 18:10', g:'중2', sub:'수학', tp:'지급', amt:400,  after:400, rs:'1학기 지급',              by:'김원장'}
+];
+var purchases=[
+ {sid:101, at:'2026-07-20 20:41', lec:'2학기 중간 대비 독해 1강', cur:'중2 영어 내신 독해',      g:'중2', sub:'영어', price:'100P'},
+ {sid:101, at:'2026-07-15 21:03', lec:'연립방정식 활용 1강',      cur:'중2 수학 2학기 내신 완성', g:'중2', sub:'수학', price:'100P'}
+];
+
+// ── C3-1 목록 ──
+function renderSList(){
+  crumb('<b>학생 관리</b>');
+  renderSTable();
+  show('v-slist');
+}
+function renderSTable(){
+  var q=document.getElementById('f-q').value.trim();
+  var gr=document.getElementById('f-gr').value;
+  var r=students.filter(function(s){
+    return s.st==='APPROVED' && (!gr||s.gr===gr) && (!q||s.nm.indexOf(q)>-1||s.sc.indexOf(q)>-1);
+  });
+  r.sort(function(a,b){return a.jd>b.jd?-1:1});
+  var h;
+  if(!r.length){ h='<div class="empty">조건에 맞는 학생이 없어요</div>'; }
+  else{
+    h=personTable(r.map(function(s){return {id:s.id, nm:s.nm, sc:s.sc, gr:s.gr, ph:s.ph, dt:s.jd}}), '가입일', 'openStudent');
+  }
+  document.getElementById('stbl').innerHTML=h;
+}
+
+// ── C3-2 상세 ──
+var sCur=null, sTab='info', editMode=false, pGrade=null;
+function sGet(){return students.filter(function(x){return x.id===sCur})[0]}
+function openStudent(id){
+  sCur=id; sTab='info'; editMode=false;
+  var s=sGet(); pGrade=(s.gr==='졸업')?'고3':s.gr;
+  renderSDet();
+}
+function sSetTab(t){
+  sTab=t; editMode=false; renderSDet();
+}
+function renderSDet(){
+  var s=sGet(), h='';
+  h+='<div class="det-head"><div><div class="page-title">'+s.nm
+    +'</div><div class="sub2">'+s.gr+' · '+s.sc+'</div></div></div>';
+  h+='<div class="tabs">'
+    +'<div class="tab'+(sTab==='info'?' on':'')+'" onclick="sSetTab(\'info\')">기본 정보</div>'
+    +'<div class="tab'+(sTab==='point'?' on':'')+'" onclick="sSetTab(\'point\')">포인트</div>'
+    +'<div class="tab'+(sTab==='buy'?' on':'')+'" onclick="sSetTab(\'buy\')">구매 내역</div>'
+    +'</div>';
+  if(sTab==='info') h+=infoView(s);
+  if(sTab==='point') h+=pointView(s);
+  if(sTab==='buy') h+=buyView(s);
+  document.getElementById('v-sdet').innerHTML=h;
+  crumb('<a onclick="renderSList()">학생 관리</a> <span class="sep">›</span> <b>'+s.nm+'</b>');
+  show('v-sdet');
+}
+function infoView(s){
+  var h='<div class="card">';
+  if(!editMode){
+    h+='<div class="card-head"><h3>기본 정보</h3><button class="btn btn-out" style="margin-right:0" onclick="editMode=true;renderSDet()">수정</button></div>'
+      +'<div class="fgrid">'+fld('이름',s.nm)+fld('학교',s.sc)+fld('현재 학년',s.gr)
+      +fld('학생 전화번호',s.ph)+fld('보호자 전화번호',s.gph)+'</div>';
+  } else {
+    var gsel='<select class="sel" id="e-gr">';
+    ['초1','초2','초3','초4','초5','초6','중1','중2','중3','고1','고2','고3','졸업'].forEach(function(g){
+      gsel+='<option'+(g===s.gr?' selected':'')+'>'+g+'</option>';
+    });
+    gsel+='</select>';
+    h+='<div class="card-head"><h3>기본 정보</h3></div><div class="fgrid">'
+      +'<div class="fld"><div class="lb">이름</div><input class="inp" id="e-nm" value="'+s.nm+'"></div>'
+      +'<div class="fld"><div class="lb">학교</div><input class="inp" id="e-sc" value="'+s.sc+'"></div>'
+      +'<div class="fld"><div class="lb">현재 학년</div>'+gsel+'</div>'
+      +'<div class="fld"><div class="lb">학생 전화번호</div><input class="inp" id="e-ph" value="'+s.ph+'"></div>'
+      +'<div class="fld"><div class="lb">보호자 전화번호</div><input class="inp" id="e-gph" value="'+s.gph+'"></div>'
+      +'</div><div style="display:flex;margin-top:16px">'
+      +'<button class="btn btn-cxl" onclick="editMode=false;renderSDet()">취소</button>'
+      +'<button class="btn btn-pri" style="margin-left:8px" onclick="saveInfo()">저장</button></div>';
+  }
+  return h+'</div>';
+}
+function saveInfo(){
+  var s=sGet();
+  s.nm=document.getElementById('e-nm').value;
+  s.sc=document.getElementById('e-sc').value;
+  s.gr=document.getElementById('e-gr').value;
+  s.ph=document.getElementById('e-ph').value;
+  s.gph=document.getElementById('e-gph').value;
+  pGrade=(s.gr==='졸업')?'고3':s.gr;
+  editMode=false; renderSDet(); toast('저장했어요');
+}
+function pointView(s){
+  var gsel='<select class="sel" id="pg-sel" onchange="pGrade=this.value;renderSDet()" style="height:36px;min-width:100px">';
+  ['초1','초2','초3','초4','초5','초6','중1','중2','중3','고1','고2','고3'].forEach(function(g){
+    gsel+='<option'+(g===pGrade?' selected':'')+'>'+g+'</option>';
+  });
+  gsel+='</select>';
+  var h='<div class="card"><div class="card-head"><h3>포인트</h3><div style="margin-left:auto">'+gsel+'</div></div><div class="wlist">';
+  SUBJECTS.forEach(function(sub){
+    h+='<div class="wrow"><span class="sj">'+sub+'</span><span class="bal">'+wbal(s.id,pGrade,sub)+'P</span>'
+      +'<span class="acts"><button class="btn btn-pri" onclick="openPModal(\'GIVE\',\''+sub+'\')">지급</button> '
+      +'<button class="btn btn-out" style="margin-right:0" onclick="openPModal(\'REV\',\''+sub+'\')">회수</button></span></div>';
+  });
+  h+='</div></div>';
+  var led=ledger.filter(function(x){return x.sid===s.id});
+  h+='<div class="card"><div class="card-head"><h3>변동 내역</h3></div>';
+  if(!led.length){ h+='<div class="empty">아직 없어요</div>'; }
+  else{
+    h+='<table style="margin-top:14px"><tr><th>일시</th><th>지갑</th><th>유형</th><th>변동</th><th>잔액</th><th>사유</th><th>처리자</th></tr>';
+    led.forEach(function(x){
+      h+='<tr><td class="sub">'+x.at+'</td><td>'+x.g+' '+x.sub+'</td><td>'+x.tp+'</td>'
+        +'<td class="'+(x.amt>0?'amt-p':'amt-m')+'">'+(x.amt>0?'+':'')+x.amt+'P</td>'
+        +'<td>'+x.after+'P</td><td class="sub">'+(x.rs||'—')+'</td><td class="sub">'+x.by+'</td></tr>';
+    });
+    h+='</table>';
+  }
+  return h+'</div>';
+}
+function buyView(s){
+  var r=purchases.filter(function(x){return x.sid===s.id});
+  var h='<div class="card"><div class="card-head"><h3>구매 내역</h3></div>';
+  if(!r.length){ h+='<div class="empty">구매한 강의가 없어요</div>'; }
+  else{
+    h+='<table style="margin-top:14px"><tr><th>구매 일시</th><th>강의명</th><th>커리큘럼</th><th>지갑</th><th>구매 당시 가격</th></tr>';
+    r.forEach(function(x){
+      h+='<tr><td class="sub">'+x.at+'</td><td class="nm">'+x.lec+'</td><td class="sub">'+x.cur+'</td>'
+        +'<td>'+x.g+' '+x.sub+'</td><td>'+x.price+'</td></tr>';
+    });
+    h+='</table>';
+  }
+  return h+'</div>';
+}
+
+// ── 지급/회수 모달 ──
+var pMode=null;
+function openPModal(m,sub){
+  pMode=m;
+  document.getElementById('p-title').textContent = m==='GIVE'?'포인트 지급':'포인트 회수';
+  document.getElementById('p-go').textContent = m==='GIVE'?'지급하기':'회수하기';
+  document.getElementById('p-g').value = pGrade;
+  var ss=document.getElementById('p-s'); ss.innerHTML='';
+  SUBJECTS.forEach(function(x){ss.innerHTML+='<option'+(x===sub?' selected':'')+'>'+x+'</option>'});
+  document.getElementById('p-amt').value='';
+  document.getElementById('p-rs').value='';
+  pCheck();
+  document.getElementById('pdim').classList.add('show');
+}
+function closePModal(){document.getElementById('pdim').classList.remove('show')}
+function pCheck(){
+  var amt=parseInt(document.getElementById('p-amt').value,10)||0;
+  var g=document.getElementById('p-g').value, sub=document.getElementById('p-s').value;
+  var err=document.getElementById('p-err'), go=document.getElementById('p-go');
+  var bad=false;
+  if(pMode==='REV'){
+    var bal=wbal(sCur,g,sub);
+    if(amt>bal){ err.textContent='잔액('+bal+'P)까지만 회수할 수 있어요'; err.classList.remove('hide'); bad=true; }
+    else err.classList.add('hide');
+  } else err.classList.add('hide');
+  go.disabled = bad || amt<=0;
+}
+document.getElementById('p-go').onclick=function(){
+  var amt=parseInt(document.getElementById('p-amt').value,10)||0;
+  var g=document.getElementById('p-g').value, sub=document.getElementById('p-s').value;
+  var rs=document.getElementById('p-rs').value.trim();
+  var d=(pMode==='GIVE')?amt:-amt;
+  var nb=wbal(sCur,g,sub)+d;
+  wset(sCur,g,sub,nb);
+  ledger.unshift({sid:sCur, at:'2026-08-27 15:40', g:g, sub:sub, tp:(pMode==='GIVE'?'지급':'회수'), amt:d, after:nb, rs:rs, by:'김원장'});
+  closePModal(); renderSDet();
+  toast(pMode==='GIVE'?'지급했어요':'회수했어요');
+};
+
+// ═══════ C4 콘텐츠 관리 ═══════
+var currs=[
+ {id:201, nm:'중2 수학 2학기 내신 완성', gr:'중2', sub:'수학', owner:'박수학', open:true,  desc:'2학기 내신 대비 핵심 개념과 실전 유형 정리', cd:'2026-07-01'},
+ {id:202, nm:'중2 영어 내신 독해',       gr:'중2', sub:'영어', owner:'이영어', open:true,  desc:'중간·기말 대비 독해 지문 훈련', cd:'2026-07-03'},
+ {id:203, nm:'고3 미적분 개념 완성',     gr:'고3', sub:'수학', owner:'박수학', open:true,  desc:'', cd:'2026-06-20'},
+ {id:204, nm:'고2 물리 역학 집중',       gr:'고2', sub:'과학', owner:'김원장', open:false, desc:'역학 파트 개념 집중', cd:'2026-08-10'}
+];
+var lects=[
+ {id:301, cid:201, nm:'연립방정식 활용 1강',       desc:'연립방정식 실전 유형', open:true,  ord:1},
+ {id:302, cid:201, nm:'일차함수 개념 1강',         desc:'',                    open:true,  ord:2},
+ {id:303, cid:201, nm:'일차함수 활용 2강',         desc:'',                    open:false, ord:3},
+ {id:304, cid:203, nm:'수열의 극한',               desc:'수열의 극한 정의와 대표 유형', open:true, ord:1},
+ {id:305, cid:203, nm:'급수와 수렴',               desc:'',                    open:true,  ord:2},
+ {id:306, cid:203, nm:'미분법 정리',               desc:'',                    open:false, ord:3}
+];
+function cGet(id){return currs.filter(function(x){return x.id===id})[0]}
+function canEdit(c){return CUR.role==='ADMIN' || c.owner===CUR.nm}
+function lGet(id){return lects.filter(function(x){return x.id===id})[0]}
+function cLects(cid){return lects.filter(function(x){return x.cid===cid}).sort(function(a,b){return a.ord-b.ord})}
+function opBadge(o){return '<span class="bg '+(o?'ok':'no')+'">'+(o?'공개':'비공개')+'</span>'}
+
+// ── C4-1 목록 ──
+function renderCList(){
+  crumb('<b>커리큘럼 관리</b>');
+  var sel=document.getElementById('c-sub'), cur=sel.value;
+  sel.innerHTML='<option value="">전체 과목</option>'+SUBJECTS.map(function(x){return '<option>'+x+'</option>'}).join('');
+  sel.value=cur; if(sel.selectedIndex<0) sel.selectedIndex=0;
+  renderCTable(); show('v-clist');
+}
+function renderCTable(){
+  var q=document.getElementById('c-q').value.trim();
+  var gr=document.getElementById('c-gr').value, sub=document.getElementById('c-sub').value, op=document.getElementById('c-op').value;
+  var r=currs.filter(function(c){
+    return (!q||c.nm.indexOf(q)>-1)&&(!gr||c.gr===gr)&&(!sub||c.sub===sub)&&(op===''||c.open===(op==='1'));
+  });
+  r.sort(function(a,b){return a.cd<b.cd?-1:1});
+  var h;
+  if(!r.length){ h='<div class="empty">조건에 맞는 커리큘럼이 없어요</div>'; }
+  else{
+    h='<table class="ptable">'
+     +'<col style="width:30%"><col style="width:8%"><col style="width:9%"><col style="width:13%"><col style="width:11%"><col style="width:11%"><col>'
+     +'<tr><th>커리큘럼명</th><th>학년</th><th>과목</th><th>강의 수</th><th>담당자</th><th>공개 상태</th><th>생성일</th></tr>';
+    r.forEach(function(c){
+      h+='<tr class="rw" onclick="openCurr('+c.id+')"><td class="nm">'+c.nm+'</td><td>'+c.gr+'</td><td>'+c.sub+'</td>'
+        +'<td>'+cLects(c.id).length+'개</td><td class="sub">'+c.owner+'</td><td>'+opBadge(c.open)+'</td><td class="sub">'+c.cd+'</td></tr>';
+    });
+    h+='</table>';
+  }
+  document.getElementById('ctbl').innerHTML=h;
+}
+
+// ── C4-2 커리큘럼 생성 / 정보 수정 — 공용 폼 페이지 ──
+var cnOpen=false, cfEdit=null;
+function openCNew(){cForm(null)}
+function openCEdit(){cForm(cCur)}
+function cForm(editId){
+  cfEdit=editId;
+  var c = editId ? cGet(editId) : null;
+  cnOpen = c ? c.open : false;
+  var gsel='<select class="sel" id="cn-gr" onchange="cnCheck()">'+(c?'':'<option value="">학년 선택</option>');
+  ['초1','초2','초3','초4','초5','초6','중1','중2','중3','고1','고2','고3'].forEach(function(g){
+    gsel+='<option'+(c&&g===c.gr?' selected':'')+'>'+g+'</option>';
+  });
+  gsel+='</select>';
+  var ssel='<select class="sel" id="cn-sub" onchange="cnCheck()">'+(c?'':'<option value="">과목 선택</option>');
+  SUBJECTS.forEach(function(x){ssel+='<option'+(c&&x===c.sub?' selected':'')+'>'+x+'</option>'});
+  ssel+='</select>';
+  var title = c ? '커리큘럼 정보 수정' : '커리큘럼 생성';
+  var osel='';
+  if(c){
+    var actives=staff.filter(function(s){return s.st==='ACTIVE'});
+    osel='<div class="mfld"><div class="lb">담당자</div><select class="sel" id="cn-owner">';
+    if(!actives.some(function(s){return s.nm===c.owner})){
+      osel+='<option value="'+c.owner+'" selected>'+c.owner+' (비활성)</option>';
+    }
+    actives.forEach(function(s){
+      osel+='<option value="'+s.nm+'"'+(s.nm===c.owner?' selected':'')+'>'+s.nm+'</option>';
+    });
+    osel+='</select></div>';
+  }
+  var h2='<div class="page-title">'+title+'</div><div class="form-col" style="margin-top:24px">'
+    +'<div class="mfld"><div class="lb">커리큘럼명</div><input class="inp" id="cn-nm" oninput="cnCheck()" placeholder="예: 중2 수학 2학기 내신 완성" value="'+(c?c.nm:'')+'"></div>'
+    +'<div class="mrow2"><div class="mfld"><div class="lb">학년</div>'+gsel+'</div>'
+    +'<div class="mfld"><div class="lb">과목</div>'+ssel+'</div></div>'
+    +osel
+    +'<div class="mfld"><div class="lb">설명 <span class="opt">(선택)</span></div><textarea id="cn-desc">'+(c?(c.desc||''):'')+'</textarea></div>'
+    +'<div class="mfld sw-row"><span class="lb2">공개 상태</span><button class="sw'+(cnOpen?' on':'')+'" id="cn-sw" onclick="this.classList.toggle(\'on\');cnOpen=this.classList.contains(\'on\')"><i></i></button></div>'
+    +'</div><div class="form-acts">'
+    +'<button class="btn btn-cxl" onclick="'+(c?'renderCDet()':'renderCList()')+'">취소</button>'
+    +'<button class="btn btn-pri" id="cn-go" '+(c?'':'disabled ')+'onclick="cnSubmit()">'+(c?'저장':'생성')+'</button></div>';
+  document.getElementById('v-cnew').innerHTML=h2;
+  if(c){
+    crumb('<a onclick="renderCList()">커리큘럼 관리</a> <span class="sep">›</span> '
+      +'<a onclick="renderCDet()">'+c.nm+'</a> <span class="sep">›</span> <b>정보 수정</b>');
+  } else {
+    crumb('<a onclick="renderCList()">커리큘럼 관리</a> <span class="sep">›</span> <b>커리큘럼 생성</b>');
+  }
+  show('v-cnew');
+}
+function cnCheck(){
+  var ok=document.getElementById('cn-nm').value.trim()
+    && document.getElementById('cn-gr').value && document.getElementById('cn-sub').value;
+  document.getElementById('cn-go').disabled=!ok;
+}
+function cnSubmit(){
+  var v={nm:document.getElementById('cn-nm').value.trim(),
+         gr:document.getElementById('cn-gr').value,
+         sub:document.getElementById('cn-sub').value,
+         desc:document.getElementById('cn-desc').value.trim(),
+         open:document.getElementById('cn-sw').classList.contains('on')};
+  if(cfEdit===null){
+    var id=Date.now()%100000;
+    currs.push({id:id, nm:v.nm, gr:v.gr, sub:v.sub, owner:CUR.nm, open:v.open, desc:v.desc, cd:'2026-08-27'});
+    openCurr(id); toast('커리큘럼을 생성했어요');
+    return;
+  }
+  var c=cGet(cfEdit);
+  var apply=function(){
+    c.nm=v.nm||c.nm; c.gr=v.gr; c.sub=v.sub; c.desc=v.desc; c.open=v.open;
+    var ow=document.getElementById('cn-owner');
+    if(ow) c.owner=ow.value;
+    renderCDet(); toast('저장했어요');
+  };
+  if(c.open && !v.open){
+    gConfirm('비공개 확인','비공개하면 더 이상 강의를 구매할 수 없어요. 이미 구매한 학생은 계속 볼 수 있어요.','비공개하고 저장',apply);
+  } else apply();
+}
+
+// ── C4-3 상세 ──
+var cCur=null;
+function openCurr(id){cCur=id; renderCDet();}
+function renderCDet(){
+  var c=cGet(cCur), h='';
+  h+='<div class="page-title">'+c.nm+'</div>';
+  var ce=canEdit(c);
+  h+='<div class="card">'
+    +'<div class="card-head"><h3>커리큘럼 정보</h3>'
+    +(ce?'<button class="btn btn-out" style="margin-right:0" onclick="openCEdit()">정보 수정</button>':'')
+    +'</div>'
+    +'<div class="fgrid">'+fld('학년',c.gr)+fld('과목',c.sub)+fld('담당자',c.owner)
+    +fld('공개 상태',opBadge(c.open))+fld('설명',c.desc||'—')+'</div>'
+    +'</div>';
+  // 강의 테이블
+  var ls=cLects(c.id);
+  h+='<div class="card"><div class="card-head"><h3>강의</h3>'
+    +(ce?'<button class="btn btn-pri" style="margin-right:0" onclick="openLNew()">강의 생성</button>':'')
+    +'</div>';
+  if(!ls.length){ h+='<div class="empty">아직 강의가 없어요</div>'; }
+  else{
+    h+='<table class="ptable" style="margin-top:14px">'
+     +'<col style="width:6%"><col style="width:8%"><col style="width:52%"><col style="width:12%"><col>'
+     +'<tr><th></th><th>순서</th><th>강의명</th><th>가격</th><th>공개 상태</th></tr>';
+    ls.forEach(function(l){
+      h+='<tr class="rw" id="lr'+l.id+'"'+(ce?' ondragstart="dStart(event,'+l.id+')" ondragover="dOver(event,'+l.id+')" ondragend="dEnd('+l.id+')"':'')+' onclick="openLect('+l.id+')">'
+        +'<td class="cell-dh">'+(ce?'<span class="dh" onmousedown="dhDown('+l.id+')" onclick="event.stopPropagation()"></span>':'')+'</td>'
+        +'<td>'+l.ord+'</td>'
+        +'<td class="nm">'+l.nm+(l.desc?'<div style="font-size:12px;color:var(--sub);font-weight:400;margin-top:2px">'+l.desc+'</div>':'')+'</td>'
+        +'<td style="color:var(--navy);font-weight:700">100P</td><td>'+opBadge(l.open)+'</td></tr>';
+    });
+    h+='</table>'+(ce?'<div class="upmeta">행 왼쪽의 점 핸들을 잡아 순서를 바꿀 수 있어요. 변경 즉시 저장돼요.</div>':'');
+  }
+  h+='</div>';
+  document.getElementById('v-cdet').innerHTML=h;
+  crumb('<a onclick="renderCList()">커리큘럼 관리</a> <span class="sep">›</span> <b>'+c.nm+'</b>');
+  show('v-cdet');
+}
+// ── DnD (실제 드래그 + 라이브 재정렬 FLIP 애니메이션) ──
+var dragId=null;
+function dhDown(id){var tr=document.getElementById('lr'+id); if(tr) tr.draggable=true;}
+function dStart(ev,id){
+  dragId=id;
+  if(ev.dataTransfer){ev.dataTransfer.setData('text',''); ev.dataTransfer.effectAllowed='move';}
+  var tr=document.getElementById('lr'+id); if(tr) tr.classList.add('dragging');
+}
+function dOver(ev,tid){
+  ev.preventDefault();
+  if(dragId===null||dragId===tid) return;
+  var tr=document.getElementById('lr'+dragId), tgt=document.getElementById('lr'+tid);
+  if(!tr||!tgt) return;
+  var r=tgt.getBoundingClientRect();
+  var before=(ev.clientY - r.top) < r.height/2;
+  if(before && tr.nextElementSibling===tgt) return;
+  if(!before && tgt.nextElementSibling===tr) return;
+  liveMove(tr, tgt, before);
+}
+function liveMove(tr, tgt, before){
+  var body=tr.parentNode;
+  var rows=[].slice.call(body.querySelectorAll('tr.rw'));
+  var first={};
+  rows.forEach(function(r){first[r.id]=r.getBoundingClientRect().top});
+  if(before) body.insertBefore(tr,tgt); else body.insertBefore(tr,tgt.nextSibling);
+  // 순서 숫자 즉시 갱신
+  [].slice.call(body.querySelectorAll('tr.rw')).forEach(function(r,i){r.cells[1].textContent=i+1});
+  // FLIP: 밀려난 행들이 미끄러지듯 이동
+  rows.forEach(function(r){
+    if(r===tr) return;
+    var d=first[r.id]-r.getBoundingClientRect().top;
+    if(d){
+      r.style.transition='none';
+      r.style.transform='translateY('+d+'px)';
+      requestAnimationFrame(function(){
+        r.style.transition='transform .15s ease';
+        r.style.transform='';
+      });
+    }
+  });
+}
+function dEnd(id){
+  var tr=document.getElementById('lr'+id);
+  if(tr){tr.draggable=false; tr.classList.remove('dragging');}
+  var order=[].slice.call(document.querySelectorAll('#v-cdet tr.rw')).map(function(r){return parseInt(r.id.slice(2),10)});
+  var changed=order.some(function(lid,i){return lGet(lid).ord!==i+1});
+  order.forEach(function(lid,i){lGet(lid).ord=i+1});
+  dragId=null;
+  if(changed){
+    window._noClick=true; setTimeout(function(){window._noClick=false},80);
+    renderCDet(); toast('순서를 저장했어요');
+  }
+}
+
+// ── C4-4 강의 생성 / 정보 수정 — 공용 폼 페이지 (영상 교체 미제공: 수정 폼엔 업로드 없음) ──
+var up={st:'idle', pct:0, timer:null}, lnOpen=false, lfEdit=null;
+function openLNew(){lForm(null)}
+function openLEdit(){lForm(lCur)}
+function lForm(editId){
+  lfEdit=editId;
+  var l = editId ? lGet(editId) : null;
+  var c = cGet(cCur);
+  up = l ? {st:'done', pct:100, timer:null, existing:true} : {st:'idle', pct:0, timer:null};
+  lnOpen = l ? l.open : false;
+  var title = l ? '강의 정보 수정' : '강의 생성';
+  var h2='<div class="page-title">'+title+'</div><div class="form-col" style="margin-top:24px">'
+    +'<div class="mfld"><div class="lb">영상</div><div id="upzone"></div></div>'
+    +'<div class="mfld"><div class="lb">강의명</div><input class="inp" id="ln-nm" oninput="lnCheck()" placeholder="예: 연립방정식 활용 1강" value="'+(l?l.nm:'')+'"></div>'
+    +'<div class="mfld"><div class="lb">설명 <span class="opt">(선택)</span></div><textarea id="ln-desc">'+(l?(l.desc||''):'')+'</textarea></div>'
+    +'<div class="mrow2"><div class="mfld"><div class="lb">가격</div><input class="inp" value="100P" disabled style="background:var(--section);color:var(--sub)"></div>'
+    +'<div class="mfld"><div class="lb">공개 상태</div><div class="sw-row" style="height:44px"><button class="sw'+(lnOpen?' on':'')+'" id="ln-sw" onclick="this.classList.toggle(\'on\');lnOpen=this.classList.contains(\'on\')"><i></i></button></div></div></div>'
+    +(l?'':'<div class="upmeta">순서는 커리큘럼 마지막에 자동으로 추가돼요. 배치는 커리큘럼 화면에서 바꿀 수 있어요.</div>')
+    +'</div><div class="form-acts">'
+    +'<button class="btn btn-cxl" onclick="'+(l?'renderLDet()':'leaveLNew()')+'">취소</button>'
+    +'<button class="btn btn-pri" id="ln-go" disabled onclick="lnSubmit()">'+(l?'저장':'생성')+'</button></div>';
+  document.getElementById('v-lnew').innerHTML=h2;
+  renderUp();
+  var base='<a onclick="renderCList()">커리큘럼 관리</a> <span class="sep">›</span> ';
+  if(l){
+    crumb(base+'<a onclick="renderCDet()">'+c.nm+'</a> <span class="sep">›</span> '
+      +'<a onclick="renderLDet()">'+l.nm+'</a> <span class="sep">›</span> <b>정보 수정</b>');
+  } else {
+    crumb(base+'<a onclick="leaveLNew()">'+c.nm+'</a> <span class="sep">›</span> <b>강의 생성</b>');
+  }
+  show('v-lnew');
+}
+function renderUp(){
+  var z=document.getElementById('upzone'); if(!z) return;
+  if(up.st==='idle'){
+    z.innerHTML='<div class="upbox" onclick="startUp()">영상을 선택하거나 끌어다 놓으세요<div class="upmeta">클릭하면 업로드가 시작돼요 (데모)</div></div>';
+  } else if(up.st==='uploading'){
+    z.innerHTML='<div class="upbox" style="cursor:default">업로드 중이에요<div class="pbar" style="margin:14px 40px 0"><i style="width:'+up.pct+'%"></i></div><div class="upmeta">'+up.pct+'%</div></div>';
+  } else {
+    var ex = !!up.existing;
+    z.innerHTML='<div class="player-mock" style="height:180px;font-size:22px;margin-top:0">▶</div>'
+      +'<div style="display:flex;align-items:center;margin-top:10px">'
+      +'<div class="upmeta" style="flex:1;margin-top:0">'+(ex?'현재 영상 — 재생해서 확인할 수 있어요. 바꾸려면 삭제하고 다시 올려요':'업로드 완료 — 재생해서 확인할 수 있어요')+'</div>'
+      +'<button class="btn btn-out" style="margin-right:0" onclick="delUp()">영상 삭제</button></div>';
+  }
+  lnCheck();
+}
+function delUp(){
+  if(up.timer) clearInterval(up.timer);
+  up={st:'idle', pct:0, timer:null};
+  renderUp();
+}
+function startUp(){
+  if(up.st!=='idle') return;
+  up.st='uploading'; up.pct=0;
+  up.timer=setInterval(function(){
+    up.pct+=9;
+    if(up.pct>=100){up.pct=100; up.st='done'; clearInterval(up.timer);}
+    renderUp();
+  },120);
+  renderUp();
+}
+function lnCheck(){
+  var el=document.getElementById('ln-go'); if(!el) return;
+  var nm=document.getElementById('ln-nm').value.trim();
+  el.disabled = !(up.st==='done' && nm);
+}
+function dirtyLNew(){
+  return up.st!=='idle' || (document.getElementById('ln-nm')&&document.getElementById('ln-nm').value.trim());
+}
+function leaveLNew(){
+  if(dirtyLNew()){
+    gConfirm('나가기 확인','지금 나가면 업로드한 영상과 입력 내용이 사라져요.','나가기',
+      function(){if(up.timer)clearInterval(up.timer); renderCDet();});
+  } else renderCDet();
+}
+function lnSubmit(){
+  var v={nm:document.getElementById('ln-nm').value.trim(),
+         desc:document.getElementById('ln-desc').value.trim(),
+         open:document.getElementById('ln-sw').classList.contains('on')};
+  if(lfEdit===null){
+    var ls=cLects(cCur);
+    lects.push({id:Date.now()%100000, cid:cCur, nm:v.nm, desc:v.desc, open:v.open, ord:ls.length+1});
+    renderCDet(); toast('강의를 생성했어요');
+    return;
+  }
+  var l=lGet(lfEdit);
+  var apply=function(){
+    l.nm=v.nm||l.nm; l.desc=v.desc; l.open=v.open;
+    renderLDet(); toast('저장했어요');
+  };
+  if(l.open && !v.open){
+    gConfirm('비공개 확인','비공개하면 더 이상 강의를 구매할 수 없어요. 이미 구매한 학생은 계속 볼 수 있어요.','비공개하고 저장',apply);
+  } else apply();
+}
+
+// ── C4-5 강의 상세 (보기 전용: 검수 플레이어 + 정보 카드) ──
+var lCur=null;
+function openLect(id){if(window._noClick)return; lCur=id; renderLDet();}
+function renderLDet(){
+  var l=lGet(lCur), c=cGet(l.cid);
+  var h='<div class="page-title">'+l.nm+'</div>'
+    +'<div class="card"><div class="card-head"><h3>강의 정보</h3>'
+    +(canEdit(c)?'<button class="btn btn-out" style="margin-right:0" onclick="openLEdit()">정보 수정</button>':'')
+    +'</div>'
+    +'<div class="player-mock">▶</div>'
+    +'<div class="upmeta">영상 미리보기 (검수 용도)</div>'
+    +'<div class="fgrid" style="margin-top:14px">'
+    +fld('설명',l.desc||'—')+fld('가격','100P')+fld('커리큘럼 내 순서',l.ord+'번째')
+    +fld('공개 상태',opBadge(l.open))+'</div></div>';
+  document.getElementById('v-ldet').innerHTML=h;
+  crumb('<a onclick="renderCList()">커리큘럼 관리</a> <span class="sep">›</span> '
+    +'<a onclick="renderCDet()">'+c.nm+'</a> <span class="sep">›</span> <b>'+l.nm+'</b>');
+  show('v-ldet');
+}
+
+// ═══════ C5 과목 관리 ═══════
+var SUBJ_META={'수학':'2026-06-15','영어':'2026-06-15','국어':'2026-06-20','과학':'2026-07-01'};
+var subEdit=null;
+function renderSubList(){
+  crumb('<b>과목 관리</b>');
+  renderSubTable(); show('v-sub');
+}
+function renderSubTable(){
+  var h='<table class="ptable"><col style="width:40%"><col>'
+    +'<tr><th>과목명</th><th>생성일</th></tr>';
+  SUBJECTS.forEach(function(nm){
+    h+='<tr class="rw" onclick="openSubEdit(\''+nm+'\')"><td class="nm">'+nm+'</td>'
+      +'<td class="sub">'+(SUBJ_META[nm]||'—')+'</td></tr>';
+  });
+  h+='</table>';
+  document.getElementById('subtbl').innerHTML=h;
+}
+function openSubNew(){
+  subEdit=null;
+  document.getElementById('s-title').textContent='과목 생성';
+  document.getElementById('s-go').textContent='생성';
+  document.getElementById('s-nm').value='';
+  document.getElementById('s-note').classList.add('hide');
+  subCheck();
+  document.getElementById('sdim').classList.add('show');
+}
+function openSubEdit(nm){
+  subEdit=nm;
+  document.getElementById('s-title').textContent='과목 수정';
+  document.getElementById('s-go').textContent='저장';
+  document.getElementById('s-nm').value=nm;
+  document.getElementById('s-note').classList.remove('hide');
+  subCheck();
+  document.getElementById('sdim').classList.add('show');
+}
+function closeSubModal(){document.getElementById('sdim').classList.remove('show')}
+function subCheck(){
+  var v=document.getElementById('s-nm').value.trim();
+  var err=document.getElementById('s-err'), go=document.getElementById('s-go');
+  var dup = SUBJECTS.indexOf(v)>-1 && v!==subEdit;
+  if(dup){ err.textContent='이미 있는 과목이에요'; err.classList.remove('hide'); }
+  else err.classList.add('hide');
+  go.disabled = !v || dup;
+}
+function subSubmit(){
+  var v=document.getElementById('s-nm').value.trim();
+  if(subEdit===null){
+    SUBJECTS.push(v); SUBJ_META[v]='2026-08-27';
+    closeSubModal(); renderSubTable(); toast('과목을 생성했어요');
+    return;
+  }
+  renameSubject(subEdit, v);
+  closeSubModal(); renderSubTable(); toast('저장했어요');
+}
+function renameSubject(o,n){
+  if(o===n) return;
+  SUBJECTS[SUBJECTS.indexOf(o)]=n;
+  SUBJ_META[n]=SUBJ_META[o]; delete SUBJ_META[o];
+  Object.keys(wallets).forEach(function(sid){
+    var w=wallets[sid];
+    Object.keys(w).forEach(function(k){
+      var p=k.split('|');
+      if(p[1]===o){ w[p[0]+'|'+n]=w[k]; delete w[k]; }
+    });
+  });
+  ledger.forEach(function(x){if(x.sub===o)x.sub=n});
+  purchases.forEach(function(x){if(x.sub===o)x.sub=n});
+  currs.forEach(function(c){if(c.sub===o)c.sub=n});
+}
+
+// ═══════ C6 선생님 관리 ═══════
+var staff=[
+ {id:1, email:'admin@koreaus.kr',   nm:'김원장', role:'ADMIN',    st:'ACTIVE',   inv:'2026-06-01', jd:'2026-06-01', kakao:true},
+ {id:2, email:'math@koreaus.kr',    nm:'박수학', role:'EMPLOYEE', st:'ACTIVE',   inv:'2026-06-10', jd:'2026-06-11', kakao:true},
+ {id:3, email:'english@koreaus.kr', nm:'이영어', role:'EMPLOYEE', st:'ACTIVE',   inv:'2026-06-12', jd:'2026-06-13', kakao:true},
+ {id:4, email:'science@koreaus.kr', nm:'최과학', role:'EMPLOYEE', st:'INVITED',  inv:'2026-08-20', jd:'', kakao:false},
+ {id:5, email:'manager@koreaus.kr', nm:'정관리', role:'ADMIN',    st:'INACTIVE', inv:'2026-07-05', jd:'2026-07-06', kakao:true}
+];
+function stGet(id){return staff.filter(function(x){return x.id===id})[0]}
+var ST_BG={INVITED:['wait','INVITED'], ACTIVE:['ok','ACTIVE'], INACTIVE:['no','INACTIVE']};
+function roleBadge(r){
+  return r==='ADMIN' ? '<span class="bg" style="background:var(--navy-soft);color:var(--navy)">ADMIN</span>'
+                     : '<span class="bg" style="background:var(--section);color:var(--sub)">EMPLOYEE</span>';
+}
+function renderStaffList(){
+  crumb('<b>선생님 관리</b>');
+  renderStaffTable(); show('v-staff');
+}
+function lastActiveAdmin(s){
+  return s.role==='ADMIN' && s.st==='ACTIVE'
+    && staff.filter(function(x){return x.role==='ADMIN'&&x.st==='ACTIVE'}).length===1;
+}
+function renderStaffTable(){
+  var role=document.getElementById('st-role').value, st=document.getElementById('st-st').value;
+  var r=staff.filter(function(s){return (!role||s.role===role)&&(!st||s.st===st)});
+  r.sort(function(a,b){return (b.jd||'9999')>(a.jd||'9999')?1:-1});
+  var h;
+  if(!r.length){ h='<div class="empty">조건에 맞는 선생님이 없어요</div>'; }
+  else{
+    h='<table class="ptable">'
+     +'<col style="width:26%"><col style="width:22%"><col style="width:22%"><col>'
+     +'<tr><th>이름</th><th>역할</th><th>상태</th><th>가입일</th></tr>';
+    r.forEach(function(s){
+      h+='<tr class="rw" onclick="openStaff('+s.id+')"><td class="nm">'+s.nm+'</td><td>'+roleBadge(s.role)+'</td>'
+        +'<td><span class="bg '+ST_BG[s.st][0]+'">'+ST_BG[s.st][1]+'</span></td>'
+        +'<td class="sub">'+(s.jd||'—')+'</td></tr>';
+    });
+    h+='</table>';
+  }
+  document.getElementById('stftbl').innerHTML=h;
+}
+var stCur=null;
+function openStaff(id){stCur=id; renderStaffDet();}
+function renderStaffDet(){
+  var s=stGet(stCur);
+  var h='<div class="det-head"><div><div class="page-title">'+(s.nm||s.email)+'</div>'
+    +'<div class="sub2">'+(s.role==='ADMIN'?'관리자':'선생님')+'</div></div>'
+    +'<div class="det-actions">';
+  if(s.st==='ACTIVE'){
+    h += lastActiveAdmin(s)
+      ? '<button class="btn btn-out" style="margin-right:0" disabled>비활성화</button>'
+      : '<button class="btn btn-out" style="margin-right:0" onclick="deactStaff()">비활성화</button>';
+  } else if(s.st==='INACTIVE'){
+    h += '<button class="btn btn-pri" onclick="actStaff()">활성화</button>';
+  }
+  h+='</div></div>';
+  h+='<div class="card"><div class="card-head"><h3>선생님 정보</h3>'
+    +'<button class="btn btn-out" style="margin-right:0" onclick="openNmEdit()">수정</button></div>'
+    +'<div class="fgrid" style="margin-top:14px">'
+    +fld('초대 이메일',s.email)+fld('이름',s.nm||'—')
+    +fld('역할',roleBadge(s.role))+fld('상태','<span class="bg '+ST_BG[s.st][0]+'">'+ST_BG[s.st][1]+'</span>')
+    +fld('가입일',s.jd||'—')+'</div>'
+    +(lastActiveAdmin(s)?'<div class="upmeta">마지막 관리자는 비활성화할 수 없어요.</div>':'')
+    +(s.st==='INVITED'?'<div class="upmeta">아직 계정을 연결하지 않았어요. 연결하면 이용할 수 있는 상태가 돼요.</div>':'')
+    +'</div>';
+  document.getElementById('v-stdet').innerHTML=h;
+  crumb('<a onclick="renderStaffList()">선생님 관리</a> <span class="sep">›</span> <b>'+(s.nm||s.email)+'</b>');
+  show('v-stdet');
+}
+function openNmEdit(){
+  var s=stGet(stCur);
+  document.getElementById('n-nm').value = s.nm;
+  var rs=document.getElementById('n-role');
+  rs.value = s.role;
+  var guard = lastActiveAdmin(s);
+  rs.disabled = guard;
+  document.getElementById('n-guard').className = 'err'+(guard?'':' hide');
+  nmCheck();
+  document.getElementById('ndim').classList.add('show');
+}
+function closeNmEdit(){document.getElementById('ndim').classList.remove('show')}
+function nmCheck(){
+  document.getElementById('n-go').disabled = !document.getElementById('n-nm').value.trim();
+}
+function nmSubmit(){
+  var s=stGet(stCur);
+  var nv=document.getElementById('n-nm').value.trim();
+  var ov=s.nm;
+  s.nm=nv;
+  if(!document.getElementById('n-role').disabled) s.role=document.getElementById('n-role').value;
+  if(ov && ov!==nv){
+    currs.forEach(function(c){if(c.owner===ov)c.owner=nv});
+    ledger.forEach(function(x){if(x.by===ov)x.by=nv});
+  }
+  closeNmEdit(); renderStaffDet(); toast('저장했어요');
+}
+function deactStaff(){
+  var s=stGet(stCur);
+  var note = s.role==='EMPLOYEE' ? '이 선생님의 커리큘럼은 관리자만 수정할 수 있게 돼요.' : '';
+  gConfirm('비활성화 확인', (s.nm||s.email)+'님을 비활성화할까요?', '비활성화',
+    function(){s.st='INACTIVE'; renderStaffDet(); toast('비활성화했어요');}, note);
+}
+function actStaff(){
+  var s=stGet(stCur);
+  s.st='ACTIVE'; renderStaffDet(); toast('활성화했어요');
+}
+function openInvite(){
+  document.getElementById('i-nm').value='';
+  document.getElementById('i-email').value='';
+  document.getElementById('i-role').value='EMPLOYEE';
+  invCheck();
+  document.getElementById('idim').classList.add('show');
+}
+function closeInvite(){document.getElementById('idim').classList.remove('show')}
+function invCheck(){
+  var v=document.getElementById('i-email').value.trim();
+  var err=document.getElementById('i-err'), go=document.getElementById('i-go');
+  var dup=staff.some(function(s){return s.email===v});
+  var bad=v && v.indexOf('@')<1;
+  if(dup){ err.textContent='이미 초대한 이메일이에요'; err.classList.remove('hide'); }
+  else if(bad){ err.textContent='이메일 형식이 아니에요'; err.classList.remove('hide'); }
+  else err.classList.add('hide');
+  go.disabled = !document.getElementById('i-nm').value.trim() || !v || dup || bad;
+}
+function invSubmit(){
+  staff.push({id:Date.now()%100000, email:document.getElementById('i-email').value.trim(),
+    nm:document.getElementById('i-nm').value.trim(), role:document.getElementById('i-role').value, st:'INVITED', inv:'2026-08-27', jd:'', kakao:false});
+  closeInvite(); renderStaffTable(); toast('초대를 보냈어요');
+}
+
+// ═══════ C8 서비스 설정 ═══════
+var settings={promoDate:'2027-03-01', phone:'02-1234-5678'};
+var TODAY='2026-08-27';
+var GR_ORDER=['초1','초2','초3','초4','초5','초6','중1','중2','중3','고1','고2','고3','졸업'];
+function renderSet(){
+  crumb('<b>서비스 설정</b>');
+  document.getElementById('set-date').value=settings.promoDate;
+  document.getElementById('set-phone').value=settings.phone;
+  show('v-set');
+}
+function savePromo(){
+  var d=document.getElementById('set-date').value;
+  if(!d){ toast('기준일을 입력해 주세요'); return; }
+  if(d<=TODAY){
+    gConfirm('진급 확인','저장하면 지금 바로 전체 재학생이 진급돼요.','저장하고 진급하기',
+      function(){
+        settings.promoDate=d;
+        runPromotion();
+        toast('저장하고 진급했어요');
+      },
+      '되돌릴 수 없어요. 학년 오류는 학생 관리에서 개별 보정해요.');
+  } else {
+    settings.promoDate=d;
+    toast('저장했어요');
+  }
+}
+function runPromotion(){
+  students.forEach(function(s){
+    if(s.st!=='APPROVED') return;
+    var i=GR_ORDER.indexOf(s.gr);
+    if(i>-1 && i<GR_ORDER.length-1) s.gr=GR_ORDER[i+1];
+  });
+}
+function savePhone(){
+  settings.phone=document.getElementById('set-phone').value.trim();
+  toast('저장했어요');
+}
+
+// ═══════ C7 졸업생 성과 관리 ═══════
+var grads=[
+ {id:1, nm:'김서연', sc:'고려대학교', dept:'경영학과',     y1:'2019', y2:'2022', gy:'2023'},
+ {id:2, nm:'이준호', sc:'연세대학교', dept:'컴퓨터과학과', y1:'2021', y2:'2024', gy:'2025'},
+ {id:3, nm:'박지민', sc:'서울대학교', dept:'수학교육과',   y1:'2022', y2:'2025', gy:'2026'}
+];
+var gradEdit=null;
+function renderGradList(){
+  crumb('<b>졸업생 성과 관리</b>');
+  renderGradTable(); show('v-grad');
+}
+function renderGradTable(){
+  var r=grads.slice().sort(function(a,b){return b.gy-a.gy||a.id-b.id});
+  var h='<table class="ptable"><col style="width:14%"><col style="width:24%"><col style="width:24%"><col style="width:22%"><col>'
+    +'<tr><th>이름</th><th>학교</th><th>학과</th><th>학원 다닌 기간</th><th>졸업 연도</th></tr>';
+  r.forEach(function(g){
+    h+='<tr class="rw" onclick="openGradEdit('+g.id+')"><td class="nm">'+g.nm+'</td>'
+      +'<td>'+g.sc+'</td><td class="sub">'+g.dept+'</td><td class="sub">'+g.y1+'–'+g.y2+'</td><td class="sub">'+g.gy+'</td></tr>';
+  });
+  h+='</table>';
+  document.getElementById('gradtbl').innerHTML=h;
+}
+function gradFill(nm,sc,dept,y1,y2,gy){
+  document.getElementById('g-nm').value=nm;
+  document.getElementById('g-sc').value=sc;
+  document.getElementById('g-dept').value=dept;
+  document.getElementById('g-y1').value=y1;
+  document.getElementById('g-y2').value=y2;
+  document.getElementById('g-gy').value=gy;
+}
+function openGradNew(){
+  gradEdit=null;
+  document.getElementById('g-title').textContent='성과 등록';
+  document.getElementById('g-go').textContent='등록';
+  gradFill('','','','','','');
+  gradCheck();
+  document.getElementById('gdim').classList.add('show');
+}
+function openGradEdit(id){
+  gradEdit=id;
+  var g=grads.filter(function(x){return x.id===id})[0];
+  document.getElementById('g-title').textContent='성과 수정';
+  document.getElementById('g-go').textContent='저장';
+  gradFill(g.nm,g.sc,g.dept,g.y1,g.y2,g.gy);
+  gradCheck();
+  document.getElementById('gdim').classList.add('show');
+}
+function closeGradModal(){document.getElementById('gdim').classList.remove('show')}
+function gradCheck(){
+  var y1=document.getElementById('g-y1').value.trim();
+  var y2=document.getElementById('g-y2').value.trim();
+  var gy=document.getElementById('g-gy').value.trim();
+  var err=document.getElementById('g-err');
+  var yrs=/^\d{4}$/.test(y1) && /^\d{4}$/.test(y2) && /^\d{4}$/.test(gy);
+  var bad = yrs && parseInt(y1,10)>parseInt(y2,10);
+  if(bad){ err.textContent='시작 연도가 종료 연도보다 늦어요'; err.classList.remove('hide'); }
+  else err.classList.add('hide');
+  var ok=document.getElementById('g-nm').value.trim()
+    && document.getElementById('g-sc').value.trim()
+    && document.getElementById('g-dept').value.trim()
+    && yrs && !bad;
+  document.getElementById('g-go').disabled=!ok;
+}
+function gradSubmit(){
+  var v={nm:document.getElementById('g-nm').value.trim(),
+         sc:document.getElementById('g-sc').value.trim(),
+         dept:document.getElementById('g-dept').value.trim(),
+         y1:document.getElementById('g-y1').value.trim(),
+         y2:document.getElementById('g-y2').value.trim(),
+         gy:document.getElementById('g-gy').value.trim()};
+  if(gradEdit===null){
+    grads.push({id:Date.now()%100000, nm:v.nm, sc:v.sc, dept:v.dept, y1:v.y1, y2:v.y2, gy:v.gy});
+    closeGradModal(); renderGradTable(); toast('성과를 등록했어요');
+    return;
+  }
+  var g=grads.filter(function(x){return x.id===gradEdit})[0];
+  g.nm=v.nm; g.sc=v.sc; g.dept=v.dept; g.y1=v.y1; g.y2=v.y2; g.gy=v.gy;
+  closeGradModal(); renderGradTable(); toast('저장했어요');
+}
+
+// ═══════ C1 대시보드 ═══════
+function selFill(id, label, opts, cur){
+  var sel=document.getElementById(id);
+  sel.innerHTML='<option value="">'+label+'</option>'+opts.map(function(x){return '<option>'+x+'</option>'}).join('');
+  sel.value=cur||''; if(sel.selectedIndex<0) sel.selectedIndex=0;
+}
+function renderDash(){
+  crumb('<b>대시보드</b>');
+  selFill('d-gr','전체 학년',['초1','초2','초3','초4','초5','초6','중1','중2','중3','고1','고2','고3'],document.getElementById('d-gr').value);
+  selFill('d-sub','전체 과목',SUBJECTS,document.getElementById('d-sub').value);
+  var owners=[]; currs.forEach(function(c){if(owners.indexOf(c.owner)<0)owners.push(c.owner)});
+  selFill('d-ow','전체 담당자',owners,document.getElementById('d-ow').value);
+  var pend=apps.filter(function(a){return a.st==='PENDING'}).length;
+  var appr=students.filter(function(s){return s.st==='APPROVED'}).length;
+  document.getElementById('dashStu').innerHTML=
+    '<div class="stat-card link" onclick="setTab(\'PENDING\');renderList()"><div class="lb3">승인 대기</div><div class="num">'+pend+'명</div><div class="cap">처리가 필요한 입학 신청</div></div>'
+   +'<div class="stat-card link" onclick="renderSList()"><div class="lb3">전체 재학생</div><div class="num">'+appr+'명</div><div class="cap">승인 완료 학생 (졸업생 포함)</div></div>';
+  renderDashContent();
+  show('v-dash');
+}
+function renderDashContent(){
+  var gr=document.getElementById('d-gr').value, sub=document.getElementById('d-sub').value, ow=document.getElementById('d-ow').value;
+  var cs=currs.filter(function(c){return (!gr||c.gr===gr)&&(!sub||c.sub===sub)&&(!ow||c.owner===ow)});
+  var sold=purchases.filter(function(p){
+    if(gr && p.g!==gr) return false;
+    if(sub && p.sub!==sub) return false;
+    if(ow){
+      var c=currs.filter(function(x){return x.nm===p.cur})[0];
+      if(!c || c.owner!==ow) return false;
+    }
+    return true;
+  });
+  var pts=0; sold.forEach(function(p){pts+=parseInt(p.price,10)||0});
+  document.getElementById('dashCont').innerHTML=
+    '<div class="stat-card"><div class="lb3">커리큘럼</div><div class="num">'+cs.length+'개</div><div class="cap">필터 조건 기준</div></div>'
+   +'<div class="stat-card"><div class="lb3">판매된 강의</div><div class="num">'+sold.length+'건</div><div class="cap">누적 '+pts+'P</div></div>';
+}
+
+// ═══════ C0 인증 ═══════
+function showAuth(id){
+  document.getElementById('v-auth').classList.remove('hide');
+  document.querySelector('.console').classList.add('hide');
+  ['a-login','a-invite','a-block'].forEach(function(v){
+    document.getElementById(v).className='auth-view'+(v===id?' on':'');
+  });
+}
+var CUR={nm:'김원장', role:'ADMIN'};
+function enterConsole(user){
+  if(user) CUR=user;
+  document.body.className = CUR.role==='EMPLOYEE' ? 'emp' : '';
+  document.getElementById('pm-nm').textContent=CUR.nm;
+  document.getElementById('pm-role').textContent=CUR.role;
+  document.getElementById('v-auth').classList.add('hide');
+  document.querySelector('.console').classList.remove('hide');
+  if(CUR.role==='EMPLOYEE') renderCList(); else renderDash();
+}
+// 임시: 카카오 클릭 → 분기 선택 오버레이. 실제 구현 시 kakaoLogin을 실제 OAuth로 교체하고 branch 계열 제거
+function kakaoLogin(){ openBranch(); }
+function openBranch(){ document.getElementById('demoBranch').classList.add('on'); }
+function closeBranch(){ document.getElementById('demoBranch').classList.remove('on'); }
+function branchGo(k){
+  closeBranch();
+  if(k==='admin') enterConsole({nm:'김원장', role:'ADMIN'});
+  if(k==='emp') enterConsole({nm:'박수학', role:'EMPLOYEE'});
+  if(k==='invite') showAuth('a-invite');
+  if(k==='none') demoBlock('none');
+  if(k==='inactive') demoBlock('inactive');
+}
+function demoBlock(reason){
+  document.getElementById('bk-title').textContent =
+    reason==='inactive' ? '이용이 중지된 계정이에요' : '등록되지 않은 계정이에요';
+  document.getElementById('bk-sub').innerHTML =
+    reason==='inactive' ? '궁금한 점은 학원에 문의해 주세요.' : '초대를 받았다면 초대 메일의 링크로 접속해 주세요.<br>초대받지 않았다면 학원에 문의해 주세요.';
+  showAuth('a-block');
+}
+function connectInvite(){
+  var s=staff.filter(function(x){return x.email==='science@koreaus.kr'})[0];
+  if(s && s.st==='INVITED'){ s.st='ACTIVE'; s.kakao=true; s.jd='2026-08-27'; }
+  enterConsole({nm:s?s.nm:'최과학', role:s?s.role:'EMPLOYEE'});
+  toast('계정을 연결했어요');
+}
+function authLogout(){
+  document.getElementById('pmenu').classList.remove('open');
+  showAuth('a-login');
+}
+
+showAuth('a-login');
+</script>
+</body>
+</html>

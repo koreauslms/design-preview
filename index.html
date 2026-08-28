@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<title>KoreaUS LMS 디자인 시안</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: "Pretendard", -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", sans-serif;
+    background: #f7f8fa; color: #1a1a2e; min-height: 100vh;
+    display: flex; align-items: center; justify-content: center; padding: 24px;
+  }
+  .wrap { max-width: 560px; width: 100%; }
+  .logo { display: block; height: 48px; margin: 0 auto 16px; }
+  h1 { font-size: 22px; text-align: center; margin-bottom: 8px; }
+  p.sub { text-align: center; color: #6b7280; font-size: 14px; margin-bottom: 32px; }
+  a.card {
+    display: block; background: #fff; border: 1px solid #e5e7eb; border-radius: 14px;
+    padding: 20px 24px; margin-bottom: 14px; text-decoration: none; color: inherit;
+    transition: box-shadow .15s, transform .15s;
+  }
+  a.card:hover { box-shadow: 0 4px 16px rgba(0,0,0,.08); transform: translateY(-1px); }
+  .card b { font-size: 16px; display: block; margin-bottom: 4px; }
+  .card span { font-size: 13px; color: #6b7280; }
+  .hint { text-align: center; font-size: 12px; color: #9ca3af; margin-top: 24px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <img class="logo" src="logo.svg" alt="KoreaUS">
+  <h1>LMS 디자인 시안</h1>
+  <p class="sub">아래에서 확인하실 화면을 선택해 주세요</p>
+  <a class="card" href="web.html"><b>학생용 웹</b><span>학생이 PC 브라우저에서 보는 화면</span></a>
+  <a class="card" href="app.html"><b>학생용 앱</b><span>학생이 모바일에서 보는 화면</span></a>
+  <a class="card" href="console.html"><b>관리자 콘솔</b><span>선생님·운영자가 사용하는 관리 화면</span></a>
+  <p class="hint">시안 검토용 페이지입니다 · 실제 데이터가 아닌 예시 데이터입니다</p>
+</div>
+</body>
+</html>

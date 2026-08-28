@@ -1,0 +1,1383 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>고려US App — S1·S2·S4·S6 프로토타입</title>
+<style>
+  @font-face {
+    font-family: 'Pretendard';
+    src: url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/woff2/Pretendard-Regular.woff2') format('woff2');
+    font-weight: 400; font-display: swap;
+  }
+  @font-face {
+    font-family: 'Pretendard';
+    src: url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/woff2/Pretendard-SemiBold.woff2') format('woff2');
+    font-weight: 600; font-display: swap;
+  }
+  @font-face {
+    font-family: 'Pretendard';
+    src: url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/woff2/Pretendard-Bold.woff2') format('woff2');
+    font-weight: 700; font-display: swap;
+  }
+
+  :root {
+    --navy: #271971;
+    --navy-soft: #EEF0F9;
+    --section: #F7F8FA;
+    --border: #E5E7EB;
+    --text: #111827;
+    --text-sub: #6B7280;
+    --r-card: 8px;
+    --r-btn: 6px;
+    --r-badge: 4px;
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family: 'Pretendard', -apple-system, 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+    background: #EDEEF2;
+    color: var(--text);
+    display: flex; flex-direction: column; align-items: center;
+    min-height: 100vh; padding: 28px 16px 60px;
+    -webkit-font-smoothing: antialiased;
+  }
+  .mock-note { width:380px; max-width:100%; font-size:11px; color:#9CA3AF; margin-bottom:12px; }
+
+  .phone {
+    width: 380px; max-width: 100%;
+    background: #fff;
+    border: 1px solid #D9DBE1;
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 12px 32px rgba(17,24,39,.10);
+    position: relative;
+    display:flex; flex-direction:column;
+    height: 760px;
+  }
+  .screen { flex:1; overflow-y:auto; overscroll-behavior: contain; }
+  .view { display:none; }
+  .view.on { display:block; }
+
+  .root-head { padding: 22px 16px 0; background:#fff; position: sticky; top:0; z-index: 5; }
+  .root-title { font-size: 19px; font-weight: 700; padding-bottom: 18px; }
+  .root-head.no-filter .root-title { border-bottom: 1px solid var(--border); }
+
+  .filter-bar {
+    display:flex; align-items:center; gap: 8px;
+    padding-bottom: 12px; border-bottom: 1px solid var(--border);
+    overflow-x: auto;
+  }
+  .grade-btn {
+    flex:none; display:flex; align-items:center; gap: 5px;
+    background:#fff; border:1px solid var(--border); border-radius: var(--r-btn);
+    padding: 7px 11px; font: inherit; font-size: 13px; font-weight: 600; cursor:pointer;
+  }
+  .grade-btn .caret { font-size: 9px; color: var(--text-sub); }
+  .grade-btn.other { border-color: var(--navy); color: var(--navy); background: var(--navy-soft); }
+  .divider-v { flex:none; width:1px; height: 20px; background: var(--border); }
+  .chip {
+    flex:none; border:1px solid var(--border); background:#fff; color: var(--text-sub);
+    border-radius: var(--r-btn); font: inherit; font-size: 13px; font-weight: 500;
+    padding: 7px 11px; cursor:pointer;
+  }
+  .chip.on { background: var(--navy); border-color: var(--navy); color:#fff; font-weight: 600; }
+
+  .list-pad { padding: 14px 16px 20px; }
+  .cur-card {
+    border:1px solid var(--border); border-radius: var(--r-card);
+    padding: 14px; margin-bottom: 10px; cursor:pointer;
+    display:flex; flex-direction:column; gap: 7px;
+  }
+  .cur-card:active { background: var(--section); }
+  .badges { display:flex; gap:6px; }
+  .badge {
+    font-size: 12px; font-weight:600; color: var(--navy);
+    background: var(--navy-soft); border-radius: var(--r-badge);
+    padding: 3px 7px;
+  }
+  .cur-name { font-size: 15px; font-weight: 600; line-height: 1.35; }
+  .cur-desc {
+    font-size: 12px; color: var(--text-sub); line-height: 1.5;
+    display:-webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow:hidden;
+  }
+  .cur-meta { font-size: 12px; color: var(--text-sub); }
+  .cur-meta b { color: var(--text); font-weight: 600; }
+
+  .empty { text-align:center; padding: 70px 20px; color: var(--text-sub); }
+  .empty .ico {
+    width: 48px; height: 48px; border-radius: 50%;
+    background: var(--section);
+    display:inline-flex; align-items:center; justify-content:center;
+    font-size: 20px; margin-bottom: 12px; color: #9CA3AF;
+  }
+  .empty .msg { font-size: 14px; font-weight: 500; color: var(--text); margin-bottom: 3px; }
+  .empty .sub { font-size: 12px; }
+  .empty .btn { margin-top: 14px; }
+
+  /* S2 */
+  .appbar {
+    display:flex; align-items:center; gap: 10px;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    background:#fff;
+    position: sticky; top:0; z-index: 5;
+  }
+  .appbar .back { width:22px; height:22px; flex:none; cursor:pointer; }
+  .appbar .title { font-size: 16px; font-weight: 600; flex:1; }
+  .cur-head { padding: 18px 16px 16px; border-bottom: 8px solid var(--section); }
+  .cur-head h1 { font-size: 20px; font-weight: 700; line-height:1.3; margin: 10px 0 8px; }
+  .cur-head p { font-size: 14px; color: var(--text-sub); line-height: 1.55; }
+  .cur-head .cur-meta { margin-top: 12px; font-size: 13px; }
+  .sec-title { font-size: 15px; font-weight: 700; margin-bottom: 12px; }
+
+  .lec-card {
+    border: 1px solid var(--border); border-radius: var(--r-card);
+    padding: 12px; margin-bottom: 10px;
+    display: flex; gap: 12px;
+  }
+  .thumb {
+    flex: none; width: 108px; height: 61px;
+    border-radius: 6px; position: relative; overflow:hidden;
+    background: linear-gradient(135deg, #2E2183 0%, #271971 55%, #1C1254 100%);
+    display:flex; align-items:center; justify-content:center;
+  }
+  .thumb .sym { color: rgba(255,255,255,.92); font-size: 24px; font-weight: 700; font-style: italic; }
+  .thumb .no {
+    position:absolute; left:6px; top:5px;
+    font-size: 10px; font-weight:600; color: rgba(255,255,255,.85);
+    background: rgba(255,255,255,.16); border-radius: 3px; padding: 1px 5px;
+  }
+  .lec-body { flex:1; min-width:0; display:flex; flex-direction:column; }
+  .lec-name { font-size: 14px; font-weight: 600; line-height:1.35; }
+  .lec-desc { font-size: 12px; color: var(--text-sub); margin-top: 2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .lec-foot { margin-top: auto; padding-top: 8px; display:flex; align-items:center; justify-content:space-between; gap:8px; }
+  .price { font-size: 14px; font-weight: 700; color: var(--navy); }
+  .price.owned { color: var(--text-sub); font-weight:600; font-size:12px; }
+
+  .btn {
+    border:0; font: inherit; cursor:pointer;
+    border-radius: var(--r-btn);
+    font-size: 13px; font-weight: 600;
+    padding: 8px 12px;
+    transition: filter .12s;
+  }
+  .btn:active { filter: brightness(.93); }
+  .btn-primary { background: var(--navy); color:#fff; }
+  .btn-outline { background:#fff; color: var(--navy); border:1px solid var(--navy); }
+  .btn-guide { background: var(--section); color: var(--text-sub); font-weight: 500; }
+  .btn-cancel { background: var(--section); color: var(--text); }
+  .btn-resume { background: var(--navy); color:#fff; display:flex; flex-direction:column; align-items:center; line-height:1.15; padding: 5px 12px; }
+  .btn-resume small { font-size: 10px; font-weight: 400; opacity:.85; }
+
+  /* S4 — 커리큘럼 그룹 */
+  .my-group {
+    border:1px solid var(--border); border-radius: var(--r-card);
+    margin-bottom: 12px; overflow:hidden;
+  }
+  .my-group-head {
+    display:flex; align-items:center; gap: 8px;
+    padding: 12px;
+    border-bottom: 1px solid var(--border);
+    background: var(--section);
+    cursor:pointer;
+  }
+  .my-group-head .mg-name { font-size: 13px; font-weight: 600; flex:1; min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .my-group-head .mg-chev { color:#9CA3AF; font-size: 13px; flex:none; }
+  .my-lec-row {
+    display:flex; align-items:center; gap: 10px;
+    padding: 11px 12px;
+    border-bottom: 1px solid var(--section);
+  }
+  .my-lec-row:last-child { border-bottom: 0; }
+  .no-chip {
+    flex:none; width: 28px; height: 20px;
+    display:flex; align-items:center; justify-content:center;
+    background: var(--navy-soft); color: var(--navy);
+    font-size: 10px; font-weight: 700; border-radius: var(--r-badge);
+  }
+  .my-lec-row .ml-name { flex:1; min-width:0; font-size: 13px; font-weight: 500; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+
+  /* S4-2 강의실 (플레이어) */
+  .app-video {
+    aspect-ratio: 16/9; position:relative;
+    background: linear-gradient(135deg, #2E2183 0%, #271971 55%, #1C1254 100%);
+    display:flex; align-items:center; justify-content:center;
+  }
+  .app-video .vback {
+    position:absolute; left: 12px; top: 12px; cursor:pointer;
+    width: 30px; height: 30px; border-radius: 50%;
+    background: rgba(0,0,0,.28);
+    display:flex; align-items:center; justify-content:center;
+  }
+  .app-video .play-big {
+    width: 50px; height: 50px; border-radius: 50%;
+    background: rgba(255,255,255,.16); border: 1.5px solid rgba(255,255,255,.55);
+    display:flex; align-items:center; justify-content:center;
+    color:#fff; font-size: 17px; cursor:pointer;
+  }
+  .locked-ui { display:flex; flex-direction:column; align-items:center; gap: 10px; }
+  .locked-ui .lock-circle {
+    width: 46px; height: 46px; border-radius: 50%;
+    background: rgba(255,255,255,.14); border: 1.5px solid rgba(255,255,255,.45);
+    display:flex; align-items:center; justify-content:center; font-size: 17px;
+  }
+  .locked-ui .lock-msg { font-size: 13px; color: rgba(255,255,255,.88); }
+  .buy-in-player {
+    border:0; font:inherit; cursor:pointer;
+    background:#fff; color: var(--navy);
+    font-size: 13px; font-weight: 700;
+    border-radius: var(--r-btn); padding: 9px 16px;
+  }
+  .app-video .resume-tag {
+    position:absolute; left: 12px; bottom: 10px;
+    font-size: 10px; color: rgba(255,255,255,.85);
+    background: rgba(255,255,255,.14); border-radius: 4px; padding: 2px 7px;
+  }
+  .player-info { padding: 12px 16px; border-bottom: 1px solid var(--border); }
+  .player-info .pi-name { font-size: 15px; font-weight: 700; line-height:1.35; }
+  .player-info .pi-meta { font-size: 12px; color: var(--text-sub); margin-top: 3px; }
+  .ps-head {
+    padding: 12px 16px 10px; font-size: 14px; font-weight: 700;
+    display:flex; justify-content:space-between; align-items:center;
+    border-bottom: 1px solid var(--border);
+  }
+  .ps-head small { font-weight: 500; font-size: 12px; color: var(--text-sub); }
+  .ps-row {
+    display:flex; align-items:center; gap: 12px;
+    padding: 10px 16px; cursor:pointer;
+    border-bottom: 1px solid var(--section);
+    font-size: 14px;
+  }
+  .ps-thumb {
+    flex:none; width: 104px; height: 59px;
+    border-radius: 6px; position:relative; overflow:hidden;
+    background: linear-gradient(135deg, #2E2183 0%, #271971 55%, #1C1254 100%);
+    display:flex; align-items:center; justify-content:center;
+  }
+  .ps-thumb .sym { color: rgba(255,255,255,.92); font-size: 22px; font-weight: 700; font-style: italic; }
+  .ps-thumb .no {
+    position:absolute; left:6px; top:5px;
+    font-size: 10px; font-weight:600; color: rgba(255,255,255,.85);
+    background: rgba(255,255,255,.16); border-radius: 3px; padding: 1px 5px;
+  }
+  .ps-thumb .thumb-lock {
+    position:absolute; inset:0;
+    background: rgba(17,24,39,.45);
+    display:flex; align-items:center; justify-content:center;
+    font-size: 15px;
+  }
+  .ps-body { flex:1; min-width:0; }
+  .ps-body .ml-name { font-weight: 500; line-height:1.4; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+  .ps-body .ml-sub { font-size: 11px; color: var(--text-sub); margin-top: 3px; }
+  .ps-body .ml-sub .p { color: var(--navy); font-weight: 700; }
+  .ps-row.now { background: var(--navy-soft); }
+  .ps-row.now .ml-name { color: var(--navy); font-weight: 600; }
+
+
+  /* S6 */
+  .sec-block {
+    border:1px solid var(--border); border-radius: var(--r-card);
+    padding: 16px; margin-bottom: 12px;
+  }
+  .sec-block .sec-head { display:flex; align-items:center; justify-content:space-between; margin-bottom: 10px; }
+  .sec-block .sec-head .sec-title { margin-bottom: 0; }
+  .point-row {
+    display:flex; justify-content:space-between; align-items:center;
+    padding: 10px 0; border-bottom: 1px solid var(--section);
+    font-size: 14px;
+  }
+  .point-row:last-child { border-bottom: 0; }
+  .point-row .subj { font-weight: 500; }
+  .point-row .amt { font-weight: 700; color: var(--navy); }
+  .point-row .amt.zero { color: var(--text-sub); font-weight: 600; }
+  .tel-box {
+    margin-top: 12px; background: var(--section); border-radius: var(--r-card);
+    padding: 11px 12px; display:flex; justify-content:space-between; align-items:center;
+  }
+  .tel-box .t1 { font-size: 12px; color: var(--text-sub); }
+  .tel-box .t2 { font-size: 14px; font-weight: 700; color: var(--navy); margin-top:2px; }
+  .tel-box .call { font-size: 12px; font-weight:600; color: var(--navy); background: var(--navy-soft); border-radius: var(--r-btn); padding: 7px 10px; }
+  .hist-row {
+    display:flex; justify-content:space-between; align-items:center; gap: 10px;
+    padding: 10px 0; border-bottom: 1px solid var(--section);
+  }
+  .hist-row:last-child { border-bottom: 0; }
+  .hist-row .h-name { font-size: 13px; font-weight: 600; }
+  .hist-row .h-meta { font-size: 11px; color: var(--text-sub); margin-top: 2px; }
+  .hist-row .h-price { font-size: 13px; font-weight: 700; color: var(--navy); flex:none; }
+  .info-row {
+    display:flex; justify-content:space-between; align-items:center;
+    padding: 10px 0; border-bottom: 1px solid var(--section); font-size: 13px;
+  }
+  .info-row:last-child { border-bottom: 0; }
+  .info-row .k { color: var(--text-sub); }
+  .info-row .v { font-weight: 500; display:flex; align-items:center; gap: 6px; }
+  .lock-tag {
+    font-size: 10px; font-weight: 500; color: var(--text-sub);
+    background: var(--section); border-radius: var(--r-badge); padding: 2px 5px;
+  }
+  .edit-link { font-size: 12px; color: var(--navy); font-weight: 600; cursor:pointer; }
+  .account-row { display:flex; justify-content:space-between; align-items:center; font-size: 13px; }
+  .kakao-dot { display:inline-block; width: 14px; height:14px; border-radius: 4px; background:#FEE500; margin-right: 7px; vertical-align: -2px; }
+  .logout-link { font-size: 12px; color: var(--text-sub); cursor:pointer; }
+
+  /* 탭바 */
+  .tabbar {
+    flex:none; display:flex; align-items:flex-start;
+    border-top: 1px solid var(--border);
+    background:#fff;
+    padding: 12px 0 0;
+    height: 84px;
+  }
+  .phone.pushed .tabbar { display:none; }
+  .tab {
+    flex:1; display:flex; flex-direction:column; align-items:center; gap: 4px;
+    font-size: 11px; color: #9CA3AF; cursor:pointer;
+    background:transparent; border:0; font-family:inherit;
+  }
+  .tab svg { display:block; }
+  .tab.on { color: var(--navy); font-weight: 600; }
+  .tab .ic-fill { display:none; }
+  .tab.on .ic-fill { display:block; }
+  .tab.on .ic-line { display:none; }
+  .home-indicator {
+    position:absolute; left:50%; bottom: 9px; transform: translateX(-50%);
+    width: 130px; height: 5px; border-radius: 3px;
+    background: #D1D5DB; z-index: 6; pointer-events:none;
+  }
+
+  /* 바텀시트 */
+  .dim {
+    position:absolute; inset:0; background: rgba(17,24,39,.44);
+    opacity:0; pointer-events:none; transition: opacity .18s; z-index: 9;
+  }
+  .sheet {
+    position:absolute; left:0; right:0; bottom:0; z-index:10;
+    background:#fff; border-radius: 12px 12px 0 0;
+    padding: 20px 20px 34px;
+    transform: translateY(105%); transition: transform .22s ease;
+    box-shadow: 0 -8px 24px rgba(17,24,39,.14);
+  }
+  .phone.sheet-open .dim { opacity:1; pointer-events:auto; }
+  .phone.sheet-open .sheet.active { transform: translateY(0); }
+  .sheet h2 { font-size: 16px; font-weight: 700; margin-bottom: 14px; }
+  .sheet .notice { font-size: 13px; color: var(--text-sub); line-height:1.55; }
+  .sheet .actions { display:flex; gap: 8px; margin-top: 16px; }
+  .sheet .actions .btn { flex:1; padding: 12px 0; font-size: 14px; }
+  .grade-grid { display:grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+  .grade-grid button {
+    border:1px solid var(--border); background:#fff; color: var(--text);
+    border-radius: var(--r-btn); font: inherit; font-size: 13px; font-weight: 500;
+    padding: 10px 0; cursor:pointer; position:relative;
+  }
+  .grade-grid button.sel { background: var(--navy); border-color: var(--navy); color:#fff; font-weight: 600; }
+  .grade-grid button .me {
+    position:absolute; top:-7px; right:-4px;
+    font-size: 9px; font-weight:600; color: var(--navy);
+    background: var(--navy-soft); border-radius: 3px; padding: 1px 4px;
+  }
+  .grade-grid button.sel .me { color:#fff; background: rgba(255,255,255,.22); }
+
+  .toast {
+    position:absolute; left:50%; bottom: 96px; transform: translateX(-50%) translateY(20px);
+    background: rgba(17,24,39,.9); color:#fff; font-size:12px;
+    padding: 8px 14px; border-radius: 6px; opacity:0; transition: all .2s; z-index: 20;
+    white-space: nowrap; max-width: 330px; overflow:hidden; text-overflow:ellipsis;
+  }
+  .toast.show { opacity:1; transform: translateX(-50%) translateY(0); }
+  .phone.pushed .toast { bottom: 24px; }
+
+  /* ===== S0 인증/온보딩 (v0.5) ===== */
+  .phone.auth .tabbar { display:none; }
+  .phone.auth .screen { display:flex; flex-direction:column; }
+  .phone.auth .toast { bottom: 24px; }
+  .btn-full { width: 100%; padding: 12px 0; font-size: 14px; }
+  .btn-primary:disabled { opacity: .4; cursor: default; }
+
+  .login-body {
+    flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center;
+    padding: 0 28px; text-align:center;
+  }
+  .login-body .logo svg { height: 38px; width:auto; display:block; }
+  .login-body .sub { font-size: 14px; color: var(--text-sub); margin-top: 16px; line-height: 1.6; }
+  .login-cta { flex:none; padding: 0 20px 40px; }
+  .btn-kakao {
+    border:0; font:inherit; cursor:pointer;
+    display:flex; align-items:center; justify-content:center; gap: 8px;
+    width: 100%; padding: 13px 16px;
+    background: #FEE500; color: rgba(0,0,0,.85);
+    font-size: 14px; font-weight: 600; border-radius: var(--r-btn);
+  }
+  .btn-kakao:active { filter: brightness(.95); }
+
+  .limit-body {
+    flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center;
+    padding: 0 28px; text-align:center;
+  }
+  .limit-body .ico {
+    width: 52px; height: 52px; border-radius: 50%;
+    display:flex; align-items:center; justify-content:center;
+    font-size: 21px; margin-bottom: 14px;
+  }
+  .limit-body .ico.wait { background: var(--navy-soft); }
+  .limit-body .ico.warn { background: var(--red-soft); color: var(--red); font-weight: 700; }
+  .limit-body .lt-title { font-size: 17px; font-weight: 700; }
+  .limit-body .lt-sub { font-size: 13px; color: var(--text-sub); margin-top: 7px; line-height: 1.6; }
+  .limit-body .tel-box { width: 100%; background:#fff; border:1px solid var(--border); margin-top: 16px; }
+  .limit-foot { flex:none; padding: 0 20px 40px; display:flex; flex-direction:column; align-items:center; gap: 14px; }
+  .limit-foot .logout-link { font-size: 13px; color: var(--text-sub); cursor:pointer; }
+
+  .auth-view { display:none; }
+  .auth-view.on { display:flex; flex-direction:column; flex:1; }
+  .form-scroll { flex:1; overflow-y:auto; padding: 20px 16px 28px; }
+  .form-sub { font-size: 13px; color: var(--text-sub); line-height: 1.55; }
+  .field { margin-top: 18px; }
+  .field label { display:block; font-size: 12px; font-weight: 600; margin-bottom: 6px; }
+  .field input, .field select {
+    width: 100%; height: 44px; padding: 0 12px;
+    font: inherit; font-size: 14px; color: var(--text);
+    border: 1px solid var(--border); border-radius: var(--r-btn);
+    background: #fff; outline: none;
+  }
+  .field input::placeholder { color: #9CA3AF; }
+  .field input:focus, .field select:focus { border-color: var(--navy); }
+  .field select {
+    cursor:pointer; appearance:none; -webkit-appearance:none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' fill='none'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%236B7280' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat:no-repeat; background-position: right 12px center;
+  }
+  .field select.ph { color: #9CA3AF; }
+  .form-notice { font-size: 12px; color: var(--text-sub); line-height: 1.6; margin-top: 18px; }
+  .form-cta { margin-top: 14px; }
+
+  /* ===== 앱 구매 (v0.6) ===== */
+  .sheet .row { display:flex; justify-content:space-between; font-size: 14px; padding: 7px 0; }
+  .sheet .row .k { color: var(--text-sub); }
+  .sheet .row .v { font-weight: 600; }
+  .sheet .lack-head { display:flex; align-items:flex-start; gap:10px; margin-bottom: 6px; }
+  .sheet .lack-head .ico {
+    flex:none; width:30px; height:30px; border-radius:50%;
+    background: var(--red-soft); color: var(--red);
+    display:flex; align-items:center; justify-content:center; font-weight:700; font-size:16px;
+  }
+  .sheet .lack-title { font-size: 16px; font-weight: 700; line-height:1.35; padding-top:3px; }
+  .sheet .tel-box { background:#fff; border:1px solid var(--border); }
+  .sheet .done-wrap h2 { margin-bottom: 4px; }
+  .sheet .done-wrap p { font-size: 13px; color: var(--text-sub); }
+  .sec-row { display:flex; align-items:center; justify-content:space-between; margin-bottom: 12px; }
+  .sec-row .sec-title { margin-bottom: 0; }
+  .bulk-list {
+    border:1px solid var(--border); border-radius: var(--r-card);
+    max-height: 250px; overflow-y:auto; margin-bottom: 6px;
+  }
+  .bulk-row {
+    display:flex; align-items:center; gap: 9px;
+    padding: 11px 12px; cursor:pointer;
+    border-bottom: 1px solid var(--section);
+    font-size: 13px;
+  }
+  .bulk-row:last-child { border-bottom: 0; }
+  .bulk-row .no-chip {
+    flex:none; width: 28px; height: 21px;
+    display:flex; align-items:center; justify-content:center;
+    background: var(--navy-soft); color: var(--navy);
+    font-size: 10px; font-weight: 700; border-radius: var(--r-badge);
+  }
+  .bulk-row .bl-name { flex:1; min-width:0; font-weight: 500; }
+  .bulk-row .bl-price { flex:none; font-size: 12px; font-weight: 700; color: var(--navy); }
+  .lec-check {
+    flex:none; width: 19px; height: 19px;
+    appearance:none; -webkit-appearance:none;
+    border: 1.5px solid #C9CDD4; border-radius: 5px;
+    cursor:pointer; position:relative; background:#fff;
+  }
+  .lec-check:checked { background: var(--navy); border-color: var(--navy); }
+  .lec-check:checked::after {
+    content:''; position:absolute; left:5.5px; top:2px;
+    width:5px; height:9px;
+    border: solid #fff; border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+  }
+
+  /* ===== S6 마이페이지 — 리스트 4행 + 푸시 (v0.7) ===== */
+  .my-menu { border-top: 1px solid var(--section); }
+  .my-menu .mm-row {
+    display:flex; align-items:center; justify-content:space-between;
+    padding: 15px 16px; cursor:pointer;
+    border-bottom: 1px solid var(--section);
+    font-size: 15px; font-weight: 500;
+  }
+  .my-menu .mm-row:active { background: var(--section); }
+  .my-menu .mm-row .chev { color: #9CA3AF; font-size: 15px; }
+  .withdraw-link { font-size: 13px; color: var(--text-sub); cursor:pointer; flex:none; }
+  .acc-info { flex:1; min-width:0; }
+  .acc-email { font-size: 15px; font-weight: 600; }
+  .acc-provider { font-size: 12px; color: var(--text-sub); margin-top: 5px; display:flex; align-items:center; }
+  /* 리스트 하단 액션 버튼 (풀폭 아웃라인 필) — 마이페이지 루트·S0-5 공용 */
+  .btn-listout {
+    display:block; width: 100%;
+    border: 1px solid var(--border); background:#fff;
+    font: inherit; font-size: 15px; font-weight: 500; color: var(--text);
+    border-radius: 24px; padding: 14px 0; cursor:pointer;
+  }
+  .btn-listout:active { background: var(--section); }
+  .list-foot { padding: 24px 16px 28px; }
+
+  /* ── 임시: 로그인 분기 선택 오버레이 — 실제 구현 시 이 블록·마크업·branchGo 제거 ── */
+  .demo-branch{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(17,24,39,.44);z-index:80;display:none;align-items:center;justify-content:center}
+  .demo-branch.on{display:flex}
+  .db-card{width:340px;background:#fff;border-radius:12px;padding:20px 20px 16px;box-shadow:0 12px 32px rgba(17,24,39,.18);font-family:inherit}
+  .db-badge{display:inline-block;font-size:11px;font-weight:700;color:#B45309;background:#FBF3E4;border-radius:4px;padding:3px 8px}
+  .db-title{font-size:16px;font-weight:700;margin-top:10px;color:#111827}
+  .db-opt{display:flex;align-items:center;justify-content:space-between;border:1px solid #E5E7EB;border-radius:8px;padding:12px 14px;margin-top:10px;cursor:pointer}
+  .db-opt:hover{background:#F7F8FA}
+  .db-opt b{font-size:14px;display:block;color:#111827}
+  .db-opt small{font-size:12px;color:#6B7280}
+  .db-opt .chv{color:#9CA3AF}
+  .db-cancel{text-align:center;font-size:13px;color:#6B7280;margin-top:14px;cursor:pointer;text-decoration:underline}
+</style>
+</head>
+<body>
+
+<div class="mock-note">※ S0 + 앱 구매(v0.6): 로그인 → 입학 신청 → [승인 처리 (임시)] → S1. 앱에서도 구매 가능 — S2 [구매하기]/[일괄 구매하기] 시트, 강의실 잠금 → S2 + 구매 시트. 지갑: 중2 수학 300P / 중2 영어 50P(부족 시연) / 중1 수학 100P</div>
+
+<div class="phone" id="phone">
+  <div class="screen" id="screen">
+
+    <!-- S0-2 로그인 -->
+    <div class="view auth-view on" id="viewS02">
+      <div class="login-body">
+        <div class="logo"><svg class="logo-svg" xmlns="http://www.w3.org/2000/svg" width="1640" height="386" viewBox="249 92 1585 331" fill="none">
+<path d="M 1293.25,118.00 L 1292.50,119.00 L 1287.25,119.00 L 1286.50,120.00 L 1282.25,120.00 L 1281.50,121.00 L 1273.25,122.00 L 1272.50,123.00 L 1270.25,123.00 L 1269.50,124.00 L 1261.25,126.00 L 1260.50,127.00 L 1245.25,134.00 L 1243.50,136.00 L 1242.25,136.00 L 1240.50,138.00 L 1236.25,140.00 L 1233.50,143.00 L 1232.25,143.00 L 1227.50,148.00 L 1226.25,148.00 L 1225.00,149.25 L 1225.00,150.50 L 1218.00,157.25 L 1218.00,158.50 L 1212.00,165.25 L 1211.00,168.50 L 1208.00,171.25 L 1207.00,175.50 L 1205.00,177.25 L 1205.00,178.50 L 1202.00,183.25 L 1201.00,188.50 L 1198.00,194.25 L 1198.00,198.50 L 1197.00,199.25 L 1196.00,207.50 L 1195.00,208.25 L 1195.00,211.50 L 1194.00,212.25 L 1194.00,224.50 L 1195.00,225.25 L 1195.00,231.50 L 1196.00,232.25 L 1196.00,235.50 L 1198.00,239.25 L 1198.00,242.50 L 1199.00,243.25 L 1203.00,252.50 L 1215.25,265.75 L 1216.50,265.75 L 1222.25,270.75 L 1223.50,270.75 L 1224.25,272.75 L 1227.50,272.75 L 1228.25,273.75 L 1229.50,273.75 L 1232.25,275.75 L 1234.50,275.75 L 1241.25,279.75 L 1244.50,279.75 L 1245.25,280.75 L 1247.50,280.75 L 1248.25,281.75 L 1250.50,281.75 L 1254.25,283.75 L 1258.50,283.75 L 1259.25,284.75 L 1262.50,284.75 L 1263.25,285.75 L 1266.50,285.75 L 1267.25,286.75 L 1270.50,286.75 L 1271.25,287.75 L 1274.50,287.75 L 1275.25,288.75 L 1282.50,288.75 L 1283.25,289.75 L 1287.50,289.75 L 1288.25,290.75 L 1291.50,290.75 L 1292.25,291.75 L 1296.50,291.75 L 1297.25,292.75 L 1307.50,293.75 L 1311.25,295.75 L 1314.50,295.75 L 1318.25,297.75 L 1321.50,297.75 L 1322.25,298.75 L 1327.50,300.75 L 1328.25,302.75 L 1331.50,302.75 L 1340.00,310.25 L 1340.00,311.50 L 1342.00,313.25 L 1342.00,314.50 L 1344.00,317.25 L 1344.00,320.50 L 1345.00,321.25 L 1345.00,328.50 L 1344.00,329.25 L 1344.00,331.50 L 1343.00,332.25 L 1343.00,334.50 L 1342.00,335.25 L 1341.00,338.50 L 1332.50,348.00 L 1329.25,349.00 L 1326.50,352.00 L 1324.25,352.00 L 1319.50,355.00 L 1317.25,355.00 L 1313.50,357.00 L 1308.25,357.00 L 1304.50,359.00 L 1299.25,359.00 L 1298.50,360.00 L 1290.25,360.00 L 1289.50,361.00 L 1273.25,361.00 L 1272.50,360.00 L 1266.25,360.00 L 1265.50,359.00 L 1258.25,358.00 L 1254.50,356.00 L 1250.25,356.00 L 1249.50,355.00 L 1246.25,354.00 L 1244.50,352.00 L 1242.25,352.00 L 1238.50,348.00 L 1237.25,348.00 L 1236.75,346.25 L 1231.75,341.50 L 1231.75,340.25 L 1229.75,338.50 L 1229.75,337.25 L 1227.75,334.50 L 1227.75,332.25 L 1225.75,328.50 L 1225.75,325.25 L 1223.75,321.50 L 1223.75,315.25 L 1222.75,314.50 L 1221.75,308.25 L 1219.75,306.50 L 1218.75,303.25 L 1211.50,295.00 L 1209.25,295.00 L 1203.50,292.00 L 1201.25,292.00 L 1200.50,293.00 L 1196.25,293.00 L 1195.50,294.00 L 1192.25,295.00 L 1189.00,299.25 L 1189.00,300.50 L 1186.00,303.25 L 1185.00,307.50 L 1184.00,308.25 L 1184.00,310.50 L 1183.00,311.25 L 1183.00,313.50 L 1182.00,314.25 L 1182.00,329.50 L 1183.00,330.25 L 1183.00,334.50 L 1184.00,335.25 L 1184.00,339.50 L 1185.00,340.25 L 1186.00,346.50 L 1188.00,349.25 L 1188.00,351.50 L 1189.00,352.25 L 1192.00,359.50 L 1194.00,361.25 L 1194.00,363.50 L 1197.00,366.25 L 1199.00,370.50 L 1206.25,377.75 L 1207.50,377.75 L 1211.25,381.75 L 1212.50,381.75 L 1217.25,385.75 L 1218.50,385.75 L 1227.25,390.75 L 1229.50,390.75 L 1234.25,393.75 L 1236.50,393.75 L 1240.25,395.75 L 1243.50,395.75 L 1244.25,396.75 L 1246.50,396.75 L 1250.25,398.75 L 1253.50,398.75 L 1254.25,399.75 L 1260.50,399.75 L 1261.25,400.75 L 1273.50,401.75 L 1274.25,402.75 L 1284.50,402.75 L 1285.25,403.75 L 1304.50,403.75 L 1305.25,402.75 L 1314.50,402.75 L 1315.25,401.75 L 1319.50,401.75 L 1320.25,400.75 L 1329.50,399.75 L 1330.25,398.75 L 1333.50,398.75 L 1336.25,396.75 L 1341.50,395.75 L 1342.25,394.75 L 1355.50,388.75 L 1357.25,386.75 L 1361.50,384.75 L 1364.25,381.75 L 1365.50,381.75 L 1378.75,368.50 L 1378.75,367.25 L 1382.75,363.50 L 1383.75,360.25 L 1385.75,358.50 L 1385.75,357.25 L 1390.75,348.50 L 1391.75,343.25 L 1392.75,342.50 L 1392.75,339.25 L 1393.75,338.50 L 1393.75,336.25 L 1394.75,335.50 L 1394.75,331.25 L 1395.75,330.50 L 1395.75,311.25 L 1394.75,310.50 L 1394.75,307.25 L 1393.75,306.50 L 1392.75,299.25 L 1391.75,298.50 L 1387.75,289.25 L 1372.50,273.00 L 1368.25,271.00 L 1365.50,268.00 L 1362.25,267.00 L 1360.50,265.00 L 1359.25,265.00 L 1348.50,259.00 L 1345.25,259.00 L 1339.50,256.00 L 1337.25,256.00 L 1333.50,254.00 L 1330.25,254.00 L 1329.50,253.00 L 1327.25,253.00 L 1323.50,251.00 L 1320.25,251.00 L 1319.50,250.00 L 1314.25,250.00 L 1313.50,249.00 L 1311.25,249.00 L 1307.50,247.00 L 1304.25,247.00 L 1303.50,246.00 L 1296.25,245.00 L 1293.50,243.00 L 1291.25,243.00 L 1287.50,241.00 L 1284.25,241.00 L 1283.50,240.00 L 1274.25,236.00 L 1271.50,233.00 L 1268.25,232.00 L 1263.75,227.50 L 1263.75,226.25 L 1261.75,223.50 L 1261.75,221.25 L 1260.75,220.50 L 1260.75,215.25 L 1261.75,214.50 L 1263.75,209.25 L 1266.75,206.50 L 1266.75,205.25 L 1269.25,202.75 L 1270.50,202.75 L 1274.25,198.75 L 1275.50,198.75 L 1280.25,195.75 L 1285.50,194.75 L 1286.25,193.75 L 1292.50,193.75 L 1293.25,192.75 L 1295.50,192.75 L 1299.00,195.25 L 1299.00,196.50 L 1301.00,198.25 L 1303.00,202.50 L 1316.25,215.75 L 1320.50,217.75 L 1323.25,220.75 L 1326.50,221.75 L 1329.25,224.75 L 1330.50,224.75 L 1333.25,226.75 L 1335.50,226.75 L 1338.25,228.75 L 1340.50,228.75 L 1341.25,229.75 L 1345.50,229.75 L 1346.25,230.75 L 1356.50,230.75 L 1357.25,229.75 L 1361.50,229.75 L 1369.25,225.75 L 1371.50,225.75 L 1373.25,223.75 L 1377.50,221.75 L 1381.25,217.75 L 1382.50,217.75 L 1389.75,209.50 L 1389.75,208.25 L 1392.75,203.50 L 1392.75,201.25 L 1393.75,200.50 L 1393.75,197.25 L 1394.75,196.50 L 1394.75,178.25 L 1393.75,177.50 L 1393.75,172.25 L 1392.75,171.50 L 1392.75,168.25 L 1390.75,165.50 L 1390.75,163.25 L 1389.75,162.50 L 1387.75,157.25 L 1371.50,143.00 L 1368.25,142.00 L 1366.50,140.00 L 1362.25,138.00 L 1359.50,135.00 L 1349.25,130.00 L 1344.50,126.00 L 1339.25,125.00 L 1336.50,123.00 L 1334.25,123.00 L 1330.50,121.00 L 1322.25,120.00 L 1321.50,119.00 L 1314.25,119.00 L 1313.50,118.00 Z M 954.25,116.00 L 952.50,118.00 L 949.25,119.00 L 948.50,121.00 L 947.00,121.25 L 947.00,122.50 L 945.00,124.25 L 945.00,125.50 L 942.00,130.25 L 942.00,133.50 L 940.00,137.25 L 940.00,145.50 L 939.00,146.25 L 939.00,149.50 L 938.00,150.25 L 938.00,153.50 L 937.00,154.25 L 937.00,158.50 L 936.00,159.25 L 936.00,163.50 L 935.00,164.25 L 935.00,169.50 L 933.00,173.25 L 933.00,177.50 L 932.00,178.25 L 932.00,181.50 L 931.00,182.25 L 931.00,185.50 L 930.00,186.25 L 930.00,192.50 L 928.00,196.25 L 927.00,204.50 L 926.00,205.25 L 926.00,210.50 L 925.00,211.25 L 925.00,214.50 L 924.00,215.25 L 923.00,222.50 L 921.00,223.25 L 922.00,229.50 L 921.00,230.25 L 921.00,233.50 L 920.00,234.25 L 920.00,237.50 L 919.00,238.25 L 919.00,242.50 L 918.00,243.25 L 918.00,250.50 L 917.00,251.25 L 917.00,257.50 L 916.00,258.25 L 916.00,262.50 L 915.00,263.25 L 915.00,267.50 L 914.00,268.25 L 914.00,275.50 L 913.00,276.25 L 913.00,289.50 L 912.00,290.25 L 912.00,311.50 L 913.00,312.25 L 913.00,320.50 L 914.00,321.25 L 914.00,325.50 L 915.00,326.25 L 915.00,328.50 L 916.00,329.25 L 916.00,331.50 L 917.00,332.25 L 919.00,340.50 L 921.00,342.25 L 922.00,346.50 L 926.00,351.25 L 927.00,354.50 L 943.25,371.75 L 944.50,371.75 L 951.25,377.75 L 953.50,377.75 L 956.25,380.75 L 957.50,380.75 L 968.25,386.75 L 970.50,386.75 L 973.25,388.75 L 975.50,388.75 L 979.25,390.75 L 987.50,391.75 L 988.25,392.75 L 990.50,392.75 L 991.25,393.75 L 995.50,393.75 L 996.25,394.75 L 1007.50,394.75 L 1008.25,395.75 L 1032.50,395.75 L 1033.25,394.75 L 1046.50,393.75 L 1047.25,392.75 L 1053.50,391.75 L 1054.25,390.75 L 1057.50,390.75 L 1063.25,387.75 L 1065.50,387.75 L 1068.25,385.75 L 1070.50,385.75 L 1074.25,382.75 L 1078.50,381.75 L 1083.25,377.75 L 1086.50,376.75 L 1090.25,372.75 L 1091.50,372.75 L 1095.25,368.75 L 1096.50,368.75 L 1107.75,357.50 L 1107.75,356.25 L 1115.75,347.50 L 1116.75,344.25 L 1120.75,340.50 L 1120.75,338.25 L 1124.75,333.50 L 1125.75,329.25 L 1127.75,327.50 L 1127.75,326.25 L 1129.75,323.50 L 1129.75,321.25 L 1131.75,318.50 L 1131.75,316.25 L 1133.75,314.50 L 1134.75,308.25 L 1136.75,305.50 L 1136.75,303.25 L 1138.75,299.50 L 1138.75,296.25 L 1140.75,292.50 L 1140.75,289.25 L 1142.75,285.50 L 1142.75,282.25 L 1143.75,281.50 L 1143.75,276.25 L 1144.75,275.50 L 1144.75,272.25 L 1145.75,271.50 L 1145.75,268.25 L 1146.75,267.50 L 1146.75,264.25 L 1147.75,263.50 L 1148.75,253.25 L 1149.75,252.50 L 1149.75,248.25 L 1150.75,247.50 L 1150.75,244.25 L 1151.75,243.50 L 1151.75,236.25 L 1152.75,235.50 L 1152.75,226.25 L 1153.75,225.50 L 1154.75,207.25 L 1155.75,206.50 L 1155.75,156.25 L 1157.75,153.50 L 1157.75,146.25 L 1155.75,142.50 L 1154.75,136.25 L 1153.75,135.50 L 1151.75,130.25 L 1144.50,123.00 L 1143.25,123.00 L 1140.50,121.00 L 1138.25,121.00 L 1137.50,120.00 L 1135.25,120.00 L 1134.50,119.00 L 1129.25,119.00 L 1128.50,120.00 L 1123.25,121.00 L 1118.00,125.25 L 1118.00,126.50 L 1115.50,129.00 L 1113.00,129.25 L 1113.00,135.50 L 1112.00,136.25 L 1112.00,140.50 L 1111.00,141.25 L 1111.00,151.50 L 1112.00,152.25 L 1112.00,157.50 L 1113.00,158.25 L 1113.00,168.50 L 1114.00,169.25 L 1114.00,201.50 L 1113.00,202.25 L 1113.00,216.50 L 1112.00,217.25 L 1111.00,234.50 L 1110.00,235.25 L 1110.00,240.50 L 1109.00,241.25 L 1109.00,249.50 L 1108.00,250.25 L 1108.00,253.50 L 1107.00,254.25 L 1107.00,257.50 L 1106.00,258.25 L 1106.00,261.50 L 1105.00,262.25 L 1105.00,267.50 L 1104.00,268.25 L 1104.00,271.50 L 1103.00,272.25 L 1103.00,275.50 L 1102.00,276.25 L 1102.00,279.50 L 1100.00,283.25 L 1099.00,289.50 L 1097.00,292.25 L 1096.00,297.50 L 1093.00,301.25 L 1087.00,313.50 L 1082.00,319.25 L 1082.00,320.50 L 1072.50,330.00 L 1071.25,330.00 L 1067.50,334.00 L 1062.25,336.00 L 1058.50,339.00 L 1056.25,339.00 L 1053.50,341.00 L 1047.25,342.00 L 1046.50,343.00 L 1037.25,343.00 L 1036.50,344.00 L 1016.25,344.00 L 1015.50,343.00 L 1009.25,343.00 L 1008.50,342.00 L 1005.25,342.00 L 1004.50,341.00 L 1002.25,341.00 L 1001.50,340.00 L 999.25,340.00 L 998.50,339.00 L 995.25,338.00 L 992.75,335.50 L 992.75,334.25 L 991.25,334.00 L 987.75,329.50 L 987.75,326.25 L 986.75,325.50 L 986.75,322.25 L 985.75,321.50 L 985.75,315.25 L 984.75,314.50 L 984.75,295.25 L 985.75,294.50 L 985.75,285.25 L 986.75,284.50 L 986.75,277.25 L 987.75,276.50 L 988.75,262.25 L 989.75,261.50 L 989.75,258.25 L 990.75,257.50 L 990.75,253.25 L 991.75,252.50 L 991.75,248.25 L 992.75,247.50 L 992.75,242.25 L 993.75,241.50 L 993.75,238.25 L 995.75,234.50 L 995.75,230.25 L 996.75,229.50 L 996.75,223.25 L 997.75,222.50 L 997.75,219.25 L 998.75,218.50 L 998.75,214.25 L 1000.75,210.50 L 1000.75,205.25 L 1001.75,204.50 L 1001.75,201.25 L 1003.75,197.50 L 1003.75,194.25 L 1004.75,193.50 L 1004.75,190.25 L 1005.75,189.50 L 1005.75,185.25 L 1006.75,184.50 L 1006.75,181.25 L 1007.75,180.50 L 1007.75,177.25 L 1008.75,176.50 L 1008.75,173.25 L 1009.75,172.50 L 1009.75,168.25 L 1010.75,167.50 L 1010.75,165.25 L 1012.75,161.50 L 1012.75,157.25 L 1013.75,156.50 L 1013.75,146.25 L 1012.75,145.50 L 1012.75,141.25 L 1009.75,136.50 L 1009.75,134.25 L 1002.50,127.00 L 999.25,126.00 L 997.50,124.00 L 996.25,124.00 L 991.50,121.00 L 989.25,121.00 L 988.50,120.00 L 986.25,120.00 L 982.50,118.00 L 979.25,118.00 L 975.50,116.00 L 969.25,116.00 L 968.50,115.00 L 964.25,115.00 L 963.50,114.00 Z M 607.25,144.00 L 602.00,149.25 L 602.00,150.50 L 599.00,155.25 L 598.00,161.50 L 597.00,162.25 L 598.00,171.50 L 599.00,172.25 L 602.00,179.50 L 606.00,183.25 L 606.00,184.50 L 608.25,186.75 L 609.50,186.75 L 612.25,189.75 L 613.50,189.75 L 618.25,193.75 L 619.50,193.75 L 630.25,199.75 L 632.50,199.75 L 636.00,202.25 L 636.00,205.50 L 633.00,209.25 L 633.00,210.50 L 623.00,220.25 L 623.00,221.50 L 620.00,224.25 L 619.00,227.50 L 616.00,231.25 L 616.00,234.50 L 615.00,235.25 L 615.00,244.50 L 616.00,245.25 L 616.00,248.50 L 617.00,249.25 L 621.00,258.50 L 622.25,259.75 L 623.50,259.75 L 629.25,265.75 L 633.50,266.75 L 634.25,267.75 L 636.50,267.75 L 639.25,269.75 L 652.00,271.25 L 652.00,273.50 L 651.00,274.25 L 649.00,279.50 L 647.00,281.25 L 646.00,284.50 L 644.00,286.25 L 644.00,287.50 L 641.00,292.25 L 641.00,294.50 L 639.00,297.25 L 639.00,299.50 L 637.00,303.25 L 637.00,308.50 L 636.00,309.25 L 636.00,314.50 L 637.00,315.25 L 637.00,318.50 L 638.00,319.25 L 639.00,324.50 L 640.00,325.25 L 641.00,328.50 L 643.00,330.25 L 643.00,331.50 L 646.00,334.25 L 646.00,335.50 L 652.25,341.75 L 653.50,341.75 L 655.25,343.75 L 656.50,343.75 L 660.25,346.75 L 662.50,346.75 L 668.25,349.75 L 682.50,350.75 L 683.25,349.75 L 689.50,349.75 L 690.25,348.75 L 694.50,348.75 L 698.25,346.75 L 702.50,346.75 L 708.25,343.75 L 710.50,343.75 L 713.25,341.75 L 715.50,341.75 L 716.25,340.75 L 719.50,339.75 L 721.25,337.75 L 724.50,337.75 L 727.25,334.75 L 728.50,334.75 L 733.25,330.75 L 736.50,329.75 L 741.75,324.50 L 742.75,320.25 L 743.75,319.50 L 743.75,317.25 L 742.50,315.00 L 741.25,315.00 L 737.75,311.50 L 739.75,303.25 L 735.50,300.00 L 731.25,300.00 L 730.50,301.00 L 722.25,302.00 L 721.50,303.00 L 715.25,303.00 L 714.50,304.00 L 699.25,305.00 L 698.50,306.00 L 687.25,306.00 L 683.75,303.50 L 683.75,300.25 L 684.75,299.50 L 685.75,294.25 L 687.75,292.50 L 690.75,285.25 L 692.75,283.50 L 693.75,280.25 L 697.75,275.50 L 698.75,272.25 L 702.75,267.50 L 702.75,265.25 L 705.75,259.50 L 705.75,250.25 L 704.75,249.50 L 701.75,242.25 L 697.75,238.50 L 697.75,237.25 L 696.50,236.00 L 695.25,236.00 L 691.50,232.00 L 689.75,231.50 L 689.75,229.25 L 696.25,225.75 L 698.50,225.75 L 703.25,222.75 L 705.50,222.75 L 706.25,221.75 L 719.50,215.75 L 721.25,213.75 L 726.50,211.75 L 728.25,209.75 L 733.50,209.75 L 734.75,208.50 L 734.75,205.25 L 738.25,204.75 L 738.00,207.50 L 737.00,208.25 L 737.00,212.50 L 736.00,213.25 L 737.00,225.50 L 738.25,227.75 L 739.50,227.75 L 742.25,230.75 L 745.50,231.75 L 748.25,234.75 L 749.50,234.75 L 754.25,237.75 L 759.50,238.75 L 760.25,239.75 L 764.50,239.75 L 765.25,240.75 L 769.50,240.75 L 770.25,241.75 L 785.50,241.75 L 786.25,240.75 L 791.50,240.75 L 792.25,239.75 L 796.00,240.25 L 795.00,246.50 L 789.25,248.00 L 788.50,250.00 L 787.25,250.00 L 784.50,252.00 L 782.25,252.00 L 778.50,254.00 L 768.25,255.00 L 767.50,256.00 L 751.25,256.00 L 750.50,257.00 L 748.25,257.00 L 747.50,258.00 L 744.25,259.00 L 743.50,261.00 L 741.25,261.00 L 735.00,271.25 L 735.00,281.50 L 737.00,283.25 L 738.00,286.50 L 742.25,290.75 L 746.50,291.75 L 747.25,292.75 L 749.50,292.75 L 750.25,293.75 L 752.50,293.75 L 753.25,294.75 L 770.50,294.75 L 771.25,293.75 L 776.50,293.75 L 777.25,292.75 L 782.50,292.75 L 783.25,293.75 L 786.50,293.75 L 787.00,300.50 L 786.00,301.25 L 786.00,306.50 L 785.00,307.25 L 784.00,323.50 L 783.00,324.25 L 782.00,336.50 L 781.00,337.25 L 781.00,345.50 L 784.00,351.25 L 784.00,357.50 L 786.25,359.75 L 789.50,359.75 L 790.25,358.75 L 801.50,357.75 L 802.25,356.75 L 805.50,355.75 L 807.25,353.75 L 808.50,353.75 L 808.75,352.25 L 813.75,347.50 L 813.75,345.25 L 815.75,342.50 L 815.75,340.25 L 818.75,334.50 L 818.75,330.25 L 820.75,327.50 L 821.75,321.25 L 822.75,320.50 L 822.75,317.25 L 823.75,316.50 L 823.75,313.25 L 825.75,309.50 L 825.75,306.25 L 826.75,305.50 L 826.75,302.25 L 827.75,301.50 L 827.75,296.25 L 828.75,295.50 L 829.75,289.25 L 831.75,285.50 L 831.75,279.25 L 832.75,278.50 L 832.75,275.25 L 833.75,274.50 L 833.75,271.25 L 834.75,270.50 L 834.75,267.25 L 835.75,266.50 L 835.75,262.25 L 836.75,261.50 L 836.75,254.25 L 837.75,253.50 L 837.75,249.25 L 838.75,248.50 L 838.75,244.25 L 839.75,243.50 L 839.75,238.25 L 840.75,237.50 L 840.75,228.25 L 841.75,227.50 L 842.75,215.25 L 843.75,214.50 L 843.75,210.25 L 844.75,209.50 L 844.75,200.25 L 845.75,199.50 L 845.75,172.25 L 844.75,171.50 L 844.75,168.25 L 843.75,167.50 L 840.75,160.25 L 834.50,154.00 L 830.25,153.00 L 823.50,149.00 L 818.25,149.00 L 817.50,150.00 L 814.25,151.00 L 811.00,154.25 L 811.00,155.50 L 807.00,162.25 L 807.00,164.50 L 806.00,165.25 L 806.00,188.50 L 805.00,189.25 L 805.00,195.50 L 804.00,196.25 L 804.00,200.50 L 800.50,204.00 L 792.25,204.00 L 791.50,205.00 L 789.25,205.00 L 788.50,204.00 L 784.25,204.00 L 783.50,203.00 L 780.25,203.00 L 779.50,202.00 L 765.25,202.00 L 764.50,203.00 L 760.25,203.00 L 756.50,201.00 L 752.25,201.00 L 748.50,203.00 L 744.25,203.00 L 742.50,206.00 L 739.50,206.00 L 739.75,201.25 L 740.75,200.50 L 740.75,198.25 L 742.75,194.50 L 742.75,191.25 L 744.75,187.50 L 744.75,172.25 L 743.75,171.50 L 741.75,163.25 L 739.75,161.50 L 737.75,157.25 L 728.50,148.00 L 727.25,148.00 L 722.50,144.00 L 717.25,142.00 L 715.50,140.00 L 713.25,140.00 L 710.50,138.00 L 708.25,138.00 L 707.50,137.00 L 705.25,137.00 L 704.50,136.00 L 702.25,136.00 L 698.50,134.00 L 695.25,134.00 L 694.50,133.00 L 691.25,133.00 L 690.50,132.00 L 686.25,132.00 L 685.50,131.00 L 677.25,131.00 L 676.50,130.00 L 653.25,130.00 L 652.50,131.00 L 645.25,131.00 L 644.50,132.00 L 640.25,132.00 L 639.50,133.00 L 635.25,133.00 L 634.50,134.00 L 630.25,134.00 L 626.50,136.00 L 623.25,136.00 L 617.50,139.00 L 615.25,139.00 L 614.50,140.00 L 611.25,141.00 L 608.50,144.00 Z M 270.25,164.00 L 268.00,166.25 L 267.00,170.50 L 265.00,173.25 L 265.00,176.50 L 267.00,178.25 L 267.00,179.50 L 269.25,181.75 L 270.50,181.75 L 274.25,185.75 L 275.50,185.75 L 281.00,191.25 L 281.00,192.50 L 283.25,194.75 L 284.50,194.75 L 289.25,198.75 L 293.50,199.75 L 301.25,203.75 L 305.50,203.75 L 306.25,204.75 L 310.50,204.75 L 311.25,205.75 L 316.50,205.75 L 317.25,206.75 L 321.50,206.75 L 322.25,207.75 L 324.50,207.75 L 325.25,206.75 L 351.50,206.75 L 352.25,205.75 L 358.50,205.75 L 359.25,204.75 L 372.50,204.75 L 373.25,203.75 L 395.50,203.75 L 396.25,204.75 L 403.50,204.75 L 405.00,206.25 L 405.00,213.50 L 404.00,214.25 L 404.00,218.50 L 403.00,219.25 L 402.00,227.50 L 400.00,228.25 L 401.00,234.50 L 400.00,235.25 L 400.00,238.50 L 399.00,239.25 L 399.00,242.50 L 398.00,243.25 L 398.00,246.50 L 397.00,247.25 L 397.00,252.50 L 396.00,253.25 L 395.00,262.50 L 394.00,263.25 L 394.00,266.50 L 393.00,267.25 L 393.00,273.50 L 392.00,274.25 L 392.00,283.50 L 391.00,284.25 L 391.00,289.50 L 390.00,290.25 L 390.00,298.50 L 389.00,299.25 L 389.00,310.50 L 392.00,314.25 L 392.00,318.50 L 393.00,319.25 L 393.00,321.50 L 394.00,322.25 L 396.00,327.50 L 398.25,328.75 L 404.50,329.75 L 405.25,330.75 L 412.50,330.75 L 416.25,328.75 L 419.50,328.75 L 426.25,324.75 L 428.50,324.75 L 433.25,319.75 L 437.50,319.75 L 439.75,318.50 L 439.75,317.25 L 444.75,312.50 L 444.75,311.25 L 451.75,303.50 L 451.75,302.25 L 453.75,299.50 L 453.75,297.25 L 457.75,290.50 L 457.75,288.25 L 460.75,283.50 L 460.75,281.25 L 461.75,280.50 L 462.75,275.25 L 465.75,270.50 L 466.75,264.25 L 469.75,258.50 L 470.75,252.25 L 471.75,251.50 L 472.75,246.25 L 474.75,243.50 L 475.75,237.25 L 477.75,234.50 L 477.75,232.25 L 479.75,228.50 L 479.75,225.25 L 480.75,224.50 L 480.75,221.25 L 482.75,218.50 L 483.75,212.25 L 484.75,211.50 L 484.75,182.25 L 483.75,181.50 L 483.75,178.25 L 482.75,177.50 L 482.75,175.25 L 479.75,170.50 L 479.75,168.25 L 478.75,167.50 L 477.75,164.25 L 468.50,152.00 L 467.25,152.00 L 460.50,145.00 L 454.25,142.00 L 452.50,140.00 L 451.25,140.00 L 440.50,134.00 L 437.25,134.00 L 433.50,132.00 L 425.25,131.00 L 424.50,130.00 L 419.25,130.00 L 418.50,129.00 L 383.25,129.00 L 382.50,130.00 L 372.25,130.00 L 371.50,131.00 L 364.25,131.00 L 363.50,132.00 L 359.25,132.00 L 358.50,133.00 L 355.25,133.00 L 354.50,134.00 L 345.25,135.00 L 344.50,136.00 L 341.25,136.00 L 337.50,138.00 L 330.25,139.00 L 329.50,140.00 L 324.25,141.00 L 321.50,143.00 L 316.25,144.00 L 313.50,146.00 L 308.25,147.00 L 305.50,149.00 L 303.25,149.00 L 298.50,152.00 L 296.25,152.00 L 289.50,156.00 L 287.25,156.00 L 278.50,161.00 L 276.25,161.00 L 275.50,162.00 Z M 251.00,374.50 L 254.25,377.75 L 264.50,381.75 L 268.00,385.25 L 268.25,386.75 L 271.50,387.75 L 273.25,389.75 L 276.50,389.75 L 277.25,390.75 L 289.50,390.75 L 290.25,389.75 L 299.50,389.75 L 300.25,388.75 L 305.50,388.75 L 306.25,387.75 L 312.50,387.75 L 313.25,386.75 L 322.50,386.75 L 323.25,385.75 L 331.50,385.75 L 332.25,384.75 L 339.50,384.75 L 340.25,383.75 L 354.50,382.75 L 355.25,381.75 L 366.50,381.75 L 367.25,380.75 L 378.50,380.75 L 379.25,379.75 L 390.50,379.75 L 391.25,378.75 L 403.50,378.75 L 404.25,377.75 L 451.50,377.75 L 452.25,378.75 L 459.50,378.75 L 460.25,379.75 L 465.50,379.75 L 466.25,380.75 L 481.50,381.75 L 482.25,382.75 L 486.50,382.75 L 487.25,383.75 L 495.50,384.75 L 496.25,385.75 L 504.50,385.75 L 505.25,384.75 L 508.50,384.75 L 515.25,378.75 L 517.75,378.50 L 517.75,375.25 L 520.25,372.75 L 521.50,372.75 L 528.75,365.50 L 528.75,358.25 L 523.50,352.00 L 521.25,352.00 L 519.50,350.00 L 518.25,350.00 L 515.50,348.00 L 512.25,348.00 L 511.50,347.00 L 509.25,347.00 L 505.50,345.00 L 502.25,345.00 L 501.50,344.00 L 477.25,344.00 L 476.50,343.00 L 454.25,343.00 L 453.50,342.00 L 373.25,343.00 L 372.75,340.25 L 371.75,339.50 L 371.75,337.25 L 370.75,336.50 L 370.75,334.25 L 371.75,333.50 L 371.75,323.25 L 372.75,322.50 L 372.75,311.25 L 373.75,310.50 L 373.75,296.25 L 372.75,295.50 L 371.75,289.25 L 368.75,285.50 L 365.75,279.25 L 360.50,274.00 L 356.25,273.00 L 355.50,272.00 L 353.25,272.00 L 352.50,271.00 L 346.25,271.00 L 345.50,272.00 L 342.25,272.00 L 340.50,274.00 L 339.25,274.00 L 334.00,279.25 L 334.00,280.50 L 332.00,283.25 L 332.00,285.50 L 330.00,288.25 L 330.00,307.50 L 329.00,308.25 L 329.00,336.50 L 328.00,337.25 L 328.00,339.50 L 327.00,340.25 L 326.00,343.50 L 323.50,345.00 L 321.25,345.00 L 320.50,346.00 L 317.25,346.00 L 316.50,347.00 L 302.25,348.00 L 301.50,349.00 L 297.25,349.00 L 293.50,351.00 L 289.25,351.00 L 288.50,352.00 L 280.25,352.00 L 279.50,353.00 L 275.25,353.00 L 274.50,354.00 L 267.25,355.00 L 266.50,357.00 L 263.25,358.00 L 260.50,361.00 L 259.25,361.00 L 253.00,367.25 L 253.00,368.50 L 251.00,370.25 Z" fill="#271971" fill-rule="evenodd" clip-rule="evenodd"/>
+<path d="M 1755.75,320.25 L 1752.25,320.00 L 1751.75,319.50 L 1751.75,316.25 L 1750.75,315.50 L 1750.75,313.25 L 1749.75,312.50 L 1749.75,311.25 L 1748.75,310.50 L 1748.75,308.25 L 1747.75,307.50 L 1747.75,305.25 L 1745.75,303.50 L 1745.75,302.25 L 1744.75,301.50 L 1744.75,300.25 L 1743.75,299.50 L 1743.75,298.25 L 1742.75,297.50 L 1742.75,296.25 L 1739.75,293.50 L 1739.75,292.25 L 1735.75,288.50 L 1735.75,287.25 L 1720.50,272.00 L 1719.25,272.00 L 1715.50,268.00 L 1714.25,268.00 L 1710.50,264.00 L 1709.25,264.00 L 1706.50,261.00 L 1705.25,261.00 L 1703.50,259.00 L 1702.25,259.00 L 1701.50,258.00 L 1700.25,258.00 L 1698.50,256.00 L 1697.25,256.00 L 1696.50,255.00 L 1694.25,255.00 L 1692.00,257.25 L 1692.00,258.50 L 1690.00,260.25 L 1690.00,261.50 L 1689.00,262.25 L 1689.00,263.50 L 1686.00,266.25 L 1686.00,267.50 L 1685.00,268.25 L 1685.00,269.50 L 1683.00,271.25 L 1683.00,272.50 L 1681.00,274.25 L 1681.00,275.50 L 1680.00,276.25 L 1680.00,277.50 L 1677.00,280.25 L 1677.00,281.50 L 1676.00,282.25 L 1676.00,283.50 L 1674.00,285.25 L 1674.00,286.50 L 1672.00,288.25 L 1672.00,289.50 L 1670.00,291.25 L 1670.00,292.50 L 1669.00,293.25 L 1669.00,294.50 L 1667.00,296.25 L 1667.00,297.50 L 1666.00,298.25 L 1666.00,301.50 L 1672.50,301.75 L 1673.00,302.25 L 1673.25,303.75 L 1676.50,303.75 L 1678.25,305.75 L 1679.50,305.75 L 1680.25,306.75 L 1681.50,306.75 L 1684.25,309.75 L 1685.50,309.75 L 1686.25,310.75 L 1687.50,310.75 L 1688.00,311.25 L 1688.00,312.50 L 1689.25,313.75 L 1690.50,313.75 L 1698.00,321.25 L 1698.00,322.50 L 1701.00,325.25 L 1701.00,326.50 L 1703.00,328.25 L 1703.00,329.50 L 1704.00,330.25 L 1704.00,331.50 L 1705.00,332.25 L 1705.00,333.50 L 1706.00,334.25 L 1706.00,337.50 L 1707.00,338.25 L 1707.00,341.50 L 1708.00,342.25 L 1708.00,346.50 L 1709.00,347.25 L 1709.00,355.50 L 1708.00,356.25 L 1708.00,361.50 L 1707.00,362.25 L 1707.00,365.50 L 1706.00,366.25 L 1706.00,369.50 L 1705.00,370.25 L 1705.00,371.50 L 1704.00,372.25 L 1704.00,373.50 L 1703.00,374.25 L 1703.00,375.50 L 1701.00,377.25 L 1701.00,379.50 L 1697.00,383.25 L 1697.00,384.50 L 1689.50,392.00 L 1688.25,392.00 L 1686.50,394.00 L 1685.25,394.00 L 1684.50,395.00 L 1681.25,395.00 L 1681.00,396.50 L 1679.50,398.00 L 1678.25,398.00 L 1677.50,399.00 L 1676.25,399.00 L 1675.50,400.00 L 1674.25,400.00 L 1673.50,401.00 L 1670.25,401.00 L 1669.50,402.00 L 1666.25,402.00 L 1665.50,403.00 L 1662.25,403.00 L 1661.50,404.00 L 1658.25,404.00 L 1657.50,405.00 L 1635.25,405.00 L 1634.50,404.00 L 1631.25,404.00 L 1630.50,403.00 L 1628.25,403.00 L 1627.50,402.00 L 1625.25,402.00 L 1624.50,401.00 L 1620.25,401.00 L 1618.50,399.00 L 1616.25,399.00 L 1615.50,398.00 L 1614.25,398.00 L 1613.50,397.00 L 1612.25,397.00 L 1611.75,396.50 L 1611.50,395.00 L 1608.25,395.00 L 1607.50,394.00 L 1606.25,394.00 L 1605.50,393.00 L 1604.25,393.00 L 1603.50,392.00 L 1602.25,392.00 L 1599.50,389.00 L 1598.25,389.00 L 1596.50,387.00 L 1595.25,387.00 L 1590.50,382.00 L 1589.25,382.00 L 1588.75,381.50 L 1588.75,380.25 L 1587.50,379.00 L 1586.25,379.00 L 1585.75,378.50 L 1585.75,377.25 L 1581.75,373.50 L 1581.75,372.25 L 1579.75,370.50 L 1579.75,369.25 L 1577.75,367.50 L 1577.75,366.25 L 1575.75,364.50 L 1575.75,363.25 L 1574.50,362.00 L 1567.25,362.00 L 1566.50,361.00 L 1559.25,361.00 L 1558.50,360.00 L 1554.25,360.00 L 1553.50,359.00 L 1550.25,359.00 L 1549.50,358.00 L 1545.25,358.00 L 1545.00,416.50 L 1546.25,417.75 L 1555.50,417.75 L 1556.75,416.50 L 1556.75,415.25 L 1557.75,414.50 L 1557.75,413.25 L 1560.25,410.75 L 1564.50,410.75 L 1564.75,409.25 L 1565.25,408.75 L 1577.50,408.75 L 1578.25,409.75 L 1583.50,409.75 L 1584.25,410.75 L 1587.50,410.75 L 1588.25,411.75 L 1591.50,411.75 L 1592.25,412.75 L 1596.50,412.75 L 1597.25,413.75 L 1601.50,413.75 L 1602.25,414.75 L 1604.50,414.75 L 1605.25,415.75 L 1608.50,415.75 L 1609.25,416.75 L 1613.50,416.75 L 1614.25,417.75 L 1621.50,417.75 L 1622.25,418.75 L 1627.50,418.75 L 1628.25,419.75 L 1635.50,419.75 L 1636.25,420.75 L 1657.50,420.75 L 1658.25,419.75 L 1664.50,419.75 L 1665.25,418.75 L 1669.50,418.75 L 1670.25,417.75 L 1676.50,417.75 L 1677.25,416.75 L 1680.50,416.75 L 1681.25,415.75 L 1683.50,415.75 L 1684.25,414.75 L 1686.50,414.75 L 1687.25,413.75 L 1690.50,413.75 L 1691.25,412.75 L 1693.50,412.75 L 1694.25,411.75 L 1695.50,411.75 L 1696.25,410.75 L 1698.50,410.75 L 1699.25,409.75 L 1700.50,409.75 L 1701.25,408.75 L 1703.50,408.75 L 1704.25,407.75 L 1705.50,407.75 L 1706.25,406.75 L 1707.50,406.75 L 1708.25,405.75 L 1709.50,405.75 L 1710.25,404.75 L 1711.50,404.75 L 1712.25,403.75 L 1713.50,403.75 L 1715.25,401.75 L 1716.50,401.75 L 1718.25,399.75 L 1719.50,399.75 L 1722.25,396.75 L 1723.50,396.75 L 1727.25,392.75 L 1728.50,392.75 L 1731.75,389.50 L 1731.75,388.25 L 1733.25,386.75 L 1734.75,386.50 L 1734.75,385.25 L 1738.75,381.50 L 1738.75,380.25 L 1739.75,379.50 L 1739.75,378.25 L 1742.75,375.50 L 1742.75,374.25 L 1743.75,373.50 L 1743.75,372.25 L 1744.75,371.50 L 1744.75,370.25 L 1745.75,369.50 L 1745.75,368.25 L 1747.75,366.50 L 1747.75,364.25 L 1748.75,363.50 L 1748.75,362.25 L 1749.75,361.50 L 1749.75,359.25 L 1750.75,358.50 L 1750.75,357.25 L 1751.75,356.50 L 1751.75,354.25 L 1752.75,353.50 L 1752.75,350.25 L 1753.75,349.50 L 1753.75,343.25 L 1754.75,342.50 L 1754.50,339.00 L 1752.25,339.00 L 1751.50,338.00 L 1748.25,338.00 L 1747.75,337.50 L 1747.75,335.25 L 1746.75,334.50 L 1746.75,331.25 L 1747.75,330.50 L 1747.75,328.25 L 1752.25,323.75 L 1753.50,323.75 L 1754.25,322.75 L 1755.75,322.50 Z M 1546.00,162.25 L 1546.25,167.75 L 1592.50,167.75 L 1592.75,164.25 L 1591.75,163.50 L 1591.75,155.25 L 1592.75,154.50 L 1592.75,148.25 L 1593.75,147.50 L 1593.75,145.25 L 1594.75,144.50 L 1594.75,143.25 L 1595.75,142.50 L 1595.75,141.25 L 1596.75,140.50 L 1596.75,138.25 L 1597.75,137.50 L 1597.75,136.25 L 1599.75,134.50 L 1599.75,133.25 L 1601.75,131.50 L 1601.75,130.25 L 1606.75,125.50 L 1606.75,124.25 L 1607.25,123.75 L 1608.50,123.75 L 1609.25,122.75 L 1610.50,122.75 L 1613.25,119.75 L 1614.50,119.75 L 1615.25,118.75 L 1616.50,118.75 L 1617.25,117.75 L 1618.50,117.75 L 1620.25,115.75 L 1622.50,115.75 L 1623.25,114.75 L 1625.50,114.75 L 1626.25,113.75 L 1628.50,113.75 L 1629.25,112.75 L 1632.50,112.75 L 1633.25,111.75 L 1637.50,111.75 L 1638.25,110.75 L 1646.50,110.75 L 1647.25,111.75 L 1654.50,111.75 L 1655.25,112.75 L 1658.50,112.75 L 1659.25,113.75 L 1661.50,113.75 L 1662.25,114.75 L 1666.50,114.75 L 1667.25,115.75 L 1668.50,115.75 L 1669.25,116.75 L 1670.50,116.75 L 1671.25,117.75 L 1672.50,117.75 L 1673.00,118.25 L 1673.25,119.75 L 1677.50,119.75 L 1681.25,123.75 L 1682.50,123.75 L 1685.25,126.75 L 1686.50,126.75 L 1692.00,132.25 L 1692.00,133.50 L 1697.00,138.25 L 1697.00,139.50 L 1698.00,140.25 L 1698.00,141.50 L 1700.00,143.25 L 1700.00,144.50 L 1701.00,145.25 L 1701.00,146.50 L 1702.00,147.25 L 1702.00,148.50 L 1704.00,150.25 L 1704.00,151.50 L 1705.00,152.25 L 1705.00,153.50 L 1706.00,154.25 L 1706.00,155.50 L 1707.00,156.25 L 1707.00,157.50 L 1708.00,158.25 L 1708.00,159.50 L 1710.00,161.25 L 1710.00,164.50 L 1711.00,165.25 L 1711.00,166.50 L 1712.00,167.25 L 1712.25,170.75 L 1715.50,170.75 L 1716.25,169.75 L 1719.50,169.75 L 1720.25,168.75 L 1723.50,168.75 L 1724.25,167.75 L 1729.50,167.75 L 1730.75,166.50 L 1730.75,102.25 L 1729.50,101.00 L 1720.25,101.00 L 1719.00,102.25 L 1719.00,103.50 L 1716.50,106.00 L 1713.25,106.00 L 1713.00,107.50 L 1712.50,108.00 L 1703.25,108.00 L 1702.50,107.00 L 1699.25,107.00 L 1698.50,106.00 L 1697.25,106.00 L 1696.50,105.00 L 1695.25,105.00 L 1694.50,104.00 L 1692.25,104.00 L 1691.50,103.00 L 1689.25,103.00 L 1688.50,102.00 L 1686.25,102.00 L 1685.50,101.00 L 1683.25,101.00 L 1682.50,100.00 L 1680.25,100.00 L 1679.50,99.00 L 1676.25,99.00 L 1675.50,98.00 L 1672.25,98.00 L 1671.50,97.00 L 1668.25,97.00 L 1667.50,96.00 L 1663.25,96.00 L 1662.50,95.00 L 1656.25,95.00 L 1655.50,94.00 L 1631.25,94.00 L 1630.50,95.00 L 1625.25,95.00 L 1624.50,96.00 L 1621.25,96.00 L 1620.50,97.00 L 1617.25,97.00 L 1616.50,98.00 L 1613.25,98.00 L 1612.50,99.00 L 1609.25,99.00 L 1608.50,100.00 L 1606.25,100.00 L 1605.50,101.00 L 1604.25,101.00 L 1603.50,102.00 L 1601.25,102.00 L 1600.50,103.00 L 1598.25,103.00 L 1597.50,104.00 L 1596.25,104.00 L 1595.50,105.00 L 1594.25,105.00 L 1593.50,106.00 L 1592.25,106.00 L 1591.50,107.00 L 1590.25,107.00 L 1589.50,108.00 L 1588.25,108.00 L 1587.50,109.00 L 1586.25,109.00 L 1584.50,111.00 L 1583.25,111.00 L 1582.50,112.00 L 1581.25,112.00 L 1579.50,114.00 L 1578.25,114.00 L 1575.50,117.00 L 1574.25,117.00 L 1570.50,121.00 L 1569.25,121.00 L 1567.00,123.25 L 1567.00,124.50 L 1566.50,125.00 L 1565.25,125.00 L 1563.00,127.25 L 1563.00,128.50 L 1560.00,131.25 L 1560.00,132.50 L 1558.00,134.25 L 1558.00,135.50 L 1556.00,137.25 L 1556.00,138.50 L 1554.00,140.25 L 1554.00,142.50 L 1552.00,144.25 L 1552.00,145.50 L 1551.00,146.25 L 1551.00,147.50 L 1550.00,148.25 L 1550.00,151.50 L 1549.00,152.25 L 1549.00,154.50 L 1548.00,155.25 L 1548.00,157.50 L 1547.00,158.25 L 1547.00,161.50 Z M 1544.00,196.25 L 1544.00,198.50 L 1546.50,198.75 L 1548.00,200.25 L 1548.00,202.50 L 1549.00,203.25 L 1549.00,204.50 L 1550.00,205.25 L 1550.00,208.50 L 1551.00,209.25 L 1551.00,211.50 L 1553.00,213.25 L 1553.00,214.50 L 1554.00,215.25 L 1554.00,217.50 L 1555.00,218.25 L 1555.00,219.50 L 1558.00,222.25 L 1558.00,223.50 L 1559.00,224.25 L 1559.00,225.50 L 1564.25,230.75 L 1565.50,230.75 L 1570.25,235.75 L 1571.50,235.75 L 1575.25,239.75 L 1576.50,239.75 L 1577.00,240.25 L 1577.25,241.75 L 1578.50,241.75 L 1580.25,243.75 L 1581.50,243.75 L 1584.25,246.75 L 1585.50,246.75 L 1587.25,248.75 L 1588.50,248.75 L 1591.25,251.75 L 1592.50,251.75 L 1593.00,252.25 L 1593.25,253.75 L 1595.50,253.75 L 1596.25,254.75 L 1597.50,254.75 L 1599.25,256.75 L 1600.50,256.75 L 1602.00,258.25 L 1602.25,259.75 L 1605.50,259.75 L 1607.25,261.75 L 1608.50,261.75 L 1609.25,262.75 L 1610.50,262.75 L 1611.25,263.75 L 1612.50,263.75 L 1614.25,265.75 L 1615.50,265.75 L 1616.25,266.75 L 1617.50,266.75 L 1619.25,268.75 L 1623.50,268.75 L 1624.75,267.50 L 1624.75,266.25 L 1626.75,264.50 L 1626.75,263.25 L 1629.75,260.50 L 1629.75,259.25 L 1631.75,257.50 L 1631.75,256.25 L 1633.75,254.50 L 1633.75,253.25 L 1636.75,250.50 L 1636.75,249.25 L 1638.75,247.50 L 1638.75,246.25 L 1640.75,244.50 L 1640.75,243.25 L 1642.75,241.50 L 1642.75,240.25 L 1644.75,238.50 L 1644.75,237.25 L 1647.75,234.50 L 1647.75,233.25 L 1649.75,231.50 L 1649.75,230.25 L 1651.75,228.50 L 1651.50,226.00 L 1649.25,226.00 L 1648.50,225.00 L 1643.25,225.00 L 1642.75,224.50 L 1642.75,223.25 L 1641.50,222.00 L 1640.25,222.00 L 1639.50,221.00 L 1636.25,221.00 L 1635.50,220.00 L 1634.25,220.00 L 1633.50,219.00 L 1632.25,219.00 L 1631.50,218.00 L 1630.25,218.00 L 1627.50,215.00 L 1626.25,215.00 L 1625.50,214.00 L 1623.25,214.00 L 1621.50,212.00 L 1620.25,212.00 L 1618.50,210.00 L 1617.25,210.00 L 1614.50,207.00 L 1613.25,207.00 L 1611.50,205.00 L 1610.25,205.00 L 1600.75,195.50 L 1600.75,194.25 L 1597.75,191.50 L 1597.75,190.25 L 1596.75,189.50 L 1596.75,188.25 L 1595.75,187.50 L 1595.50,183.00 L 1590.25,183.00 L 1589.50,184.00 L 1586.25,184.00 L 1585.50,185.00 L 1582.25,185.00 L 1581.50,186.00 L 1577.25,186.00 L 1576.50,187.00 L 1573.25,187.00 L 1572.50,188.00 L 1569.25,188.00 L 1568.50,189.00 L 1565.25,189.00 L 1564.50,190.00 L 1561.25,190.00 L 1560.50,191.00 L 1558.25,191.00 L 1557.50,192.00 L 1555.25,192.00 L 1554.50,193.00 L 1551.25,193.00 L 1550.50,194.00 L 1548.25,194.00 L 1547.50,195.00 L 1545.25,195.00 Z" fill="#271971" fill-rule="evenodd" clip-rule="evenodd"/>
+<path d="M 1828.75,236.25 L 1827.75,235.50 L 1827.75,233.25 L 1826.75,232.50 L 1826.75,230.25 L 1825.75,229.50 L 1825.75,227.25 L 1823.75,224.50 L 1823.75,222.25 L 1822.75,221.50 L 1822.75,220.25 L 1821.75,219.50 L 1821.75,218.25 L 1820.75,217.50 L 1820.75,216.25 L 1819.75,215.50 L 1819.75,214.25 L 1818.75,213.50 L 1817.75,210.25 L 1815.75,208.50 L 1814.75,205.25 L 1811.75,202.50 L 1811.75,201.25 L 1809.75,199.50 L 1809.75,198.25 L 1797.50,186.00 L 1796.25,186.00 L 1794.50,184.00 L 1793.25,184.00 L 1790.50,181.00 L 1789.25,181.00 L 1788.50,180.00 L 1787.25,180.00 L 1786.50,179.00 L 1783.25,178.00 L 1781.50,176.00 L 1780.25,176.00 L 1779.50,175.00 L 1777.25,175.00 L 1774.50,173.00 L 1772.25,173.00 L 1771.50,172.00 L 1769.25,172.00 L 1768.50,171.00 L 1766.25,171.00 L 1765.50,170.00 L 1762.25,170.00 L 1761.50,169.00 L 1758.25,169.00 L 1757.50,168.00 L 1753.25,168.00 L 1752.50,167.00 L 1730.25,167.00 L 1729.50,168.00 L 1724.25,168.00 L 1723.50,169.00 L 1720.25,169.00 L 1719.50,170.00 L 1716.25,170.00 L 1715.50,171.00 L 1713.25,171.00 L 1712.50,172.00 L 1710.25,172.00 L 1709.50,173.00 L 1707.25,173.00 L 1706.50,174.00 L 1704.25,174.00 L 1703.50,175.00 L 1702.25,175.00 L 1701.50,176.00 L 1700.25,176.00 L 1699.50,177.00 L 1696.25,178.00 L 1694.50,180.00 L 1693.25,180.00 L 1691.50,182.00 L 1690.25,182.00 L 1675.00,197.25 L 1675.00,198.50 L 1671.00,202.25 L 1671.00,203.50 L 1667.00,207.25 L 1667.00,208.50 L 1664.00,211.25 L 1664.00,212.50 L 1661.00,215.25 L 1661.00,216.50 L 1657.00,220.25 L 1657.00,221.50 L 1654.00,224.25 L 1654.00,225.50 L 1652.00,227.25 L 1652.00,228.50 L 1650.00,230.25 L 1650.00,231.50 L 1648.00,233.25 L 1648.00,234.50 L 1645.00,237.25 L 1645.00,238.50 L 1643.00,240.25 L 1643.00,241.50 L 1641.00,243.25 L 1641.00,244.50 L 1639.00,246.25 L 1639.00,247.50 L 1637.00,249.25 L 1637.00,250.50 L 1634.00,253.25 L 1634.00,254.50 L 1632.00,256.25 L 1632.00,257.50 L 1630.00,259.25 L 1630.00,260.50 L 1627.00,263.25 L 1627.00,264.50 L 1625.00,266.25 L 1625.00,267.50 L 1621.00,271.25 L 1621.00,272.50 L 1618.00,275.25 L 1618.00,276.50 L 1615.00,279.25 L 1615.00,280.50 L 1613.00,282.25 L 1613.00,283.50 L 1610.00,286.25 L 1610.00,287.50 L 1608.00,289.25 L 1608.00,290.50 L 1605.00,293.25 L 1605.00,294.50 L 1601.00,298.25 L 1601.00,299.50 L 1591.50,309.00 L 1590.25,309.00 L 1587.50,312.00 L 1586.25,312.00 L 1584.50,314.00 L 1583.25,314.00 L 1580.50,316.00 L 1578.25,316.00 L 1577.50,317.00 L 1575.25,317.00 L 1574.50,318.00 L 1572.25,318.00 L 1571.50,319.00 L 1569.25,319.00 L 1568.50,320.00 L 1563.25,320.00 L 1562.50,321.00 L 1551.25,321.00 L 1550.50,320.00 L 1545.25,320.00 L 1544.50,319.00 L 1541.25,319.00 L 1540.50,318.00 L 1538.25,318.00 L 1537.50,317.00 L 1535.25,317.00 L 1534.50,316.00 L 1532.25,316.00 L 1531.50,315.00 L 1530.25,315.00 L 1529.50,314.00 L 1528.25,314.00 L 1527.50,313.00 L 1524.25,312.00 L 1522.50,310.00 L 1521.25,310.00 L 1519.50,308.00 L 1518.25,308.00 L 1510.75,300.50 L 1510.75,299.25 L 1508.75,297.50 L 1508.75,296.25 L 1507.75,295.50 L 1506.75,292.25 L 1504.75,290.50 L 1504.75,289.25 L 1503.75,288.50 L 1503.75,286.25 L 1502.75,285.50 L 1502.75,284.25 L 1501.75,283.50 L 1501.75,281.25 L 1500.75,280.50 L 1500.75,277.25 L 1499.75,276.50 L 1499.75,273.25 L 1498.75,272.50 L 1498.75,267.25 L 1497.75,266.50 L 1497.75,256.25 L 1498.75,255.50 L 1498.75,250.25 L 1499.75,249.50 L 1499.75,246.25 L 1500.75,245.50 L 1500.75,243.25 L 1501.75,242.50 L 1501.75,240.25 L 1502.75,239.50 L 1502.75,237.25 L 1503.75,236.50 L 1503.75,235.25 L 1504.75,234.50 L 1504.75,233.25 L 1505.75,232.50 L 1505.75,231.25 L 1506.75,230.50 L 1506.75,229.25 L 1507.75,228.50 L 1508.75,225.25 L 1510.75,223.50 L 1510.75,222.25 L 1512.75,220.50 L 1512.75,219.25 L 1516.75,215.50 L 1516.75,214.25 L 1522.25,208.75 L 1523.50,208.75 L 1527.25,204.75 L 1528.50,204.75 L 1531.25,201.75 L 1534.50,200.75 L 1536.25,198.75 L 1537.50,198.75 L 1540.25,196.75 L 1542.50,196.75 L 1545.25,194.75 L 1547.50,194.75 L 1548.25,193.75 L 1550.50,193.75 L 1551.25,192.75 L 1554.50,192.75 L 1555.25,191.75 L 1557.50,191.75 L 1558.25,190.75 L 1560.50,190.75 L 1561.25,189.75 L 1564.50,189.75 L 1565.25,188.75 L 1568.50,188.75 L 1569.25,187.75 L 1572.50,187.75 L 1573.25,186.75 L 1576.50,186.75 L 1577.25,185.75 L 1581.50,185.75 L 1582.25,184.75 L 1585.50,184.75 L 1586.25,183.75 L 1589.50,183.75 L 1590.25,182.75 L 1596.50,182.75 L 1598.75,180.50 L 1598.75,179.25 L 1599.75,178.50 L 1599.75,170.25 L 1598.75,169.50 L 1598.50,168.00 L 1487.00,168.25 L 1487.00,177.50 L 1489.50,177.75 L 1491.25,179.75 L 1492.50,179.75 L 1494.00,181.25 L 1494.00,182.50 L 1496.00,185.25 L 1496.00,198.50 L 1495.00,199.25 L 1495.00,203.50 L 1494.00,204.25 L 1494.00,207.50 L 1493.00,208.25 L 1493.00,211.50 L 1492.00,212.25 L 1492.00,215.50 L 1491.00,216.25 L 1491.00,218.50 L 1490.00,219.25 L 1490.00,222.50 L 1489.00,223.25 L 1489.00,225.50 L 1488.00,226.25 L 1488.00,229.50 L 1487.00,230.25 L 1487.00,233.50 L 1486.00,234.25 L 1486.00,237.50 L 1485.00,238.25 L 1485.00,242.50 L 1484.00,243.25 L 1484.00,251.50 L 1483.00,252.25 L 1483.00,267.50 L 1484.00,268.25 L 1484.00,276.50 L 1485.00,277.25 L 1485.00,281.50 L 1486.00,282.25 L 1486.00,285.50 L 1487.00,286.25 L 1487.00,288.50 L 1488.00,289.25 L 1488.00,292.50 L 1489.00,293.25 L 1489.00,295.50 L 1490.00,296.25 L 1490.00,298.50 L 1491.00,299.25 L 1491.00,300.50 L 1492.00,301.25 L 1492.00,303.50 L 1493.00,304.25 L 1493.00,305.50 L 1494.00,306.25 L 1494.00,307.50 L 1495.00,308.25 L 1495.00,309.50 L 1496.00,310.25 L 1496.00,311.50 L 1497.00,312.25 L 1497.00,313.50 L 1498.00,314.25 L 1499.00,317.50 L 1501.00,319.25 L 1502.00,322.50 L 1504.00,324.25 L 1504.00,325.50 L 1507.00,328.25 L 1507.00,329.50 L 1511.00,333.25 L 1511.00,334.50 L 1517.25,340.75 L 1518.50,340.75 L 1522.25,344.75 L 1523.50,344.75 L 1525.25,346.75 L 1526.50,346.75 L 1528.25,348.75 L 1529.50,348.75 L 1530.25,349.75 L 1533.50,350.75 L 1535.25,352.75 L 1536.50,352.75 L 1537.25,353.75 L 1539.50,353.75 L 1542.25,355.75 L 1544.50,355.75 L 1545.25,356.75 L 1546.50,356.75 L 1547.25,357.75 L 1549.50,357.75 L 1550.25,358.75 L 1553.50,358.75 L 1554.25,359.75 L 1558.50,359.75 L 1559.25,360.75 L 1566.50,360.75 L 1567.25,361.75 L 1578.50,361.75 L 1579.25,360.75 L 1586.50,360.75 L 1587.25,359.75 L 1591.50,359.75 L 1592.25,358.75 L 1595.50,358.75 L 1596.25,357.75 L 1599.50,357.75 L 1602.25,355.75 L 1604.50,355.75 L 1605.25,354.75 L 1607.50,354.75 L 1608.25,353.75 L 1609.50,353.75 L 1610.25,352.75 L 1611.50,352.75 L 1612.25,351.75 L 1613.50,351.75 L 1614.25,350.75 L 1617.50,349.75 L 1619.25,347.75 L 1620.50,347.75 L 1622.25,345.75 L 1625.50,344.75 L 1628.25,341.75 L 1629.50,341.75 L 1634.25,336.75 L 1635.50,336.75 L 1645.75,326.50 L 1645.75,325.25 L 1650.75,320.50 L 1650.75,319.25 L 1654.75,315.50 L 1654.75,314.25 L 1657.75,311.50 L 1657.75,310.25 L 1659.75,308.50 L 1659.75,307.25 L 1661.75,305.50 L 1661.75,304.25 L 1663.75,302.50 L 1663.75,301.25 L 1665.75,299.50 L 1666.75,296.25 L 1668.75,294.50 L 1669.75,291.25 L 1671.75,289.50 L 1671.75,288.25 L 1673.75,286.50 L 1673.75,285.25 L 1675.75,283.50 L 1676.75,280.25 L 1679.75,277.50 L 1680.75,274.25 L 1682.75,272.50 L 1682.75,271.25 L 1684.75,269.50 L 1685.75,266.25 L 1688.75,263.50 L 1689.75,260.25 L 1691.75,258.50 L 1691.75,257.25 L 1694.75,254.50 L 1695.75,251.25 L 1697.75,249.50 L 1697.75,248.25 L 1699.75,246.50 L 1700.75,243.25 L 1702.75,241.50 L 1702.75,240.25 L 1704.75,238.50 L 1705.75,235.25 L 1707.75,233.50 L 1707.75,232.25 L 1711.75,228.50 L 1711.75,227.25 L 1720.25,218.75 L 1721.50,218.75 L 1723.25,216.75 L 1724.50,216.75 L 1725.25,215.75 L 1726.50,215.75 L 1727.25,214.75 L 1728.50,214.75 L 1731.25,212.75 L 1733.50,212.75 L 1734.25,211.75 L 1739.50,211.75 L 1740.25,210.75 L 1744.50,210.75 L 1745.25,209.75 L 1753.50,209.75 L 1754.25,208.75 L 1764.50,208.75 L 1765.25,209.75 L 1770.50,209.75 L 1771.25,210.75 L 1775.50,210.75 L 1776.25,211.75 L 1779.50,211.75 L 1780.25,212.75 L 1782.50,212.75 L 1783.25,213.75 L 1784.50,213.75 L 1785.25,214.75 L 1786.50,214.75 L 1787.25,215.75 L 1790.50,216.75 L 1792.25,218.75 L 1793.50,218.75 L 1795.25,220.75 L 1796.50,220.75 L 1806.00,230.25 L 1806.00,231.50 L 1808.00,233.25 L 1808.00,234.50 L 1809.00,235.25 L 1809.00,236.50 L 1811.00,239.25 L 1811.00,241.50 L 1813.00,244.25 L 1813.00,247.50 L 1814.00,248.25 L 1814.00,252.50 L 1815.00,253.25 L 1815.00,262.50 L 1814.00,263.25 L 1814.00,268.50 L 1813.00,269.25 L 1813.00,273.50 L 1812.00,274.25 L 1812.00,276.50 L 1811.00,277.25 L 1811.00,279.50 L 1809.00,282.25 L 1809.00,284.50 L 1808.00,285.25 L 1808.00,286.50 L 1806.00,288.25 L 1806.00,289.50 L 1804.00,291.25 L 1804.00,292.50 L 1799.00,297.25 L 1799.00,298.50 L 1797.50,300.00 L 1796.25,300.00 L 1790.50,306.00 L 1789.25,306.00 L 1787.50,308.00 L 1784.25,309.00 L 1782.50,311.00 L 1781.25,311.00 L 1780.50,312.00 L 1779.25,312.00 L 1778.50,313.00 L 1777.25,313.00 L 1776.50,314.00 L 1775.25,314.00 L 1774.50,315.00 L 1773.25,315.00 L 1770.50,317.00 L 1768.25,317.00 L 1765.50,319.00 L 1763.25,319.00 L 1762.50,320.00 L 1761.25,320.00 L 1758.50,322.00 L 1756.25,322.00 L 1755.50,323.00 L 1752.25,324.00 L 1748.00,328.25 L 1748.00,330.50 L 1747.00,331.25 L 1747.00,334.50 L 1748.00,335.25 L 1748.00,337.50 L 1751.50,337.75 L 1752.25,338.75 L 1822.50,338.75 L 1823.75,337.50 L 1823.75,331.25 L 1822.50,330.00 L 1821.25,330.00 L 1816.75,325.50 L 1816.75,323.25 L 1815.75,322.50 L 1815.75,316.25 L 1816.75,315.50 L 1816.75,313.25 L 1817.75,312.50 L 1817.75,310.25 L 1818.75,309.50 L 1818.75,307.25 L 1820.75,304.50 L 1820.75,302.25 L 1822.75,299.50 L 1822.75,297.25 L 1823.75,296.50 L 1823.75,294.25 L 1824.75,293.50 L 1824.75,291.25 L 1825.75,290.50 L 1825.75,288.25 L 1826.75,287.50 L 1826.75,285.25 L 1827.75,284.50 L 1827.75,281.25 L 1828.75,280.50 L 1828.75,277.25 L 1829.75,276.50 L 1829.75,273.25 L 1830.75,272.50 L 1830.75,266.25 L 1831.75,265.50 L 1831.75,252.25 L 1830.75,251.50 L 1830.75,244.25 L 1829.75,243.50 L 1829.75,240.25 L 1828.75,239.50 Z" fill="#CE241F" fill-rule="evenodd" clip-rule="evenodd"/>
+</svg></div>
+        <div class="sub">학원 수업을 언제든 다시 볼 수 있어요.</div>
+      </div>
+      <div class="login-cta">
+        <button class="btn-kakao" onclick="startKakao()">
+          <svg width="17" height="17" viewBox="0 0 18 18" fill="none"><path d="M9 1.5C4.58 1.5 1 4.31 1 7.78c0 2.22 1.47 4.17 3.68 5.28l-.94 3.46c-.08.3.26.54.52.37l4.1-2.72c.21.02.42.03.64.03 4.42 0 8-2.81 8-6.28S13.42 1.5 9 1.5Z" fill="rgba(0,0,0,.85)"/></svg>
+          카카오로 시작하기
+        </button>
+      </div>
+    </div>
+
+    <!-- S0-3 회원가입 = 입학 신청 -->
+    <div class="view auth-view" id="viewS03">
+      <div class="appbar">
+        <div class="back" onclick="backToLogin()" aria-label="뒤로">
+          <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M14 4L7 11L14 18" stroke="#111827" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="title">입학 신청</div>
+      </div>
+      <div class="form-scroll">
+        <div class="form-sub">정보를 입력하면 학원에 입학 신청이 접수돼요.</div>
+        <div class="field"><label>이름</label><input type="text" id="f3Name" placeholder="이름을 입력해주세요"></div>
+        <div class="field"><label>학교</label><input type="text" id="f3School" placeholder="학교 이름을 입력해주세요"></div>
+        <div class="field"><label>학년</label><select id="f3Grade" class="ph"><option value="" selected>학년을 선택해주세요</option></select></div>
+        <div class="field"><label>학생 전화번호</label><input type="tel" id="f3Phone" placeholder="010-0000-0000"></div>
+        <div class="field"><label>보호자 전화번호</label><input type="tel" id="f3Parent" placeholder="010-0000-0000"></div>
+        <div class="form-notice">입력한 정보는 학원 승인에 사용돼요. 가입 후에는 전화번호만 직접 수정할 수 있어요.</div>
+        <div class="form-cta"><button class="btn btn-primary btn-full" id="f3Submit" disabled onclick="submitApply()">입학 신청하기</button></div>
+      </div>
+    </div>
+
+    <!-- S0-4 입학 재신청 -->
+    <div class="view auth-view" id="viewS04">
+      <div class="appbar">
+        <div class="back" onclick="goAuth('s05')" aria-label="뒤로">
+          <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M14 4L7 11L14 18" stroke="#111827" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="title">입학 재신청</div>
+      </div>
+      <div class="form-scroll">
+        <div class="form-sub">이전에 입력한 정보를 확인하고 다시 신청할 수 있어요.</div>
+        <div class="field"><label>이름</label><input type="text" id="f4Name" value="김하늘"></div>
+        <div class="field"><label>학교</label><input type="text" id="f4School" value="고려중학교"></div>
+        <div class="field"><label>학년</label><select id="f4Grade"></select></div>
+        <div class="field"><label>학생 전화번호</label><input type="tel" id="f4Phone" value="010-2345-6789"></div>
+        <div class="field"><label>보호자 전화번호</label><input type="tel" id="f4Parent" value="010-9876-5432"></div>
+        <div class="form-notice">입력한 정보는 학원 승인에 사용돼요. 가입 후에는 전화번호만 직접 수정할 수 있어요.</div>
+        <div class="form-cta"><button class="btn btn-primary btn-full" onclick="submitReapply()">다시 신청하기</button></div>
+      </div>
+    </div>
+
+    <!-- S0-5 제한 화면 (PENDING / REJECTED) -->
+    <div class="view auth-view" id="viewS05">
+      <div class="limit-body" id="limitBody"></div>
+      <div class="limit-foot"><button class="btn-listout" onclick="doLogout()">로그아웃</button></div>
+    </div>
+
+    <!-- S1 커리큘럼 -->
+    <div class="view on" id="viewS1">
+      <div class="root-head">
+        <div class="root-title">커리큘럼</div>
+        <div class="filter-bar">
+          <button class="grade-btn" id="s1GradeBtn" onclick="openGradeSheet('s1', event)"><span id="s1GradeLabel">중2</span><span class="caret">▾</span></button>
+          <div class="divider-v"></div>
+          <span id="s1SubjectChips" style="display:flex;gap:8px"></span>
+        </div>
+      </div>
+      <div class="list-pad" id="curList"></div>
+    </div>
+
+    <!-- S2 상세 (푸시) -->
+    <div class="view" id="viewS2">
+      <div class="appbar">
+        <div class="back" onclick="popDetail()" aria-label="뒤로">
+          <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M14 4L7 11L14 18" stroke="#111827" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="title">커리큘럼</div>
+      </div>
+      <div class="cur-head">
+        <div class="badges" id="detBadges"></div>
+        <h1 id="detName"></h1>
+        <p id="detDesc"></p>
+        <div class="cur-meta" id="detMeta"></div>
+      </div>
+      <div class="list-pad">
+        <div class="sec-row">
+          <div class="sec-title">강의 목록</div>
+          <button class="btn btn-outline" id="bulkOpenBtn" onclick="openBulkSheet()" style="font-size:12px;padding:7px 11px">일괄 구매하기</button>
+        </div>
+        <div id="lecList"></div>
+      </div>
+    </div>
+
+    <!-- S4 내 학습 (커리큘럼 카드 목록) -->
+    <div class="view" id="viewS4">
+      <div class="root-head">
+        <div class="root-title">내 학습</div>
+        <div class="filter-bar">
+          <button class="grade-btn" id="s4GradeBtn" onclick="openGradeSheet('s4', event)"><span id="s4GradeLabel">중2</span><span class="caret">▾</span></button>
+          <div class="divider-v"></div>
+          <span id="s4SubjectChips" style="display:flex;gap:8px"></span>
+        </div>
+      </div>
+      <div class="list-pad" id="myLecList"></div>
+    </div>
+
+    <!-- S4-2 강의실 (플레이어, 푸시) -->
+    <div class="view" id="viewS42">
+      <div class="app-video">
+        <span class="vback" onclick="goRoot('s4')" aria-label="뒤로">
+          <svg width="18" height="18" viewBox="0 0 22 22" fill="none"><path d="M14 4L7 11L14 18" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+        <span id="videoInner" style="display:contents"></span>
+      </div>
+      <div class="player-info">
+        <div class="pi-name" id="piName"></div>
+        <div class="pi-meta" id="piMeta"></div>
+      </div>
+      <div class="ps-head">커리큘럼 <small id="psCount"></small></div>
+      <div id="psList"></div>
+    </div>
+
+    <!-- S6 마이페이지 -->
+    <div class="view" id="viewS6">
+      <div class="root-head no-filter">
+        <div class="root-title">마이페이지</div>
+      </div>
+      <div class="my-menu">
+        <div class="mm-row" onclick="pushMy('s6p')"><span>프로필</span><span class="chev">›</span></div>
+        <div class="mm-row" onclick="pushMy('s6w')"><span>포인트</span><span class="chev">›</span></div>
+        <div class="mm-row" onclick="pushMy('s6h')"><span>구매 내역</span><span class="chev">›</span></div>
+        <div class="mm-row" onclick="pushMy('s6a')"><span>계정</span><span class="chev">›</span></div>
+      </div>
+      <div class="list-foot"><button class="btn-listout" onclick="doLogout()">로그아웃</button></div>
+    </div>
+
+    <!-- S6 푸시: 프로필 -->
+    <div class="view" id="viewS6P">
+      <div class="appbar">
+        <div class="back" onclick="popMy()" aria-label="뒤로"><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M14 4L7 11L14 18" stroke="#111827" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="title">프로필</div>
+        <span class="edit-link" onclick="toast('전화번호 수정 (이름·학교·학년은 학원 문의)')">수정</span>
+      </div>
+      <div class="list-pad">
+        <div class="info-row"><span class="k">이름</span><span class="v">김하늘 <span class="lock-tag">학원 문의</span></span></div>
+        <div class="info-row"><span class="k">학교</span><span class="v">고려중학교 <span class="lock-tag">학원 문의</span></span></div>
+        <div class="info-row"><span class="k">현재 학년</span><span class="v">중2 <span class="lock-tag">학원 문의</span></span></div>
+        <div class="info-row"><span class="k">학생 전화번호</span><span class="v">010-1234-5678</span></div>
+        <div class="info-row"><span class="k">보호자 전화번호</span><span class="v">010-9876-5432</span></div>
+      </div>
+    </div>
+
+    <!-- S6 푸시: 포인트 -->
+    <div class="view" id="viewS6W">
+      <div class="appbar">
+        <div class="back" onclick="popMy()" aria-label="뒤로"><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M14 4L7 11L14 18" stroke="#111827" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="title">포인트</div>
+        <button class="grade-btn" style="font-size:12px;padding:6px 10px" id="s6GradeBtn" onclick="openGradeSheet('s6', event)"><span id="s6GradeLabel">중2</span><span class="caret">▾</span></button>
+      </div>
+      <div class="list-pad">
+        <div id="pointList"></div>
+        <div class="tel-box">
+          <div>
+            <div class="t1">포인트 충전은 학원으로 문의해주세요</div>
+            <div class="t2">02-1234-5678</div>
+          </div>
+          <span class="call" onclick="toast('전화 연결')">전화하기</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- S6 푸시: 구매 내역 -->
+    <div class="view" id="viewS6H">
+      <div class="appbar">
+        <div class="back" onclick="popMy()" aria-label="뒤로"><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M14 4L7 11L14 18" stroke="#111827" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="title">구매 내역</div>
+      </div>
+      <div class="list-pad">
+        <div id="histList"></div>
+      </div>
+    </div>
+
+    <!-- S6 푸시: 계정 -->
+    <div class="view" id="viewS6A">
+      <div class="appbar">
+        <div class="back" onclick="popMy()" aria-label="뒤로"><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M14 4L7 11L14 18" stroke="#111827" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="title">계정</div>
+      </div>
+      <div class="list-pad">
+        <div class="account-row">
+          <div class="acc-info">
+            <div class="acc-email">haneul0412@kakao.com</div>
+            <div class="acc-provider"><span class="kakao-dot"></span>카카오 계정 연결됨</div>
+          </div>
+          <span class="withdraw-link" onclick="openWithdraw()">계정 탈퇴</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 탭바 -->
+  <div class="tabbar">
+    <button class="tab on" id="tabS1" onclick="goRoot('s1')">
+      <svg class="ic-fill" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 6.2C10.4 4.9 8.1 4.5 5.5 4.5c-.55 0-1 .45-1 1V17c0 .55.45 1 1 1 2.6 0 4.9.4 6.5 1.7 1.6-1.3 3.9-1.7 6.5-1.7.55 0 1-.45 1-1V5.5c0-.55-.45-1-1-1-2.6 0-4.9.4-6.5 1.7z" fill="#271971"/><path d="M12 6.2v13.5" stroke="#fff" stroke-width="1.4"/></svg>
+      <svg class="ic-line" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 6.2C10.4 4.9 8.1 4.5 5.5 4.5c-.55 0-1 .45-1 1V17c0 .55.45 1 1 1 2.6 0 4.9.4 6.5 1.7 1.6-1.3 3.9-1.7 6.5-1.7.55 0 1-.45 1-1V5.5c0-.55-.45-1-1-1-2.6 0-4.9.4-6.5 1.7z" stroke="#9CA3AF" stroke-width="1.7" stroke-linejoin="round"/><path d="M12 6.2v13.5" stroke="#9CA3AF" stroke-width="1.4"/></svg>
+      커리큘럼
+    </button>
+    <button class="tab" id="tabS4" onclick="goRoot('s4')">
+      <svg class="ic-fill" width="24" height="24" viewBox="0 0 24 24" fill="none"><rect x="3.75" y="5.25" width="16.5" height="13.5" rx="2.25" fill="#271971"/><path d="M10.3 9.3l4.4 2.7-4.4 2.7V9.3z" fill="#fff"/></svg>
+      <svg class="ic-line" width="24" height="24" viewBox="0 0 24 24" fill="none"><rect x="3.75" y="5.25" width="16.5" height="13.5" rx="2.25" stroke="#9CA3AF" stroke-width="1.7"/><path d="M10.3 9.3l4.4 2.7-4.4 2.7V9.3z" stroke="#9CA3AF" stroke-width="1.6" stroke-linejoin="round"/></svg>
+      내 학습
+    </button>
+    <button class="tab" id="tabS6" onclick="goRoot('s6')">
+      <svg class="ic-fill" width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8.25" r="3.6" fill="#271971"/><path d="M4.6 20c.9-3.7 3.9-5.7 7.4-5.7s6.5 2 7.4 5.7H4.6z" fill="#271971"/></svg>
+      <svg class="ic-line" width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8.25" r="3.25" stroke="#9CA3AF" stroke-width="1.7"/><path d="M5 19.5c.9-3.5 3.7-5.4 7-5.4s6.1 1.9 7 5.4" stroke="#9CA3AF" stroke-width="1.7" stroke-linecap="round"/></svg>
+      마이페이지
+    </button>
+  </div>
+  <div class="home-indicator"></div>
+
+  <div class="dim" onclick="closeSheets()"></div>
+
+  <div class="sheet" data-sheet="grade">
+    <h2>학년 선택</h2>
+    <div class="grade-grid" id="gradeGrid"></div>
+  </div>
+
+  <div class="sheet" data-sheet="buy">
+    <h2>구매 확인</h2>
+    <div class="row"><span class="k">강의</span><span class="v" id="buyLecName"></span></div>
+    <div class="row"><span class="k">가격</span><span class="v">100P</span></div>
+    <div class="row"><span class="k" id="buyWalletLabel"></span><span class="v" id="buyBefore"></span></div>
+    <div class="notice">구매 후에는 취소·환불이 불가해요.</div>
+    <div class="actions">
+      <button class="btn btn-cancel" onclick="closeSheets()">취소</button>
+      <button class="btn btn-primary" onclick="confirmBuy()">구매하기</button>
+    </div>
+  </div>
+
+  <div class="sheet" data-sheet="bulk">
+    <h2>일괄 구매</h2>
+    <div class="notice" style="margin:-4px 0 10px">구매할 강의를 선택하세요.</div>
+    <div class="bulk-list" id="bulkList"></div>
+    <div class="row"><span class="k">선택한 강의</span><span class="v" id="bkCount">0개</span></div>
+    <div class="row"><span class="k">총 가격</span><span class="v" id="bkTotal">0P</span></div>
+    <div class="row"><span class="k" id="bkWalletLabel"></span><span class="v" id="bkBalance">0P</span></div>
+    <div class="notice">구매 후에는 취소·환불이 불가해요.</div>
+    <div class="actions">
+      <button class="btn btn-cancel" onclick="closeSheets()">취소</button>
+      <button class="btn btn-primary" id="bkConfirm" onclick="confirmBulkBuy()">구매하기</button>
+    </div>
+  </div>
+
+  <div class="sheet" data-sheet="lack">
+    <div class="lack-head">
+      <div class="ico">!</div>
+      <div class="lack-title" id="lackTitle">포인트가 부족해요</div>
+    </div>
+    <div class="row"><span class="k">현재 포인트</span><span class="v" id="lackNow"></span></div>
+    <div class="row"><span class="k">필요 포인트</span><span class="v" id="lackNeed"></span></div>
+    <div class="notice">포인트 충전은 학원으로 문의해주세요.</div>
+    <div class="tel-box"><div><div class="t1">학원 문의</div><div class="t2">02-1234-5678</div></div><span class="call" onclick="toast('전화 연결 (데모)')">전화하기</span></div>
+    <div class="actions">
+      <button class="btn btn-cancel" onclick="closeSheets()">확인</button>
+    </div>
+  </div>
+
+  <div class="sheet" data-sheet="done">
+    <div class="done-wrap">
+      <h2>구매했어요</h2>
+      <p id="doneLecName"></p>
+    </div>
+    <div class="actions">
+      <button class="btn btn-cancel" onclick="closeSheets()">계속 둘러보기</button>
+      <button class="btn btn-primary" onclick="goStudyBought()">바로 학습하기</button>
+    </div>
+  </div>
+
+  <div class="sheet" data-sheet="withdraw">
+    <div class="lack-head">
+      <div class="ico">!</div>
+      <div class="lack-title">탈퇴하면 되돌릴 수 없어요</div>
+    </div>
+    <div class="row"><span class="k">남은 포인트</span><span class="v" id="wdPoints"></span></div>
+    <div class="row"><span class="k">구매한 강의</span><span class="v" id="wdLecs"></span></div>
+    <div class="notice">남은 포인트와 수강 권한은 모두 사라져요. 구매·포인트 기록은 익명으로 보관돼요.</div>
+    <div class="actions">
+      <button class="btn btn-cancel" onclick="closeSheets()">취소</button>
+      <button class="btn btn-primary" onclick="confirmWithdraw()">탈퇴하기</button>
+    </div>
+  </div>
+
+  <div class="toast" id="toastEl"></div>
+</div>
+
+<script>
+  const MY_GRADE = '중2';
+  const GRADES = ['초1','초2','초3','초4','초5','초6','중1','중2','중3','고1','고2','고3'];
+  const SUBJECTS = ['전체','수학','영어','과학'];
+  const SUBJ_ONLY = ['수학','영어','과학'];
+  const SYM = { '수학':'Σ', '영어':'Aa', '과학':'⚛' };
+
+  const CURRICULA = [
+    { id:'c1', grade:'중2', subject:'수학', name:'중2 수학 2학기 내신 완성', desc:'일차함수부터 확률까지, 2학기 내신 범위를 개념 → 유형 → 기출 순서로 완성하는 커리큘럼입니다.', teacher:'김수학',
+      lectures:[
+        { id:'c1l1', name:'일차함수의 뜻과 그래프', desc:'함수 개념부터 그래프 그리기까지 한 번에', state:'resume', resumeAt:'12:30' },
+        { id:'c1l2', name:'일차함수와 일차방정식의 관계', desc:'두 그래프의 교점, 연립방정식으로 읽기', state:'owned' },
+        { id:'c1l3', name:'확률의 기본 성질', desc:'경우의 수에서 확률로, 시험에 나오는 것만', state:'buyable' },
+        { id:'c1l4', name:'확률 실전 기출 풀이', desc:'최근 3개년 내신 기출 중 핵심 12문항', state:'buyable' },
+      ]},
+    { id:'c2', grade:'중2', subject:'영어', name:'중2 영어 문법 마스터', desc:'to부정사·동명사·수동태, 중2 필수 문법을 예문 중심으로 잡아드립니다.', teacher:'이영어',
+      lectures:[
+        { id:'c2l1', name:'to부정사 완전 정복', desc:'명사적·형용사적·부사적 용법 구분', state:'buyable' },
+        { id:'c2l2', name:'동명사 vs to부정사', desc:'목적어 자리에서 헷갈리는 동사 총정리', state:'buyable' },
+        { id:'c2l3', name:'수동태의 모든 것', desc:'시제별 수동태와 by 이외의 전치사', state:'buyable' },
+      ]},
+    { id:'c3', grade:'중2', subject:'과학', name:'중2 과학 개념+탐구', desc:'물질의 특성부터 자극과 반응까지, 실험 영상과 함께 개념을 정리합니다.', teacher:'박과학',
+      lectures:[
+        { id:'c3l1', name:'물질의 특성', desc:'밀도·용해도·끓는점으로 물질 구분하기', state:'buyable' },
+        { id:'c3l2', name:'자극과 반응', desc:'감각 기관과 신경계, 그림으로 이해하기', state:'buyable' },
+      ]},
+    { id:'c4', grade:'중1', subject:'수학', name:'중1 수학 기초 다지기', desc:'소인수분해와 정수·유리수, 중학 수학의 출발점을 탄탄하게 다집니다.', teacher:'김수학',
+      lectures:[
+        { id:'c4l1', name:'소인수분해', desc:'거듭제곱과 소인수분해, 최대공약수까지', state:'buyable' },
+        { id:'c4l2', name:'정수와 유리수', desc:'수직선 위에서 부호 있는 수 다루기', state:'buyable' },
+        { id:'c4l3', name:'문자와 식', desc:'문자를 사용한 식, 식의 값 구하기', state:'buyable' },
+      ]},
+    { id:'c5', grade:'중3', subject:'수학', name:'중3 수학 고입 대비', desc:'이차함수와 원의 성질까지, 고입 전 반드시 완성해야 할 단원 총정리.', teacher:'김수학',
+      lectures:[
+        { id:'c5l1', name:'이차함수의 그래프', desc:'꼭짓점과 축, 평행이동으로 그리기', state:'buyable' },
+        { id:'c5l2', name:'원의 성질', desc:'원주각과 중심각, 접선의 성질', state:'buyable' },
+      ]},
+    { id:'c6', grade:'중3', subject:'영어', name:'중3 영어 독해 트레이닝', desc:'지문 구조 분석으로 독해 속도와 정확도를 함께 올립니다.', teacher:'이영어',
+      lectures:[
+        { id:'c6l1', name:'주제문 찾기', desc:'단락 구조로 글쓴이의 의도 파악하기', state:'buyable' },
+      ]},
+  ];
+  const DUR = { c1l1:'21:04', c1l2:'17:32', c1l3:'14:08', c1l4:'19:45', c2l1:'11:20', c2l2:'09:47', c2l3:'15:03', c3l1:'13:26', c3l2:'10:52', c4l1:'16:11', c4l2:'12:40', c4l3:'14:57', c5l1:'18:22', c5l2:'15:36', c6l1:'13:19' };
+  const LEC_INDEX = {};
+  CURRICULA.forEach(c => c.lectures.forEach(l => LEC_INDEX[l.id] = { lec: l, cur: c }));
+
+  const state = {
+    root: 's1',
+    s1: { grade: MY_GRADE, subject: '전체' },
+    s4: { grade: MY_GRADE, subject: '전체' },
+    s6: { grade: MY_GRADE },
+    currentCur: null,
+    currentClass: null,
+    playing: null,
+    gradeTarget: 's1',
+    auth: 'unregistered', // unregistered | pending | rejected | approved
+    selected: new Set(),
+    pendingBuy: null,
+    lastBought: null,
+    wallets: { '중2|수학': 300, '중2|영어': 50, '중2|과학': 0, '중1|수학': 100, '중1|영어': 0, '중1|과학': 0, '중3|수학': 0, '중3|영어': 0, '중3|과학': 0 },
+    purchases: [
+      { lecId:'c1l1', date:'2026.08.12' },
+      { lecId:'c1l2', date:'2026.08.20' },
+    ],
+  };
+  const phone = document.getElementById('phone');
+
+  /* ── S1 ── */
+  function renderS1() {
+    document.getElementById('s1GradeLabel').textContent = state.s1.grade;
+    document.getElementById('s1GradeBtn').classList.toggle('other', state.s1.grade !== MY_GRADE);
+    document.getElementById('s1SubjectChips').innerHTML = SUBJECTS.map(s =>
+      `<button class="chip ${state.s1.subject===s?'on':''}" onclick="state.s1.subject='${s}';renderS1()">${s}</button>`
+    ).join('');
+
+    const list = CURRICULA.filter(c =>
+      c.grade === state.s1.grade && (state.s1.subject === '전체' || c.subject === state.s1.subject)
+    );
+    const wrap = document.getElementById('curList');
+    if (list.length === 0) {
+      const f = state.s1.subject !== '전체';
+      wrap.innerHTML = `
+        <div class="empty">
+          <div class="ico">☰</div>
+          <div class="msg">${f ? '이 과목에는 아직 커리큘럼이 없어요' : '아직 등록된 커리큘럼이 없어요'}</div>
+          <div class="sub">학원에서 커리큘럼을 공개하면 여기에 표시돼요.</div>
+        </div>`;
+      return;
+    }
+    wrap.innerHTML = list.map(c => `
+      <div class="cur-card" onclick="pushDetail('${c.id}')">
+        <div class="badges"><span class="badge">${c.grade}</span><span class="badge">${c.subject}</span></div>
+        <div class="cur-name">${c.name}</div>
+        <div class="cur-desc">${c.desc}</div>
+        <div class="cur-meta">강의 <b>${c.lectures.length}개</b> · ${c.teacher} 선생님</div>
+      </div>`).join('');
+  }
+
+  /* ── S2 ── */
+  function renderS2() {
+    const c = state.currentCur;
+    document.getElementById('detBadges').innerHTML = `<span class="badge">${c.grade}</span><span class="badge">${c.subject}</span>`;
+    document.getElementById('detName').textContent = c.name;
+    document.getElementById('detDesc').textContent = c.desc;
+    document.getElementById('detMeta').innerHTML = `강의 <b>${c.lectures.length}개</b> · ${c.teacher} 선생님`;
+
+    document.getElementById('bulkOpenBtn').style.display = unpurchasedOf(c).length >= 2 ? '' : 'none';
+    document.getElementById('lecList').innerHTML = c.lectures.map((lec, i) => {
+      let cta, price;
+      if (lec.state === 'resume') {
+        cta = `<button class="btn btn-resume" onclick="goStudy('${c.id}','${lec.id}')">이어보기<small>${lec.resumeAt}부터</small></button>`;
+        price = `<span class="price owned">구매한 강의</span>`;
+      } else if (lec.state === 'owned' || isOwned(lec.id)) {
+        cta = `<button class="btn btn-primary" onclick="goStudy('${c.id}','${lec.id}')">학습하기</button>`;
+        price = `<span class="price owned">구매한 강의</span>`;
+      } else {
+        cta = `<button class="btn btn-primary" onclick="tryBuy('${lec.id}')">구매하기</button>`;
+        price = `<span class="price">100P</span>`;
+      }
+      const no = String(i+1).padStart(2,'0');
+      return `
+      <div class="lec-card">
+        <div class="thumb"><span class="no">${no}</span><span class="sym">${SYM[c.subject]}</span></div>
+        <div class="lec-body">
+          <div class="lec-name">${lec.name}</div>
+          <div class="lec-desc">${lec.desc}</div>
+          <div class="lec-foot">${price}${cta}</div>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  /* ── S4 내 학습 ── */
+  function renderS4() {
+    document.getElementById('s4GradeLabel').textContent = state.s4.grade;
+    document.getElementById('s4GradeBtn').classList.toggle('other', state.s4.grade !== MY_GRADE);
+    document.getElementById('s4SubjectChips').innerHTML = SUBJECTS.map(s =>
+      `<button class="chip ${state.s4.subject===s?'on':''}" onclick="state.s4.subject='${s}';renderS4()">${s}</button>`
+    ).join('');
+
+    const ownedIds = new Set(state.purchases.map(p => p.lecId));
+    const groups = CURRICULA
+      .filter(c => c.grade === state.s4.grade && (state.s4.subject === '전체' || c.subject === state.s4.subject))
+      .map(c => ({ cur: c, owned: c.lectures.filter(l => ownedIds.has(l.id)).length }))
+      .filter(g => g.owned > 0);
+
+    const wrap = document.getElementById('myLecList');
+    if (groups.length === 0) {
+      wrap.innerHTML = `
+        <div class="empty">
+          <div class="ico">▶</div>
+          <div class="msg">이 학년/과목에는 구매한 강의가 없어요</div>
+          <div class="sub">커리큘럼에서 필요한 강의를 찾아보세요.</div>
+          <button class="btn btn-outline" onclick="goRoot('s1')">커리큘럼 보러 가기</button>
+        </div>`;
+      return;
+    }
+    wrap.innerHTML = groups.map(({ cur, owned }) => `
+      <div class="cur-card" onclick="pushClass('${cur.id}')">
+        <div class="badges"><span class="badge">${cur.grade}</span><span class="badge">${cur.subject}</span></div>
+        <div class="cur-name">${cur.name}</div>
+        <div class="cur-desc">${cur.desc}</div>
+        <div class="cur-meta">내 강의 <b>${owned} / ${cur.lectures.length}</b> · ${cur.teacher} 선생님</div>
+      </div>`).join('');
+  }
+
+  /* ── S4-2 강의실 렌더 ── */
+  function renderS42() {
+    const c = state.currentClass;
+    const ownedIds = new Set(state.purchases.map(p => p.lecId));
+    const isLecOwned = l => l.state !== 'buyable' || ownedIds.has(l.id);
+    const cur = c.lectures.find(l => l.id === state.playing);
+    const ownedCount = c.lectures.filter(isLecOwned).length;
+    const curOwned = isLecOwned(cur);
+
+    document.getElementById('piName').textContent = cur.name;
+    document.getElementById('piMeta').textContent = `${c.name} · ${c.teacher} 선생님 · ${DUR[cur.id]}`;
+    document.getElementById('psCount').textContent = `내 강의 ${ownedCount} / ${c.lectures.length}`;
+
+    const vi = document.getElementById('videoInner');
+    if (!curOwned) {
+      vi.innerHTML = `
+        <span class="locked-ui">
+          <span class="lock-circle">🔒</span>
+          <span class="lock-msg">구매 후 볼 수 있는 강의예요</span>
+          <button class="buy-in-player" onclick="goBuyFromClass('${c.id}','${cur.id}')">100P 구매하기</button>
+        </span>`;
+    } else {
+      /* 시청 이력이 있으면 저장된 위치에서 자동 이어재생 — 별도 표시 없음 */
+      vi.innerHTML = `<span class="play-big" onclick="toast('재생 — ${cur.name}')">▶</span>`;
+    }
+
+    document.getElementById('psList').innerHTML = c.lectures.map((lec, i) => {
+      const no = String(i+1).padStart(2,'0');
+      const now = lec.id === state.playing;
+      const locked = !isLecOwned(lec);
+      return `
+      <div class="ps-row ${now?'now':''} ${locked?'locked':''}" onclick="state.playing='${lec.id}';renderS42();">
+        <span class="ps-thumb">
+          <span class="no">${no}</span>
+          <span class="sym">${SYM[c.subject]}</span>
+          ${locked ? '<span class="thumb-lock">🔒</span>' : ''}
+        </span>
+        <span class="ps-body">
+          <span class="ml-name">${lec.name}</span>
+          <span class="ml-sub" style="display:block">${DUR[lec.id]}</span>
+        </span>
+      </div>`;
+    }).join('');
+  }
+
+  /* ── S6 ── */
+  function renderS6() {
+    if (!document.getElementById('viewS6W')) return;
+    document.getElementById('s6GradeLabel').textContent = state.s6.grade;
+    document.getElementById('s6GradeBtn').classList.toggle('other', state.s6.grade !== MY_GRADE);
+    document.getElementById('pointList').innerHTML = SUBJ_ONLY.map(s => {
+      const amt = state.wallets[state.s6.grade + '|' + s] ?? 0;
+      return `<div class="point-row"><span class="subj">${s}</span><span class="amt ${amt===0?'zero':''}">${amt}P</span></div>`;
+    }).join('');
+
+    const hist = [...state.purchases].reverse();
+    document.getElementById('histList').innerHTML = hist.map(p => {
+      const { lec, cur } = LEC_INDEX[p.lecId];
+      return `
+      <div class="hist-row">
+        <div>
+          <div class="h-name">${lec.name}</div>
+          <div class="h-meta">${cur.grade} · ${cur.subject} · ${p.date}</div>
+        </div>
+        <div class="h-price">100P</div>
+      </div>`;
+    }).join('');
+  }
+
+  /* ── 내비게이션 ── */
+  function goRoot(v) {
+    if (state.auth !== 'approved') { toast('학원에서 승인한 후 이용할 수 있어요'); return; }
+    state.root = v;
+    phone.classList.remove('auth');
+    phone.classList.remove('pushed');
+    closeSheets();
+    ['S02','S03','S04','S05','S1','S2','S4','S42','S6','S6P','S6W','S6H','S6A'].forEach(x => document.getElementById('view'+x).classList.remove('on'));
+    document.getElementById('view' + v.toUpperCase()).classList.add('on');
+    ['s1','s4','s6'].forEach(t => document.getElementById('tab' + t.toUpperCase().slice(0,2) + t.slice(1).toUpperCase().slice(1)));
+    document.getElementById('tabS1').classList.toggle('on', v === 's1');
+    document.getElementById('tabS4').classList.toggle('on', v === 's4');
+    document.getElementById('tabS6').classList.toggle('on', v === 's6');
+    if (v === 's1') renderS1();
+    if (v === 's4') renderS4();
+    if (v === 's6') renderS6();
+    document.getElementById('screen').scrollTop = 0;
+  }
+  function pushDetail(id) {
+    state.currentCur = CURRICULA.find(c => c.id === id);
+    ['S1','S4','S42','S6'].forEach(x => document.getElementById('view'+x).classList.remove('on'));
+    document.getElementById('viewS2').classList.add('on');
+    phone.classList.add('pushed');
+    renderS2();
+    document.getElementById('screen').scrollTop = 0;
+  }
+  function popDetail() { goRoot(state.root); }
+  function pushClass(curId, lecId) {
+    const c = CURRICULA.find(x => x.id === curId);
+    state.currentClass = c;
+    const ownedIds = new Set(state.purchases.map(p => p.lecId));
+    const ownedLecs = c.lectures.filter(l => l.state !== 'buyable' || ownedIds.has(l.id));
+    state.playing = lecId
+      || (c.lectures.find(l => l.state === 'resume') || ownedLecs[0]).id;
+    state.root = 's4';
+    document.getElementById('tabS1').classList.remove('on');
+    document.getElementById('tabS6').classList.remove('on');
+    document.getElementById('tabS4').classList.add('on');
+    ['S1','S2','S4','S6'].forEach(x => document.getElementById('view'+x).classList.remove('on'));
+    document.getElementById('viewS42').classList.add('on');
+    phone.classList.add('pushed');
+    renderS42();
+    document.getElementById('screen').scrollTop = 0;
+  }
+  /* 시청 딥링크: 커리큘럼 상세 → 강의실 */
+  function goStudy(curId, lecId) { pushClass(curId, lecId); }
+
+  /* ── S6 마이페이지 (v0.7: 리스트 4행 → 푸시) ── */
+  function pushMy(v) {
+    if (v === 's6w' || v === 's6h') renderS6();
+    phone.classList.add('pushed');
+    ['S02','S03','S04','S05','S1','S2','S4','S42','S6','S6P','S6W','S6H','S6A'].forEach(x => document.getElementById('view'+x).classList.remove('on'));
+    document.getElementById('view' + v.toUpperCase()).classList.add('on');
+  }
+  function popMy() {
+    goRoot('s6');
+  }
+  function openWithdraw() {
+    const totalP = Object.values(state.wallets).reduce((a, b) => a + b, 0);
+    document.getElementById('wdPoints').textContent = totalP + 'P';
+    document.getElementById('wdLecs').textContent = state.purchases.length + '개';
+    openSheet('withdraw');
+  }
+  function confirmWithdraw() {
+    closeSheets();
+    phone.classList.remove('pushed');
+    state.auth = 'unregistered';
+    applyAuthUi();
+    goAuth('s02');
+    toast('탈퇴했어요');
+  }
+
+  /* ── 시트 ── */
+  function openGradeSheet(target, e) {
+    if (e) e.stopPropagation();
+    state.gradeTarget = target;
+    const cur = state[target].grade;
+    document.getElementById('gradeGrid').innerHTML = GRADES.map(g =>
+      `<button class="${g===cur?'sel':''}" onclick="pickGrade('${g}')">${g}${g===MY_GRADE?'<span class="me">내 학년</span>':''}</button>`
+    ).join('');
+    openSheet('grade');
+  }
+  function pickGrade(g) {
+    state[state.gradeTarget].grade = g;
+    closeSheets();
+    if (state.gradeTarget === 's1') renderS1();
+    if (state.gradeTarget === 's4') renderS4();
+    if (state.gradeTarget === 's6') renderS6();
+  }
+  function openSheet(name, e) {
+    if (e) e.stopPropagation();
+    phone.querySelectorAll('.sheet').forEach(s => s.classList.remove('active'));
+    phone.querySelector(`.sheet[data-sheet="${name}"]`).classList.add('active');
+    phone.classList.add('sheet-open');
+  }
+  function closeSheets() {
+    phone.classList.remove('sheet-open');
+    phone.querySelectorAll('.sheet').forEach(s => s.classList.remove('active'));
+  }
+
+  let toastTimer;
+  function toast(msg) {
+    const t = document.getElementById('toastEl');
+    t.textContent = msg; t.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.classList.remove('show'), 1600);
+  }
+
+
+
+  /* ===== 앱 구매 (v0.6) — 웹 프로토타입 로직 이식 ===== */
+  const PRICE = 100;
+  const walletKey = c => c.grade + '|' + c.subject;
+  const walletOf = c => state.wallets[walletKey(c)] ?? 0;
+  const isOwned = lecId => state.purchases.some(p => p.lecId === lecId);
+
+  function unpurchasedOf(c) {
+    const ownedIds = new Set(state.purchases.map(p => p.lecId));
+    return c.lectures
+      .map((l, i) => ({ ...l, no: i+1 }))
+      .filter(l => l.state === 'buyable' && !ownedIds.has(l.id));
+  }
+  function openLack(c, needed) {
+    document.getElementById('lackTitle').textContent = `${c.grade} ${c.subject} 포인트가 부족해요`;
+    document.getElementById('lackNow').textContent = walletOf(c) + 'P';
+    document.getElementById('lackNeed').textContent = needed + 'P';
+    openSheet('lack');
+  }
+  function tryBuy(lecId) {
+    const c = state.currentCur;
+    const lec = c.lectures.find(l => l.id === lecId);
+    const bal = walletOf(c);
+    if (bal < PRICE) { openLack(c, PRICE); return; }
+    state.pendingBuy = lecId;
+    document.getElementById('buyLecName').textContent = lec.name;
+    document.getElementById('buyWalletLabel').textContent = `${c.grade} ${c.subject} 포인트`;
+    document.getElementById('buyBefore').textContent = bal + 'P';
+    openSheet('buy');
+  }
+  function confirmBuy() {
+    const c = state.currentCur;
+    state.wallets[walletKey(c)] -= PRICE;
+    state.purchases.push({ lecId: state.pendingBuy, date: '2026.08.27' });
+    state.lastBought = state.pendingBuy;
+    const lec = c.lectures.find(l => l.id === state.pendingBuy);
+    document.getElementById('doneLecName').textContent = lec.name + ' · 언제든 다시 볼 수 있어요';
+    renderS2();
+    openSheet('done');
+  }
+  function goStudyBought() {
+    closeSheets();
+    goStudy(state.currentCur.id, state.lastBought);
+  }
+  /* 구매 딥링크: 강의실 잠금 → S2 + 구매 시트 (결제 = 커리큘럼 원칙) */
+  function goBuyFromClass(curId, lecId) {
+    pushDetail(curId);
+    tryBuy(lecId);
+  }
+  function openBulkSheet() {
+    const c = state.currentCur;
+    state.selected = new Set(unpurchasedOf(c).map(l => l.id)); // 기본 전체 선택
+    renderBulkSheet();
+    openSheet('bulk');
+  }
+  function renderBulkSheet() {
+    const c = state.currentCur;
+    const items = unpurchasedOf(c);
+    document.getElementById('bulkList').innerHTML = items.map(l => `
+      <label class="bulk-row">
+        <input type="checkbox" class="lec-check" ${state.selected.has(l.id)?'checked':''}
+          onchange="toggleSelect('${l.id}', this.checked)">
+        <span class="no-chip">${String(l.no).padStart(2,'0')}</span>
+        <span class="bl-name">${l.name}</span>
+        <span class="bl-price">100P</span>
+      </label>`).join('');
+    const n = state.selected.size;
+    document.getElementById('bkCount').textContent = n + '개';
+    document.getElementById('bkTotal').textContent = (n * PRICE) + 'P';
+    document.getElementById('bkWalletLabel').textContent = `${c.grade} ${c.subject} 포인트`;
+    document.getElementById('bkBalance').textContent = walletOf(c) + 'P';
+    document.getElementById('bkConfirm').disabled = n === 0;
+  }
+  function toggleSelect(lecId, on) {
+    if (on) state.selected.add(lecId); else state.selected.delete(lecId);
+    renderBulkSheet();
+  }
+  function confirmBulkBuy() {
+    const c = state.currentCur;
+    const ids = [...state.selected];
+    if (ids.length === 0) return;
+    const total = ids.length * PRICE;
+    if (walletOf(c) < total) { openLack(c, total); return; }
+    state.wallets[walletKey(c)] -= total;
+    ids.forEach(id => state.purchases.push({ lecId: id, date: '2026.08.27' }));
+    state.lastBought = ids[0];
+    state.selected.clear();
+    const first = c.lectures.find(l => l.id === state.lastBought);
+    document.getElementById('doneLecName').textContent = `${first.name} 외 ${ids.length - 1}개 · 언제든 다시 볼 수 있어요`;
+    renderS2();
+    openSheet('done');
+  }
+
+  // ===== S0 인증/온보딩 (v0.5) =====
+  const ACADEMY_TEL = '02-1234-5678';
+  const S0_GRADES = ['초1','초2','초3','초4','초5','초6','중1','중2','중3','고1','고2','고3'];
+
+  function applyAuthUi() {
+    phone.classList.toggle('auth', state.auth !== 'approved');
+  }
+  function goAuth(id) {
+    phone.classList.add('auth');
+    phone.classList.remove('pushed');
+    ['S02','S03','S04','S05','S1','S2','S4','S42','S6','S6P','S6W','S6H','S6A'].forEach(x => document.getElementById('view'+x).classList.remove('on'));
+    document.getElementById('view' + id.toUpperCase()).classList.add('on');
+    if (id === 's05') renderLimit();
+  }
+  function renderLimit() {
+    const body = document.getElementById('limitBody');
+    if (state.auth === 'pending') {
+      body.innerHTML =
+        '<div class="ico wait">⏳</div>' +
+        '<div class="lt-title">입학 신청을 확인하고 있어요</div>' +
+        '<div class="lt-sub">학원에서 승인한 후<br>강의를 이용할 수 있어요.</div>' +
+        '';
+    } else {
+      body.innerHTML =
+        '<div class="ico warn">!</div>' +
+        '<div class="lt-title">입학 신청이 승인되지 않았어요</div>' +
+        '<div class="lt-sub">궁금한 점은 학원으로 문의해주세요.</div>' +
+        '<button class="btn btn-primary btn-full" style="margin-top:20px" onclick="goReapply()">다시 신청하기</button>' +
+        '<div class="tel-box"><div><div class="t1">학원 문의</div><div class="t2">' + ACADEMY_TEL + '</div></div><span class="call" onclick="toast(\'전화 연결 (데모)\')">전화하기</span></div>';
+    }
+  }
+
+  // 임시: 카카오 클릭 → 분기 선택 오버레이. 실제 구현 시 startKakao를 실제 OAuth로 교체하고 branch 계열 제거
+  function startKakao() { openBranch(); }
+  function openBranch() { document.getElementById('demoBranch').classList.add('on'); }
+  function closeBranch() { document.getElementById('demoBranch').classList.remove('on'); }
+  function branchGo(k) {
+    closeBranch();
+    if (k === 'new') { state.auth = 'unregistered'; toast('카카오 로그인 — 최초 사용자 (데모)'); goAuth('s03'); }
+    if (k === 'pending') { state.auth = 'pending'; goAuth('s05'); }
+    if (k === 'rejected') { state.auth = 'rejected'; goAuth('s05'); }
+    if (k === 'approved') { state.auth = 'approved'; applyAuthUi(); goRoot('s1'); toast('로그인했어요'); }
+  }
+  function backToLogin() {
+    toast('로그아웃 — 재로그인 시 이 화면으로 돌아와요');
+    goAuth('s02');
+  }
+  function doLogout() {
+    toast('로그아웃');
+    goAuth('s02');
+  }
+  function submitApply() {
+    state.auth = 'pending';
+    goAuth('s05');
+    toast('입학 신청을 접수했어요');
+  }
+  function goReapply() {
+    s0FillGrades('f4Grade', '중2');
+    goAuth('s04');
+  }
+  function submitReapply() {
+    state.auth = 'pending';
+    goAuth('s05');
+    toast('입학 신청을 접수했어요');
+  }
+
+  function s0FillGrades(id, selected) {
+    const sel = document.getElementById(id);
+    const keep = sel.options.length && sel.options[0].value === '' ? '<option value="" selected>학년을 선택해주세요</option>' : '';
+    sel.innerHTML = keep + S0_GRADES.map(g => '<option value="' + g + '"' + (g === selected ? ' selected' : '') + '>' + g + '</option>').join('');
+  }
+  function s0Validate() {
+    const ok = ['f3Name','f3School','f3Phone','f3Parent'].every(id => document.getElementById(id).value.trim() !== '')
+      && document.getElementById('f3Grade').value !== '';
+    document.getElementById('f3Submit').disabled = !ok;
+    const g = document.getElementById('f3Grade');
+    g.classList.toggle('ph', g.value === '');
+  }
+  s0FillGrades('f3Grade', null);
+  ['f3Name','f3School','f3Grade','f3Phone','f3Parent'].forEach(id => {
+    document.getElementById(id).addEventListener('input', s0Validate);
+    document.getElementById(id).addEventListener('change', s0Validate);
+  });
+
+  applyAuthUi();
+  goAuth('s02');
+</script>
+<div class="demo-branch" id="demoBranch">
+  <div class="db-card">
+    <div class="db-badge">임시 화면 · 실제 구현 시 제거</div>
+    <div class="db-title">어떤 사용자로 들어갈까요?</div>
+<div class="db-opt" onclick="branchGo('new')"><div><b>최초 사용자</b><small>가입(입학 신청)부터 시작해요</small></div><span class="chv">›</span></div><div class="db-opt" onclick="branchGo('pending')"><div><b>김하늘 · 승인 대기</b><small>신청 접수 후 학원 승인을 기다려요</small></div><span class="chv">›</span></div><div class="db-opt" onclick="branchGo('rejected')"><div><b>김하늘 · 신청 거절</b><small>거절 안내와 재신청 흐름</small></div><span class="chv">›</span></div><div class="db-opt" onclick="branchGo('approved')"><div><b>김하늘 · 재학생</b><small>승인된 회원으로 바로 이용해요</small></div><span class="chv">›</span></div>
+    <div class="db-cancel" onclick="closeBranch()">취소</div>
+  </div>
+</div>
+</body>
+</html>
