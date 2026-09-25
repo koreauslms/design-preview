@@ -12,11 +12,14 @@
   --ok:#0E7A4A; --ok-soft:#E7F5EE; --wait:#B45309; --wait-soft:#FBF3E4;
 }
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:Pretendard,-apple-system,'Apple SD Gothic Neo','Noto Sans KR',sans-serif;background:#EDEEF2;color:var(--text)}
-.console{display:flex;min-height:100vh;max-width:1280px;margin:0 auto;background:#fff}
+body{font-family:Pretendard,-apple-system,'Apple SD Gothic Neo','Noto Sans KR',sans-serif;background:#EDEEF2;color:var(--text);
+ display:flex;flex-direction:column;align-items:center;height:100vh;overflow:hidden;padding:28px 16px 40px;-webkit-font-smoothing:antialiased}
+/* 프레임: web.html .web-frame 과 동일 규격 (max 1400, 테두리·라운드·그림자, 내부 스크롤) */
+.frame{width:100%;max-width:1400px;flex:1;min-height:0;background:#fff;border:1px solid #D9DBE1;border-radius:10px;overflow:hidden;box-shadow:0 12px 32px rgba(17,24,39,.10)}
+.console{display:flex}
 
 /* ── 사이드바 ─────────────────────── */
-.side{width:220px;flex:none;border-right:1px solid var(--border);display:flex;flex-direction:column}
+.side{width:220px;flex:none;border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:auto}
 .side-logo{padding:18px 20px 14px}
 .side-logo .logo-svg{height:26px;width:auto;display:block}
 .side-menu{flex:1;padding:4px 12px 12px}
@@ -29,7 +32,7 @@ body{font-family:Pretendard,-apple-system,'Apple SD Gothic Neo','Noto Sans KR',s
 .side-foot{padding:14px 20px;font-size:11px;color:#C4C8CF;border-top:1px solid var(--border)}
 
 /* ── 상단 바 ─────────────────────── */
-.main{flex:1;min-width:0;display:flex;flex-direction:column}
+.main{flex:1;min-width:0;display:flex;flex-direction:column;overflow:auto}
 .topbar{height:60px;flex:none;border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 32px}
 .crumb{font-size:13px;color:var(--sub)}
 .crumb b{color:var(--text);font-weight:600}
@@ -50,7 +53,7 @@ body{font-family:Pretendard,-apple-system,'Apple SD Gothic Neo','Noto Sans KR',s
 .pm-item:hover{background:var(--section)}
 
 /* ── 콘텐츠 공통 ─────────────────── */
-.content{padding:28px 32px 48px;max-width:1080px}
+.content{padding:28px 32px 48px}
 .page-title{font-size:26px;font-weight:700;letter-spacing:-.3px}
 .page-desc{font-size:13px;color:var(--sub);margin-top:6px}
 
@@ -164,6 +167,14 @@ td.sub,th.r,td.r{color:var(--sub)}
 .pbar{height:8px;background:var(--section);border-radius:4px;overflow:hidden;margin-top:14px}
 .pbar i{display:block;height:100%;background:var(--navy)}
 .upmeta{font-size:13px;color:var(--sub);margin-top:10px}
+.photo-ph{width:100%;height:120px;border-radius:6px;background:var(--section);color:var(--sub);display:flex;align-items:center;justify-content:center;font-size:13px}
+.photo-row{display:flex;align-items:center}
+.photo-row .photo-ph{width:180px;height:101px;flex:none;margin-right:14px}
+.calc{font-size:13px;color:var(--sub);margin-top:8px}
+.calc b{color:var(--text);font-weight:600}
+.mrow2 .mfld .sel{width:100%}
+.lg{display:inline-block;font-size:12px;font-weight:600;border-radius:4px;padding:3px 8px;background:var(--section);color:var(--sub)}
+.lg.kakao{background:#FEE500;color:rgba(0,0,0,.85)}
 .form-col{max-width:460px}
 .form-col > :first-child{margin-top:0}
 .form-acts{display:flex;margin-top:24px;max-width:460px}
@@ -173,24 +184,49 @@ td.sub,th.r,td.r{color:var(--sub)}
 .mfld textarea:focus{outline:none;border-color:var(--navy)}
 
 /* ── C0 인증 ─────────────────────── */
-#v-auth{min-height:100vh;background:#EDEEF2;display:flex;align-items:center;justify-content:center;padding:24px}
+#v-auth{display:flex;overflow:auto}
 #v-auth.hide{display:none}
 .auth-view{display:none}
-.auth-view.on{display:block}
-.login-box{display:flex;width:920px;min-height:520px;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 12px 32px rgba(17,24,39,.10)}
-.login-hero{width:70%;background:var(--navy);color:#fff;padding:40px;display:flex;flex-direction:column}
+.auth-view.on{display:flex;width:100%;min-height:100%;align-items:flex-start;justify-content:center;padding:64px 24px 40px}
+#a-login.on{padding:0}
+.login-box{display:flex;width:100%;min-height:100%;background:#fff}
+.login-hero{flex:1;min-width:0;background:var(--navy);color:#fff;padding:56px 64px;display:flex;flex-direction:column}
 .login-hero .lh-logo-svg{height:31px;width:auto;display:block}
 .login-hero .lh-sub{font-size:13px;opacity:.75;margin-top:12px}
 .login-hero .lh-copy{margin-top:auto}
 .login-hero .lh-tag{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.8px;border:1px solid rgba(255,255,255,.4);border-radius:12px;padding:4px 10px;opacity:.85}
 .login-hero .lh-title{font-size:24px;font-weight:700;line-height:1.45;margin-top:14px}
 .login-hero .lh-foot{font-size:11px;opacity:.5;margin-top:auto}
-.login-side{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 26px}
+.login-side{width:460px;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:48px 40px}
+.lf{width:100%;max-width:380px}
+.lf .inp{width:100%;height:46px;margin-bottom:10px}
+.pwrap{position:relative}
+.pwrap .inp{padding-right:44px}
+.eye{position:absolute;right:8px;top:50%;transform:translateY(-50%);width:28px;height:28px;border:0;background:none;color:#9CA3AF;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0}
+.lf .pwrap .eye{margin-top:-5px}
+.eye svg{width:18px;height:18px}
+.eye.on{color:var(--navy)}
+.lg-submit{width:100%;padding:13px 0;font-size:15px}
+.lg-links{text-align:center;font-size:13px;margin:14px 0 20px}
+.lg-links a{color:var(--sub);text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+.lg-div{display:flex;align-items:center;font-size:13px;color:var(--sub);margin-bottom:14px}
+.lg-div::before,.lg-div::after{content:'';flex:1;height:1px;background:var(--border)}
+.lg-div span{padding:0 12px}
+.pw-panel{display:none;margin-top:8px;padding:12px 14px;border:1px solid var(--border);border-radius:8px;background:var(--section);text-align:left}
+.pw-panel.show{display:block}
+.pw-rule{font-size:13px;color:var(--red);padding:3px 0;display:flex;align-items:center}
+.pw-rule b::before{content:'✕';font-weight:700;margin-right:10px}
+.pw-rule.ok{color:#2FB36B}
+.pw-rule.ok b::before{content:'✓'}
+.auth-card .af{text-align:left;margin-top:4px}
+.auth-card .af .btn{margin-top:20px}
+.auth-card .demo-link{display:block;font-size:12px;color:#9CA3AF;margin-top:14px;cursor:pointer;text-decoration:underline}
 .btn-kakao{width:100%;max-width:230px;height:46px;background:#FEE500;color:rgba(0,0,0,.85);border:none;border-radius:6px;font:inherit;font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center}
 .btn-kakao svg{margin-right:8px}
 .demo-row{margin-top:26px;font-size:12px;color:#9CA3AF;text-align:center}
 .demo-row a{color:#9CA3AF;text-decoration:underline;cursor:pointer;margin:0 5px}
-.auth-card{width:420px;background:#fff;border-radius:12px;padding:38px 34px;text-align:center;box-shadow:0 12px 32px rgba(17,24,39,.10)}
+.auth-card{width:100%;max-width:380px;text-align:center}
+.auth-card .ap-logo{height:30px;width:auto;display:block;margin:0 auto 36px;cursor:pointer}
 .auth-card .ico{width:52px;height:52px;border-radius:50%;background:var(--section);display:flex;align-items:center;justify-content:center;font-size:22px;margin:0 auto 16px}
 .auth-card .ico.warn{color:var(--red);background:var(--red-soft);font-weight:800}
 .auth-card .t1{font-size:18px;font-weight:700}
@@ -232,38 +268,104 @@ body.emp .adm-only{display:none}
 </style>
 </head>
 <body>
-<div id="v-auth" class="hide">
+<div id="v-auth" class="frame hide">
   <!-- C0-1 로그인 -->
   <div class="auth-view" id="a-login">
     <div class="login-box">
       <div class="login-hero">
         <div><img class="lh-logo-svg" src="logo-white.svg" alt="고려US"><div class="lh-sub">학습의 모든 운영을 하나의 콘솔에서 연결해요.</div></div>
         <div class="lh-copy"><span class="lh-tag">ACADEMY MANAGEMENT</span>
-          <div class="lh-title">학생과 콘텐츠 운영을<br>더 명확하고 빠르게.</div></div>
+          <div class="lh-title">학생과 콘텐츠 운영을<br>더 명확하고 빠르게</div></div>
         <div class="lh-foot">© 2026 고려US 아카데미. All rights reserved.</div>
       </div>
       <div class="login-side">
-        <button class="btn-kakao" onclick="kakaoLogin()"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 1.5C4.58 1.5 1 4.31 1 7.78c0 2.22 1.47 4.17 3.68 5.28l-.94 3.46c-.08.3.26.54.52.37l4.1-2.72c.21.02.42.03.64.03 4.42 0 8-2.81 8-6.28S13.42 1.5 9 1.5Z" fill="rgba(0,0,0,.85)"/></svg>카카오 로그인</button>
-
+        <div class="lf">
+          <input class="inp" type="text" id="lg-email" placeholder="이메일" autocomplete="username">
+          <div class="pwrap"><input class="inp" type="password" id="lg-pw" placeholder="비밀번호" autocomplete="current-password"><button type="button" class="eye" onclick="togglePw('lg-pw',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></button></div>
+          <div class="err hide" id="lg-err" style="margin:-2px 0 10px">이메일 또는 비밀번호가 올바르지 않아요.</div>
+          <button class="btn btn-pri lg-submit" onclick="emailLogin()">로그인</button>
+          <div class="lg-links"><a onclick="openFindPw()">비밀번호 찾기</a></div>
+          <div class="lg-div"><span>간편 로그인</span></div>
+          <button class="btn-kakao" style="width:100%;max-width:none" onclick="kakaoLogin()"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 1.5C4.58 1.5 1 4.31 1 7.78c0 2.22 1.47 4.17 3.68 5.28l-.94 3.46c-.08.3.26.54.52.37l4.1-2.72c.21.02.42.03.64.03 4.42 0 8-2.81 8-6.28S13.42 1.5 9 1.5Z" fill="rgba(0,0,0,.85)"/></svg>카카오 로그인</button>
+        </div>
       </div>
     </div>
   </div>
   <!-- C0-2 초대 계정 연결 -->
   <div class="auth-view" id="a-invite">
-    <div class="auth-card">
+    <div class="auth-card"><img class="ap-logo" src="logo.svg" alt="고려US" onclick="showAuth('a-login')">
       <div class="ico">✉</div>
       <div class="t1">초대 링크를 확인했어요</div>
-      <div class="t2">아래 계정으로 콘솔을 이용할 수 있어요.<br>카카오 로그인으로 계정을 연결하면 시작돼요.</div>
+      <div class="t2">아래 계정으로 콘솔을 이용할 수 있어요.<br>비밀번호를 설정하거나 카카오 로그인으로 연결하면 시작돼요.</div>
       <div class="inv">
         <span class="fld"><span class="lb" style="font-size:12px;color:var(--sub)">이름</span><br><b style="font-size:14px">최과학</b></span><span class="fld"><span class="lb" style="font-size:12px;color:var(--sub)">역할</span><br><b style="font-size:14px">EMPLOYEE</b></span><span class="fld" style="width:100%;margin-top:8px"><span class="lb" style="font-size:12px;color:var(--sub)">초대 이메일</span><br><b style="font-size:14px">science@koreaus.kr</b></span>
       </div>
-      <button class="btn-kakao" style="width:100%;max-width:none;margin-top:20px" onclick="connectInvite()"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 1.5C4.58 1.5 1 4.31 1 7.78c0 2.22 1.47 4.17 3.68 5.28l-.94 3.46c-.08.3.26.54.52.37l4.1-2.72c.21.02.42.03.64.03 4.42 0 8-2.81 8-6.28S13.42 1.5 9 1.5Z" fill="rgba(0,0,0,.85)"/></svg>카카오 로그인</button>
+      <div class="af"><div class="mfld"><div class="lb">비밀번호</div><div class="pwrap"><input class="inp" type="password" id="iv-pw" placeholder="비밀번호 입력" oninput="pwFormValidate('iv')" onfocus="pwFocus.iv=true;pwFormValidate('iv')" onblur="pwFocus.iv=false;pwFormValidate('iv')"><button type="button" class="eye" onclick="togglePw('iv-pw',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></button></div><div class="pw-panel" id="iv-panel"><div class="pw-rule"><b></b>영문/숫자/특수문자 중, 2가지 이상 포함</div><div class="pw-rule"><b></b>8자 이상 32자 이하 입력 (공백 제외)</div><div class="pw-rule"><b></b>연속 3자 이상 동일한 문자/숫자 제외</div></div></div><div class="mfld"><div class="lb">비밀번호 확인</div><div class="pwrap"><input class="inp" type="password" id="iv-pw2" placeholder="비밀번호 입력" oninput="pwFormValidate('iv')"><button type="button" class="eye" onclick="togglePw('iv-pw2',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></button></div></div><div class="err hide" id="iv-err">비밀번호가 일치하지 않습니다.</div>
+        <button class="btn btn-pri" id="iv-go" onclick="connectInvite('email')" disabled>비밀번호 설정하고 시작</button>
+      </div>
+      <div class="lg-div" style="margin:18px 0 0"><span>또는</span></div>
+      <button class="btn-kakao" style="width:100%;max-width:none;margin-top:14px" onclick="connectInvite('kakao')"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 1.5C4.58 1.5 1 4.31 1 7.78c0 2.22 1.47 4.17 3.68 5.28l-.94 3.46c-.08.3.26.54.52.37l4.1-2.72c.21.02.42.03.64.03 4.42 0 8-2.81 8-6.28S13.42 1.5 9 1.5Z" fill="rgba(0,0,0,.85)"/></svg>카카오 로그인</button>
       <span class="sub-act" onclick="showAuth('a-login')">돌아가기</span>
+    </div>
+  </div>
+  <!-- C0-4 비밀번호 찾기 -->
+  <div class="auth-view" id="a-findpw">
+    <div class="auth-card"><img class="ap-logo" src="logo.svg" alt="고려US" onclick="showAuth('a-login')">
+      <div class="t1">비밀번호 찾기</div>
+      <div class="t2">가입한 이메일을 입력해 주세요.<br>이메일을 통해 비밀번호 변경 링크가 전송됩니다</div>
+      <div class="af"><div class="mfld"><div class="lb">이메일</div><input class="inp" type="email" id="fp-email" placeholder="이메일 입력"></div>
+        <button class="btn btn-pri" onclick="findPwSubmit()">변경 링크 전송하기</button></div>
+      <span class="sub-act" onclick="showAuth('a-login')">돌아가기</span>
+    </div>
+  </div>
+  <div class="auth-view" id="a-findpw-done">
+    <div class="auth-card"><img class="ap-logo" src="logo.svg" alt="고려US" onclick="showAuth('a-login')">
+      <div class="ico">✉</div>
+      <div class="t1">메일을 보냈어요</div>
+      <div class="t2" id="fp-msg"></div>
+      <button class="btn btn-cxl" onclick="showAuth('a-login')">로그인으로</button>
+      <span class="demo-link" onclick="openResetPw()">메일의 변경 링크 열기 (데모)</span>
+      <span class="demo-link" style="margin-top:6px" onclick="showAuth('a-resetpw-expired')">만료된 변경 링크 열기 (데모)</span>
+    </div>
+  </div>
+  <!-- C0-5 비밀번호 재설정 (메일 링크 진입) -->
+  <div class="auth-view" id="a-resetpw">
+    <div class="auth-card"><img class="ap-logo" src="logo.svg" alt="고려US" onclick="showAuth('a-login')">
+      <div class="t1">비밀번호 재설정</div>
+      <div class="t2">새로운 비밀번호를 입력해 주세요.</div>
+      <div class="af"><div class="mfld"><div class="lb">새 비밀번호</div><div class="pwrap"><input class="inp" type="password" id="rp-pw" placeholder="비밀번호 입력" oninput="pwFormValidate('rp')" onfocus="pwFocus.rp=true;pwFormValidate('rp')" onblur="pwFocus.rp=false;pwFormValidate('rp')"><button type="button" class="eye" onclick="togglePw('rp-pw',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></button></div><div class="pw-panel" id="rp-panel"><div class="pw-rule"><b></b>영문/숫자/특수문자 중, 2가지 이상 포함</div><div class="pw-rule"><b></b>8자 이상 32자 이하 입력 (공백 제외)</div><div class="pw-rule"><b></b>연속 3자 이상 동일한 문자/숫자 제외</div></div></div><div class="mfld"><div class="lb">새 비밀번호 확인</div><div class="pwrap"><input class="inp" type="password" id="rp-pw2" placeholder="비밀번호 입력" oninput="pwFormValidate('rp')"><button type="button" class="eye" onclick="togglePw('rp-pw2',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></button></div></div><div class="err hide" id="rp-err">비밀번호가 일치하지 않습니다.</div>
+        <button class="btn btn-pri" id="rp-go" onclick="showAuth('a-resetpw-done')" disabled>비밀번호 변경</button></div>
+    </div>
+  </div>
+  <div class="auth-view" id="a-resetpw-done">
+    <div class="auth-card"><img class="ap-logo" src="logo.svg" alt="고려US" onclick="showAuth('a-login')">
+      <div class="ico">✓</div>
+      <div class="t1">비밀번호를 변경했어요</div>
+      <div class="t2">새 비밀번호로 로그인해 주세요.</div>
+      <button class="btn btn-pri" onclick="showAuth('a-login')">로그인</button>
+    </div>
+  </div>
+  <div class="auth-view" id="a-resetpw-expired">
+    <div class="auth-card"><img class="ap-logo" src="logo.svg" alt="고려US" onclick="showAuth('a-login')">
+      <div class="ico warn">!</div>
+      <div class="t1">변경 링크가 만료되었어요</div>
+      <div class="t2">비밀번호 변경 링크는 24시간 동안만 유효해요.<br>비밀번호 찾기를 다시 진행해 주세요.</div>
+      <button class="btn btn-pri" onclick="openFindPw()">비밀번호 찾기</button>
+      <span class="sub-act" onclick="showAuth('a-login')">로그인으로</span>
+    </div>
+  </div>
+  <!-- C0-6 초대 링크 만료 -->
+  <div class="auth-view" id="a-expired">
+    <div class="auth-card"><img class="ap-logo" src="logo.svg" alt="고려US" onclick="showAuth('a-login')">
+      <div class="ico warn">!</div>
+      <div class="t1">초대 링크가 만료되었어요</div>
+      <div class="t2">초대 링크는 7일 동안만 유효해요.<br>관리자에게 초대를 다시 요청해 주세요.</div>
+      <button class="btn btn-cxl" onclick="showAuth('a-login')">로그인으로</button>
     </div>
   </div>
   <!-- C0-3 접근 차단 -->
   <div class="auth-view" id="a-block">
-    <div class="auth-card">
+    <div class="auth-card"><img class="ap-logo" src="logo.svg" alt="고려US" onclick="showAuth('a-login')">
       <div class="ico warn">!</div>
       <div class="t1" id="bk-title"></div>
       <div class="t2" id="bk-sub"></div>
@@ -272,31 +374,32 @@ body.emp .adm-only{display:none}
   </div>
 </div>
 
-<div class="console">
+<div class="frame console">
   <aside class="side">
     <div class="side-logo"><img class="logo-svg" src="logo.svg" alt="고려US"></div>
     <nav class="side-menu">
       <div class="grp adm-only">개요</div>
       <div class="mi adm-only" id="mi-dash" onclick="renderDash()">대시보드</div>
-      <div class="grp adm-only">학생 운영</div>
+      <div class="grp adm-only">학생</div>
       <div class="mi adm-only" id="mi-apps" onclick="renderList()">입학 신청 관리</div>
       <div class="mi adm-only" id="mi-students" onclick="renderSList()">학생 관리</div>
       <div class="grp">콘텐츠</div>
       <div class="mi" id="mi-currs" onclick="renderCList()">커리큘럼 관리</div>
       <div class="mi adm-only" id="mi-subs" onclick="renderSubList()">과목 관리</div>
-      <div class="mi adm-only" id="mi-grad" onclick="renderGradList()">졸업생 성과 관리</div>
       <div class="grp adm-only">학원</div>
+      <div class="mi adm-only" id="mi-home" onclick="renderHome()">학원 정보 관리</div>
       <div class="mi adm-only" id="mi-staff" onclick="renderStaffList()">선생님 관리</div>
-      <div class="grp adm-only">설정</div>
-      <div class="mi adm-only" id="mi-set" onclick="renderSet()">서비스 설정</div>
+      <div class="mi adm-only" id="mi-fee" onclick="renderFeeList()">교습비 관리</div>
+      <div class="mi adm-only" id="mi-grad" onclick="renderGradList()">졸업생 성과 관리</div>
+      <div class="mi adm-only" id="mi-set" onclick="renderSet()">진급 관리</div>
     </nav>
-    <div class="side-foot">고려US 아카데미 콘솔 · b48</div>
+    <div class="side-foot">고려US 아카데미 콘솔 · b49</div>
   </aside>
 
   <div class="main">
     <div class="topbar">
       <div class="crumb" id="crumb"></div>
-      <div class="profile-wrap"><button class="profile-btn" onclick="toggleMenu()"><img src="data:image/png;base64,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" alt=""></button><div class="profile-menu" id="pmenu"><div class="pm-head"><span class="pm-avatar"><img src="data:image/png;base64,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" alt=""></span><div class="pm-info"><span class="nm" id="pm-nm">김원장</span><span class="meta" id="pm-role">ADMIN</span></div></div><div class="pm-item" onclick="authLogout()">로그아웃</div></div></div>
+      <div class="profile-wrap"><button class="profile-btn" onclick="toggleMenu()"><img src="data:image/png;base64,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" alt=""></button><div class="profile-menu" id="pmenu"><div class="pm-head"><span class="pm-avatar"><img src="data:image/png;base64,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" alt=""></span><div class="pm-info"><span class="nm" id="pm-nm">김원장</span><span class="meta" id="pm-role">ADMIN</span></div></div><div class="pm-item hide" id="pm-pw" onclick="openPwChange()">비밀번호 변경</div><div class="pm-item" onclick="authLogout()">로그아웃</div></div></div>
     </div>
 
     <!-- ── C1 대시보드 ── -->
@@ -330,7 +433,8 @@ body.emp .adm-only{display:none}
       <div class="page-title">학생 관리</div>
       <div class="page-desc">학생을 검색하고 정보·포인트·구매 내역을 관리해요.</div>
       <div class="fbar">
-        <input class="inp" id="f-q" placeholder="이름 또는 학교" oninput="renderSTable()">
+        <input class="inp" id="f-q" placeholder="이름, 학교 또는 이메일" oninput="renderSTable()">
+        <select class="sel" id="f-st" onchange="renderSTable()"><option value="APPROVED">재학</option><option value="LEFT">퇴원</option><option value="WITHDRAWN">탈퇴</option><option value="">전체 상태</option></select>
         <select class="sel" id="f-gr" onchange="renderSTable()"><option value="">전체 학년</option><option>초1</option><option>초2</option><option>초3</option><option>초4</option><option>초5</option><option>초6</option><option>중1</option><option>중2</option><option>중3</option><option>고1</option><option>고2</option><option>고3</option><option>졸업</option></select>
       </div>
       <div id="stbl"></div>
@@ -388,25 +492,25 @@ body.emp .adm-only{display:none}
       <div id="gradtbl"></div>
     </div>
 
-    <!-- ── C8 서비스 설정 ── -->
+    <!-- ── C8 진급 관리 ── -->
     <div class="content hide" id="v-set">
-      <div class="page-title">서비스 설정</div>
-      <div class="card">
-        <div class="card-head"><h3>자동 진급</h3></div>
-        <div class="form-col" style="margin-top:14px">
-          <div class="mfld" style="margin-top:0"><div class="lb">진급 기준일</div><input class="inp" type="date" id="set-date"></div>
-          <div class="upmeta">기준일에 전체 재학생이 한 학년씩 진급해요. (초1 → … → 고3 → 졸업, 졸업은 유지)</div>
-        </div>
-        <div style="display:flex;margin-top:16px"><button class="btn btn-pri" onclick="savePromo()">저장</button></div>
+      <div class="page-title">진급 관리</div>
+      <div id="set-promo"></div>
+    </div>
+
+    <!-- ── C9 학원 정보 관리 ── -->
+    <div class="content hide" id="v-home"></div>
+
+    <!-- ── C10 교습비 관리 ── -->
+    <div class="content hide" id="v-fee">
+      <div class="det-head"><div class="page-title">교습비 관리</div>
+        <div class="det-actions"><button class="btn btn-pri" onclick="openFeeNew()">교습과정 등록</button></div></div>
+      <div id="fee-meta"></div>
+      <div class="fbar">
+        <select class="sel" id="fee-gr" style="margin-left:0" onchange="renderFeeTable()"><option value="">전체 학년</option><option>초1</option><option>초2</option><option>초3</option><option>초4</option><option>초5</option><option>초6</option><option>중1</option><option>중2</option><option>중3</option><option>고1</option><option>고2</option><option>고3</option></select>
+        <select class="sel" id="fee-sub" onchange="renderFeeTable()"><option value="">전체 과목</option></select>
       </div>
-      <div class="card">
-        <div class="card-head"><h3>포인트 문의</h3></div>
-        <div class="form-col" style="margin-top:14px">
-          <div class="mfld" style="margin-top:0"><div class="lb">학원 문의 전화번호</div><input class="inp" id="set-phone"></div>
-          <div class="upmeta">학생 서비스의 포인트 부족·충전 안내에 노출돼요.</div>
-        </div>
-        <div style="display:flex;margin-top:16px"><button class="btn btn-pri" onclick="savePhone()">저장</button></div>
-      </div>
+      <div id="feetbl"></div>
     </div>
 
     <!-- ── C4-2 커리큘럼 생성 / C4-3 상세 / C4-4 강의 생성 / C4-5 강의 상세 ── -->
@@ -423,6 +527,11 @@ body.emp .adm-only{display:none}
     <h4 id="m-title"></h4>
     <div class="msg" id="m-msg"></div>
     <div class="note" id="m-note"></div>
+    <div id="m-extra" class="hide">
+      <div class="mfld"><div class="lb">거절 사유</div><select class="sel" id="m-reason"><option>정보 불일치</option><option>정원 마감</option><option>학원 문의 필요</option></select></div>
+      <div class="mfld"><div class="lb">메모 <span class="opt">(선택, 학생에게는 보이지 않아요)</span></div><input class="inp" id="m-memo" placeholder="예: 보호자 전화번호 확인 필요"></div>
+      <div class="upmeta">선택한 사유는 학생의 승인 대기 화면에 한 줄로 표시돼요.</div>
+    </div>
     <div class="acts">
       <button class="btn btn-cxl" onclick="closeModal()">취소</button>
       <button class="btn btn-pri" id="m-go"></button>
@@ -446,7 +555,7 @@ body.emp .adm-only{display:none}
     <h4 id="s-title"></h4>
     <div class="mfld"><div class="lb">과목명</div><input class="inp" id="s-nm" oninput="subCheck()" placeholder="예: 수학"><div class="err hide" id="s-err"></div></div>
     <div class="note hide" id="s-note" style="font-size:13px;color:var(--sub);margin-top:10px;line-height:1.6">이름을 바꿔도 기존 포인트와 강의는 그대로 유지돼요.</div>
-    <div class="acts"><button class="btn btn-cxl" onclick="closeSubModal()">취소</button><button class="btn btn-pri" id="s-go" onclick="subSubmit()"></button></div>
+    <div class="acts"><button class="btn btn-cxl" onclick="closeSubModal()">취소</button><button class="btn btn-out hide" style="margin-right:0" id="s-del" onclick="subDelete()">삭제</button><button class="btn btn-pri" id="s-go" onclick="subSubmit()"></button></div>
   </div>
 </div>
 <div class="dim" id="idim">
@@ -457,34 +566,67 @@ body.emp .adm-only{display:none}
       <div class="mfld"><div class="lb">역할</div><select class="sel" id="i-role"><option>EMPLOYEE</option><option>ADMIN</option></select></div>
     </div>
     <div class="mfld"><div class="lb">이메일</div><input class="inp" id="i-email" oninput="invCheck()" placeholder="예: teacher@example.com"><div class="err hide" id="i-err"></div></div>
-    <div style="font-size:13px;color:var(--sub);margin-top:10px;line-height:1.6">보낸 초대는 취소할 수 없어요.</div>
     <div class="acts"><button class="btn btn-cxl" onclick="closeInvite()">취소</button><button class="btn btn-pri" id="i-go" onclick="invSubmit()">초대</button></div>
   </div>
 </div>
 <div class="dim" id="gdim">
   <div class="modal">
     <h4 id="g-title"></h4>
-    <div class="mfld"><div class="lb">이름</div><input class="inp" id="g-nm" oninput="gradCheck()"></div>
-    <div class="mfld"><div class="lb">학교</div><input class="inp" id="g-sc" oninput="gradCheck()" placeholder="예: 고려대학교"></div>
-    <div class="mfld"><div class="lb">학과</div><input class="inp" id="g-dept" oninput="gradCheck()"></div>
+    <div class="mfld"><div class="lb">캠퍼스 사진 <span class="opt">(선택)</span></div><div id="g-photo"></div></div>
+    <div class="mrow2">
+      <div class="mfld"><div class="lb">이름</div><input class="inp" id="g-nm" oninput="gradCheck()"></div>
+      <div class="mfld"><div class="lb">출신 고교</div><input class="inp" id="g-high" oninput="gradCheck()" placeholder="예: 정왕고"></div>
+    </div>
+    <div class="mrow2">
+      <div class="mfld"><div class="lb">학교</div><input class="inp" id="g-sc" oninput="gradCheck()" placeholder="예: 고려대학교"></div>
+      <div class="mfld"><div class="lb">학과</div><input class="inp" id="g-dept" oninput="gradCheck()"></div>
+    </div>
     <div class="mfld"><div class="lb">학원 다닌 기간</div>
-      <div class="mrow2" style="margin-top:8px">
+      <div class="mrow2" style="margin-top:0">
         <div class="mfld" style="margin-top:0"><div class="lb lb-s">시작</div><input class="inp" id="g-y1" type="number" oninput="gradCheck()" placeholder="예: 2019"></div>
         <div class="mfld" style="margin-top:0"><div class="lb lb-s">종료</div><input class="inp" id="g-y2" type="number" oninput="gradCheck()" placeholder="예: 2022"></div>
       </div>
+      <div class="calc" id="g-calc"></div>
     </div>
     <div class="err hide" id="g-err"></div>
     <div class="mfld"><div class="lb">졸업 연도</div><input class="inp" id="g-gy" type="number" oninput="gradCheck()" placeholder="예: 2023"></div>
-    <div style="font-size:13px;color:var(--sub);margin-top:10px;line-height:1.6">저장하면 학생 웹 랜딩에 바로 노출돼요.</div>
-    <div class="acts"><button class="btn btn-cxl" onclick="closeGradModal()">취소</button><button class="btn btn-pri" id="g-go" onclick="gradSubmit()"></button></div>
+    <div class="mfld sw-row"><span class="lb2">홈 대표 노출</span><button class="sw" id="g-feat" onclick="gradFeatToggle()"><i></i></button></div>
+    <div class="err hide" id="g-feat-err">이미 4명이 지정되어 있어요. 다른 졸업생의 대표 노출을 먼저 해제해 주세요.</div>
+    <div class="upmeta">대표 4명이 홈에 노출돼요. 4명 미만이면 최신 졸업 연도 순으로 채워요.</div>
+    <div class="acts"><button class="btn btn-cxl" onclick="closeGradModal()">취소</button><button class="btn btn-out hide" style="margin-right:0" id="g-del" onclick="gradDelete()">삭제</button><button class="btn btn-pri" id="g-go" onclick="gradSubmit()"></button></div>
+  </div>
+</div>
+<div class="dim" id="fdim">
+  <div class="modal">
+    <h4 id="fe-title"></h4>
+    <div class="mfld"><div class="lb">교습과정명</div><input class="inp" id="fe-nm" oninput="feeCheck()" placeholder="예: 중2 수학 내신반"></div>
+    <div class="mrow2">
+      <div class="mfld"><div class="lb">대상 학년</div><select class="sel" id="fe-gr" onchange="feeCheck()"></select></div>
+      <div class="mfld"><div class="lb">과목</div><select class="sel" id="fe-sub" onchange="feeCheck()"></select></div>
+    </div>
+    <div class="mrow2">
+      <div class="mfld"><div class="lb">주당 수업 횟수 (회)</div><input class="inp" type="number" id="fe-wk" min="1" oninput="feeCheck()"></div>
+      <div class="mfld"><div class="lb">회당 교습시간 (분)</div><input class="inp" type="number" id="fe-min" min="1" step="10" oninput="feeCheck()"></div>
+    </div>
+    <div class="mfld"><div class="lb">월 교습비 (원)</div><input class="inp" type="number" id="fe-fee" min="0" step="1000" oninput="feeCheck()"></div>
+    <div class="mfld"><div class="lb">기타경비 <span class="opt">(선택)</span></div><input class="inp" id="fe-ex" placeholder="예: 교재비 15,000원"></div>
+    <div class="err hide" id="fe-err"></div>
+    <div class="acts"><button class="btn btn-cxl" onclick="closeFeeModal()">취소</button><button class="btn btn-out hide" style="margin-right:0" id="fe-del" onclick="feeDelete()">삭제</button><button class="btn btn-pri" id="fe-go" onclick="feeSubmit()"></button></div>
   </div>
 </div>
 <div class="demo-branch" id="demoBranch">
   <div class="db-card">
     <div class="db-badge">임시 화면 · 실제 구현 시 제거</div>
     <div class="db-title">어떤 사용자로 들어갈까요?</div>
-<div class="db-opt" onclick="branchGo('admin')"><div><b>김원장 · ADMIN</b><small>활성 관리자 — 콘솔로 진입해요</small></div><span class="chv">›</span></div><div class="db-opt" onclick="branchGo('emp')"><div><b>박수학 · EMPLOYEE</b><small>담당 커리큘럼만 관리하는 선생님이에요</small></div><span class="chv">›</span></div><div class="db-opt" onclick="branchGo('invite')"><div><b>최과학 · 초대 링크 클릭</b><small>이메일의 초대 링크로 들어온 상황이에요</small></div><span class="chv">›</span></div><div class="db-opt" onclick="branchGo('none')"><div><b>미초대 사용자</b><small>접근 차단 화면을 확인해요</small></div><span class="chv">›</span></div><div class="db-opt" onclick="branchGo('inactive')"><div><b>정관리 · ADMIN 중지</b><small>이용 중지 차단 화면을 확인해요</small></div><span class="chv">›</span></div>
+<div class="db-opt" onclick="branchGo('admin')"><div><b>김원장 · ADMIN</b><small>활성 관리자 — 콘솔로 진입해요</small></div><span class="chv">›</span></div><div class="db-opt" onclick="branchGo('emp')"><div><b>박수학 · EMPLOYEE</b><small>담당 커리큘럼만 관리하는 선생님이에요</small></div><span class="chv">›</span></div><div class="db-opt" onclick="branchGo('emp-email')"><div><b>이영어 · EMPLOYEE</b><small>이메일 계정 선생님 — 비밀번호 변경 메뉴를 확인해요</small></div><span class="chv">›</span></div><div class="db-opt" onclick="branchGo('invite')"><div><b>최과학 · 초대 링크 클릭</b><small>이메일의 초대 링크로 들어온 상황이에요</small></div><span class="chv">›</span></div><div class="db-opt" onclick="branchGo('expired')"><div><b>만료된 초대 링크</b><small>7일이 지난 초대 링크로 들어온 상황이에요</small></div><span class="chv">›</span></div><div class="db-opt" onclick="branchGo('none')"><div><b>미초대 사용자</b><small>접근 차단 화면을 확인해요</small></div><span class="chv">›</span></div><div class="db-opt" onclick="branchGo('inactive')"><div><b>정관리 · ADMIN 중지</b><small>이용 중지 차단 화면을 확인해요</small></div><span class="chv">›</span></div>
     <div class="db-cancel" onclick="closeBranch()">취소</div>
+  </div>
+</div>
+<div class="dim" id="pcdim">
+  <div class="modal">
+    <h4>비밀번호 변경</h4>
+    <div class="mfld"><div class="lb">현재 비밀번호</div><div class="pwrap"><input class="inp" type="password" id="pc-cur" placeholder="현재 비밀번호 입력" oninput="pwFormValidate('pc')"><button type="button" class="eye" onclick="togglePw('pc-cur',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></button></div></div><div class="err hide" id="pc-cur-err">현재 비밀번호가 올바르지 않아요.</div><div class="mfld"><div class="lb">새 비밀번호</div><div class="pwrap"><input class="inp" type="password" id="pc-pw" placeholder="비밀번호 입력" oninput="pwFormValidate('pc')" onfocus="pwFocus.pc=true;pwFormValidate('pc')" onblur="pwFocus.pc=false;pwFormValidate('pc')"><button type="button" class="eye" onclick="togglePw('pc-pw',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></button></div><div class="pw-panel" id="pc-panel"><div class="pw-rule"><b></b>영문/숫자/특수문자 중, 2가지 이상 포함</div><div class="pw-rule"><b></b>8자 이상 32자 이하 입력 (공백 제외)</div><div class="pw-rule"><b></b>연속 3자 이상 동일한 문자/숫자 제외</div></div></div><div class="mfld"><div class="lb">새 비밀번호 확인</div><div class="pwrap"><input class="inp" type="password" id="pc-pw2" placeholder="비밀번호 입력" oninput="pwFormValidate('pc')"><button type="button" class="eye" onclick="togglePw('pc-pw2',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></button></div></div><div class="err hide" id="pc-err">비밀번호가 일치하지 않습니다.</div>
+    <div class="acts"><button class="btn btn-cxl" onclick="closePwChange()">취소</button><button class="btn btn-pri" id="pc-go" onclick="pwChangeSubmit()" disabled>변경</button></div>
   </div>
 </div>
 <div class="dim" id="ndim">
@@ -504,29 +646,34 @@ body.emp .adm-only{display:none}
 <script>
 // ── 데모 데이터: 행 = 신청 건 (재신청 시 새 행) ──
 var apps = [
- {id:1, st:'PENDING',  nm:'윤서아', sc:'푸른초등학교', gr:'초6', ph:'010-4444-5555', gph:'010-4444-6666', n:1, at:'2026-08-25 14:02', done:null,
+ {id:1, st:'PENDING',  nm:'윤서아', sc:'푸른초등학교', gr:'초6', ph:'010-4444-5555', gph:'010-4444-6666', login:'kakao', email:'seoa.yoon@kakao.com', n:1, at:'2026-08-25 14:02', done:null,
   hist:[]},
- {id:2, st:'PENDING',  nm:'최유진', sc:'새봄고등학교', gr:'고2', ph:'010-3333-4444', gph:'010-3333-5555', n:2, at:'2026-08-26 10:31', done:null,
-  hist:[{n:1, at:'2026-08-19 09:12', done:'2026-08-20 11:40', st:'REJECTED'}]},
- {id:3, st:'APPROVED', nm:'박준서', sc:'미래중학교', gr:'중3', ph:'010-2222-3333', gph:'010-2222-4444', n:1, at:'2026-08-18 16:20', done:'2026-08-19 09:05', hist:[]},
- {id:4, st:'APPROVED', nm:'이도현', sc:'한빛초등학교', gr:'초3', ph:'010-7777-8888', gph:'010-7777-9999', n:1, at:'2026-08-12 11:03', done:'2026-08-12 15:44', hist:[]},
- {id:5, st:'REJECTED', nm:'최유진', sc:'새봄고등학교', gr:'고2', ph:'010-3333-4444', gph:'010-3333-5555', n:1, at:'2026-08-19 09:12', done:'2026-08-20 11:40', hist:[]},
- {id:6, st:'REJECTED', nm:'강지우', sc:'솔빛초등학교', gr:'초4', ph:'010-6666-7777', gph:'010-6666-8888', n:1, at:'2026-08-15 13:55', done:'2026-08-16 10:02', hist:[]}
+ {id:2, st:'PENDING',  nm:'최유진', sc:'새봄고등학교', gr:'고2', ph:'010-3333-4444', gph:'010-3333-5555', login:'email', email:'yujin.choi@gmail.com', n:2, at:'2026-08-26 10:31', done:null,
+  hist:[{n:1, at:'2026-08-19 09:12', done:'2026-08-20 11:40', st:'REJECTED', reason:'정보 불일치', memo:'보호자 전화번호 확인 필요'}]},
+ {id:3, st:'APPROVED', nm:'박준서', sc:'미래중학교', gr:'중3', ph:'010-2222-3333', gph:'010-2222-4444', login:'kakao', email:'junseo.park@kakao.com', n:1, at:'2026-08-18 16:20', done:'2026-08-19 09:05', hist:[]},
+ {id:4, st:'APPROVED', nm:'이도현', sc:'한빛초등학교', gr:'초3', ph:'010-7777-8888', gph:'010-7777-9999', login:'email', email:'dohyun.lee@naver.com', n:1, at:'2026-08-12 11:03', done:'2026-08-12 15:44', hist:[]},
+ {id:5, st:'REJECTED', nm:'최유진', sc:'새봄고등학교', gr:'고2', ph:'010-3333-4444', gph:'010-3333-5555', login:'email', email:'yujin.choi@gmail.com', n:1, at:'2026-08-19 09:12', done:'2026-08-20 11:40', reason:'정보 불일치', memo:'보호자 전화번호 확인 필요', hist:[]},
+ {id:6, st:'REJECTED', nm:'강지우', sc:'솔빛초등학교', gr:'초4', ph:'010-6666-7777', gph:'010-6666-8888', login:'kakao', email:'jiwoo.kang@kakao.com', n:1, at:'2026-08-15 13:55', done:'2026-08-16 10:02', reason:'학원 문의 필요', memo:'', hist:[]}
 ];
+var LOGIN={kakao:'카카오', email:'이메일'};
+function loginTag(k){return '<span class="lg'+(k==='kakao'?' kakao':'')+'">'+LOGIN[k]+'</span>'}
 var TAB = [
  {k:'PENDING',  lb:'승인 대기'},
  {k:'APPROVED', lb:'승인 완료'},
  {k:'REJECTED', lb:'거절'}
 ];
 var BG = {PENDING:['wait','승인 대기'], APPROVED:['ok','승인 완료'], REJECTED:['no','거절']};
-// 공용 인물 목록 테이블 — C2·C3 공용, 열 위치 고정 (이름14/학교26/학년10/전화24/일시)
-function personTable(rows, dateLb, click){
+// 공용 인물 목록 테이블 — C2·C3 공용, 열 위치 고정 (이름12/학교22/학년8/전화18/로그인10/일시)
+function personTable(rows, dateLb, click, withSt){
   var h='<table class="ptable">'
-    +'<col style="width:14%"><col style="width:26%"><col style="width:10%"><col style="width:24%"><col>'
-    +'<tr><th>이름</th><th>학교</th><th>학년</th><th>학생 전화번호</th><th>'+dateLb+'</th></tr>';
+    +(withSt?'<col style="width:12%"><col style="width:20%"><col style="width:8%"><col style="width:17%"><col style="width:10%"><col style="width:10%"><col>'
+            :'<col style="width:12%"><col style="width:22%"><col style="width:8%"><col style="width:18%"><col style="width:10%"><col>')
+    +'<tr><th>이름</th><th>학교</th><th>학년</th><th>학생 전화번호</th><th>로그인</th>'+(withSt?'<th>상태</th>':'')+'<th>'+dateLb+'</th></tr>';
   rows.forEach(function(r){
     h+='<tr class="rw" onclick="'+click+'('+r.id+')"><td class="nm">'+r.nm+'</td>'
       +'<td class="sub">'+r.sc+'</td><td>'+r.gr+'</td><td class="sub">'+r.ph+'</td>'
+      +'<td>'+loginTag(r.login)+'</td>'
+      +(withSt?'<td><span class="bg '+SBG[r.st][0]+'">'+SBG[r.st][1]+'</span></td>':'')
       +'<td class="sub">'+r.dt+'</td></tr>';
   });
   return h+'</table>';
@@ -555,7 +702,7 @@ function renderList(){
   if(!r.length){
     h='<div class="empty">'+(curTab==='PENDING'?'처리할 신청이 없어요':'아직 없어요')+'</div>';
   } else {
-    h=personTable(r.map(function(a){return {id:a.id, nm:a.nm, sc:a.sc, gr:a.gr, ph:a.ph, dt:a.at}}), '신청 일시', 'openDet');
+    h=personTable(r.map(function(a){return {id:a.id, nm:a.nm, sc:a.sc, gr:a.gr, ph:a.ph, login:a.login, dt:a.at}}), '신청 일시', 'openDet');
   }
   document.getElementById('tbl').innerHTML=h;
   crumb('<b>입학 신청 관리</b>');
@@ -576,13 +723,15 @@ function openDet(id){
   h+='<div class="card"><h3>신청 정보</h3><div class="fgrid">'
     +fld('이름',a.nm)+fld('학교',a.sc)+fld('학년',a.gr)
     +fld('학생 전화번호',a.ph)+fld('보호자 전화번호',a.gph)
+    +fld('로그인',loginTag(a.login))+fld('이메일',a.email)
     +'</div></div>';
-  var hist = [{n:a.n, at:a.at, done:a.done, st:a.st}].concat(a.hist);
+  var hist = [{n:a.n, at:a.at, done:a.done, st:a.st, reason:a.reason, memo:a.memo}].concat(a.hist);
   hist.sort(function(x,y){return y.n-x.n});
   h+='<div class="card"><h3>신청 이력</h3>';
   hist.forEach(function(x){
     h+='<div class="hrow"><span class="ttl">'+x.n+'차 신청</span>'
-      +'<span class="mt">'+x.at+' 신청'+(x.done?' · '+x.done+' 처리':'')+'</span>'
+      +'<span class="mt">'+x.at+' 신청'+(x.done?' · '+x.done+' 처리':'')
+      +(x.st==='REJECTED'&&x.reason?' · 사유: '+x.reason+(x.memo?' <span style="color:#9CA3AF">('+x.memo+')</span>':''):'')+'</span>'
       +'<span class="bg '+BG[x.st][0]+'">'+BG[x.st][1]+'</span></div>';
   });
   h+='</div>';
@@ -590,13 +739,13 @@ function openDet(id){
   crumb('<a onclick="renderList()">입학 신청 관리</a> <span class="sep">›</span> <b>'+a.nm+'</b>');
   show('v-det');
 }
-var VIEWS=['v-dash','v-list','v-det','v-slist','v-sdet','v-clist','v-cnew','v-cdet','v-lnew','v-ldet','v-sub','v-staff','v-stdet','v-set','v-grad'];
+var VIEWS=['v-dash','v-list','v-det','v-slist','v-sdet','v-clist','v-cnew','v-cdet','v-lnew','v-ldet','v-sub','v-staff','v-stdet','v-set','v-grad','v-home','v-fee'];
 var VMENU={'v-dash':'mi-dash','v-list':'mi-apps','v-det':'mi-apps','v-slist':'mi-students','v-sdet':'mi-students',
-           'v-clist':'mi-currs','v-cnew':'mi-currs','v-cdet':'mi-currs','v-lnew':'mi-currs','v-ldet':'mi-currs','v-sub':'mi-subs','v-staff':'mi-staff','v-stdet':'mi-staff','v-set':'mi-set','v-grad':'mi-grad'};
+           'v-clist':'mi-currs','v-cnew':'mi-currs','v-cdet':'mi-currs','v-lnew':'mi-currs','v-ldet':'mi-currs','v-sub':'mi-subs','v-staff':'mi-staff','v-stdet':'mi-staff','v-set':'mi-set','v-grad':'mi-grad','v-home':'mi-home','v-fee':'mi-fee'};
 function show(id){
   VIEWS.forEach(function(v){document.getElementById(v).classList.add('hide')});
   document.getElementById(id).classList.remove('hide');
-  ['mi-dash','mi-apps','mi-students','mi-currs','mi-subs','mi-staff','mi-set','mi-grad'].forEach(function(m){
+  ['mi-dash','mi-apps','mi-students','mi-currs','mi-subs','mi-staff','mi-set','mi-grad','mi-home','mi-fee'].forEach(function(m){
     var el=document.getElementById(m);
     el.classList[VMENU[id]===m?'add':'remove']('on');
   });
@@ -611,6 +760,8 @@ function ask(m){
     set('승인 확인', a.nm+' 학생을 승인할까요?', '', '승인하기');
   } else {
     set('거절 확인', a.nm+' 학생의 신청을 거절할까요?', '', '거절하기');
+    document.getElementById('m-reason').selectedIndex=0; document.getElementById('m-memo').value='';
+    document.getElementById('m-extra').classList.remove('hide');
   }
   document.getElementById('dim').classList.add('show');
 }
@@ -620,7 +771,7 @@ function set(t,m,n,b){
   document.getElementById('m-note').textContent=n;
   document.getElementById('m-go').textContent=b;
 }
-function closeModal(){gCb=null;document.getElementById('dim').classList.remove('show')}
+function closeModal(){gCb=null;document.getElementById('dim').classList.remove('show');document.getElementById('m-extra').classList.add('hide')}
 var gCb=null;
 function gConfirm(t,msg,btn,fn,note){
   gCb=fn; set(t,msg,note||'',btn);
@@ -632,6 +783,7 @@ document.getElementById('m-go').onclick=function(){
   var now='2026-08-27 15:20';
   a.st = mode==='APR' ? 'APPROVED' : 'REJECTED';
   a.done = now;
+  if(mode==='REJ'){ a.reason=document.getElementById('m-reason').value; a.memo=document.getElementById('m-memo').value.trim(); }
   var s = students.filter(function(x){return x.id===APPSID[a.id]})[0];
   if(s) s.st = a.st;
   closeModal();
@@ -651,14 +803,17 @@ function setTab(k){curTab=k;renderList()}
 // ═══════ C3 학생 관리 ═══════
 var SUBJECTS=['수학','영어','국어','과학'];
 var APPSID={1:105,2:106,3:102,4:103,5:106,6:107};
+var SBG={APPROVED:['ok','재학'], LEFT:['wait','퇴원'], WITHDRAWN:['no','탈퇴']};
 var students=[
- {id:101, st:'APPROVED', nm:'김하늘', sc:'고려중학교',   gr:'중2', ph:'010-1234-5678', gph:'010-1234-9999', jd:'2026-07-02'},
- {id:102, st:'APPROVED', nm:'박준서', sc:'미래중학교',   gr:'중3', ph:'010-2222-3333', gph:'010-2222-4444', jd:'2026-08-18'},
- {id:103, st:'APPROVED', nm:'이도현', sc:'한빛초등학교', gr:'초3', ph:'010-7777-8888', gph:'010-7777-9999', jd:'2026-08-12'},
- {id:104, st:'APPROVED', nm:'정민아', sc:'한국고등학교', gr:'졸업', ph:'010-5555-6666', gph:'010-5555-7777', jd:'2026-03-02'},
- {id:105, st:'PENDING',  nm:'윤서아', sc:'푸른초등학교', gr:'초6', ph:'010-4444-5555', gph:'010-4444-6666', jd:'2026-08-25'},
- {id:106, st:'PENDING',  nm:'최유진', sc:'새봄고등학교', gr:'고2', ph:'010-3333-4444', gph:'010-3333-5555', jd:'2026-08-19'},
- {id:107, st:'REJECTED', nm:'강지우', sc:'솔빛초등학교', gr:'초4', ph:'010-6666-7777', gph:'010-6666-8888', jd:'2026-08-15'}
+ {id:108, st:'WITHDRAWN', nm:'한소율', sc:'고려중학교',   gr:'중1', ph:'010-8888-1111', gph:'010-8888-2222', login:'kakao', email:'soyul.han@kakao.com',  jd:'2026-05-10', left:'2026-08-30'},
+ {id:109, st:'LEFT',      nm:'서준호', sc:'미래중학교',   gr:'중3', ph:'010-9999-1111', gph:'010-9999-2222', login:'email', email:'junho.seo@naver.com',   jd:'2026-04-01', left:'2026-08-01'},
+ {id:101, st:'APPROVED', nm:'김하늘', sc:'고려중학교',   gr:'중2', ph:'010-1234-5678', gph:'010-1234-9999', login:'email', email:'haneul.kim@gmail.com',  jd:'2026-07-02'},
+ {id:102, st:'APPROVED', nm:'박준서', sc:'미래중학교',   gr:'중3', ph:'010-2222-3333', gph:'010-2222-4444', login:'kakao', email:'junseo.park@kakao.com', jd:'2026-08-18'},
+ {id:103, st:'APPROVED', nm:'이도현', sc:'한빛초등학교', gr:'초3', ph:'010-7777-8888', gph:'010-7777-9999', login:'email', email:'dohyun.lee@naver.com',   jd:'2026-08-12'},
+ {id:104, st:'APPROVED', nm:'정민아', sc:'한국고등학교', gr:'졸업', ph:'010-5555-6666', gph:'010-5555-7777', login:'kakao', email:'mina.jung@kakao.com',   jd:'2026-03-02'},
+ {id:105, st:'PENDING',  nm:'윤서아', sc:'푸른초등학교', gr:'초6', ph:'010-4444-5555', gph:'010-4444-6666', login:'kakao', email:'seoa.yoon@kakao.com',    jd:'2026-08-25'},
+ {id:106, st:'PENDING',  nm:'최유진', sc:'새봄고등학교', gr:'고2', ph:'010-3333-4444', gph:'010-3333-5555', login:'email', email:'yujin.choi@gmail.com',   jd:'2026-08-19'},
+ {id:107, st:'REJECTED', nm:'강지우', sc:'솔빛초등학교', gr:'초4', ph:'010-6666-7777', gph:'010-6666-8888', login:'kakao', email:'jiwoo.kang@kakao.com',   jd:'2026-08-15'}
 ];
 var wallets={101:{'중2|수학':300,'중2|영어':50,'중1|수학':100}};
 function wbal(sid,g,sub){var w=wallets[sid]||{};return w[g+'|'+sub]||0}
@@ -683,15 +838,15 @@ function renderSList(){
 }
 function renderSTable(){
   var q=document.getElementById('f-q').value.trim();
-  var gr=document.getElementById('f-gr').value;
+  var gr=document.getElementById('f-gr').value, st=document.getElementById('f-st').value;
   var r=students.filter(function(s){
-    return s.st==='APPROVED' && (!gr||s.gr===gr) && (!q||s.nm.indexOf(q)>-1||s.sc.indexOf(q)>-1);
+    return (st?s.st===st:(s.st in SBG)) && (!gr||s.gr===gr) && (!q||s.nm.indexOf(q)>-1||s.sc.indexOf(q)>-1||s.email.indexOf(q)>-1);
   });
   r.sort(function(a,b){return a.jd>b.jd?-1:1});
   var h;
   if(!r.length){ h='<div class="empty">조건에 맞는 학생이 없어요</div>'; }
   else{
-    h=personTable(r.map(function(s){return {id:s.id, nm:s.nm, sc:s.sc, gr:s.gr, ph:s.ph, dt:s.jd}}), '가입일', 'openStudent');
+    h=personTable(r.map(function(s){return {id:s.id, nm:s.nm, sc:s.sc, gr:s.gr, ph:s.ph, login:s.login, dt:s.jd, st:s.st}}), '가입일', 'openStudent', st==='');
   }
   document.getElementById('stbl').innerHTML=h;
 }
@@ -710,7 +865,10 @@ function sSetTab(t){
 function renderSDet(){
   var s=sGet(), h='';
   h+='<div class="det-head"><div><div class="page-title">'+s.nm
-    +'</div><div class="sub2">'+s.gr+' · '+s.sc+'</div></div></div>';
+    +(s.st!=='APPROVED'?' <span class="bg '+SBG[s.st][0]+'" style="vertical-align:4px;margin-left:6px">'+SBG[s.st][1]+'</span>':'')
+    +'</div><div class="sub2">'+s.gr+' · '+s.sc+'</div></div>'
+    +(s.st==='APPROVED'?'<div class="det-actions"><button class="btn btn-out" style="margin-right:0" onclick="askLeave()">퇴원 처리</button></div>':'')
+    +'</div>';
   h+='<div class="tabs">'
     +'<div class="tab'+(sTab==='info'?' on':'')+'" onclick="sSetTab(\'info\')">기본 정보</div>'
     +'<div class="tab'+(sTab==='point'?' on':'')+'" onclick="sSetTab(\'point\')">포인트</div>'
@@ -725,10 +883,18 @@ function renderSDet(){
 }
 function infoView(s){
   var h='<div class="card">';
+  var gone = s.st==='WITHDRAWN';
   if(!editMode){
-    h+='<div class="card-head"><h3>기본 정보</h3><button class="btn btn-out" style="margin-right:0" onclick="editMode=true;renderSDet()">수정</button></div>'
+    var canMail = s.login==='email' && !gone;
+    h+='<div class="card-head"><h3>기본 정보</h3>'
+      +(canMail?'<button class="btn btn-out" onclick="askPwReset()">비밀번호 재설정 메일 발송</button>':'')
+      +(gone?'':'<button class="btn btn-out" style="margin-right:0;margin-left:'+(canMail?'0':'auto')+'" onclick="editMode=true;renderSDet()">수정</button>')+'</div>'
       +'<div class="fgrid">'+fld('이름',s.nm)+fld('학교',s.sc)+fld('현재 학년',s.gr)
-      +fld('학생 전화번호',s.ph)+fld('보호자 전화번호',s.gph)+'</div>';
+      +fld('학생 전화번호',s.ph)+fld('보호자 전화번호',s.gph)
+      +fld('로그인',loginTag(s.login))+fld('이메일',s.email)+fld('가입일',s.jd)
+      +(s.st==='LEFT'?fld('퇴원일',s.left):'')+(gone?fld('탈퇴일',s.left):'')+'</div>'
+      +(s.st==='LEFT'?'<div class="upmeta">퇴원한 학생이에요. 포인트 지급·회수는 할 수 없고, 이미 구매한 강의는 계속 볼 수 있어요.</div>':'')
+      +(gone?'<div class="upmeta">학생이 직접 탈퇴했어요. 포인트와 구매한 강의는 삭제됐고, 기록은 조회만 가능해요.</div>':'');
   } else {
     var gsel='<select class="sel" id="e-gr">';
     ['초1','초2','초3','초4','초5','초6','중1','중2','중3','고1','고2','고3','졸업'].forEach(function(g){
@@ -746,6 +912,16 @@ function infoView(s){
       +'<button class="btn btn-pri" style="margin-left:8px" onclick="saveInfo()">저장</button></div>';
   }
   return h+'</div>';
+}
+function askLeave(){
+  var s=sGet();
+  gConfirm('퇴원 처리', s.nm+' 학생을 퇴원 처리할까요?', '퇴원 처리', function(){
+    s.st='LEFT'; s.left=TODAY; renderSDet(); toast('퇴원 처리했어요');
+  }, '포인트 지급·회수가 막히고 학생 목록의 재학 필터에서 빠져요. 이미 구매한 강의는 계속 볼 수 있어요.');
+}
+function askPwReset(){
+  var s=sGet();
+  gConfirm('재설정 메일 발송', s.email+'로 비밀번호 재설정 메일을 보낼까요?', '발송', function(){ toast('재설정 메일을 보냈어요'); });
 }
 function saveInfo(){
   var s=sGet();
@@ -766,8 +942,8 @@ function pointView(s){
   var h='<div class="card"><div class="card-head"><h3>포인트</h3><div style="margin-left:auto">'+gsel+'</div></div><div class="wlist">';
   SUBJECTS.forEach(function(sub){
     h+='<div class="wrow"><span class="sj">'+sub+'</span><span class="bal">'+wbal(s.id,pGrade,sub)+'P</span>'
-      +'<span class="acts"><button class="btn btn-pri" onclick="openPModal(\'GIVE\',\''+sub+'\')">지급</button> '
-      +'<button class="btn btn-out" style="margin-right:0" onclick="openPModal(\'REV\',\''+sub+'\')">회수</button></span></div>';
+      +(s.st==='APPROVED'?'<span class="acts"><button class="btn btn-pri" onclick="openPModal(\'GIVE\',\''+sub+'\')">지급</button> '
+      +'<button class="btn btn-out" style="margin-right:0" onclick="openPModal(\'REV\',\''+sub+'\')">회수</button></span>':'')+'</div>';
   });
   h+='</div></div>';
   var led=ledger.filter(function(x){return x.sid===s.id});
@@ -856,6 +1032,7 @@ var lects=[
 function cGet(id){return currs.filter(function(x){return x.id===id})[0]}
 function canEdit(c){return CUR.role==='ADMIN' || c.owner===CUR.nm}
 function lGet(id){return lects.filter(function(x){return x.id===id})[0]}
+function lBuyers(l){var c=cGet(l.cid);return purchases.filter(function(p){return p.lec===l.nm&&p.cur===c.nm}).length}
 function cLects(cid){return lects.filter(function(x){return x.cid===cid}).sort(function(a,b){return a.ord-b.ord})}
 function opBadge(o){return '<span class="bg '+(o?'ok':'no')+'">'+(o?'공개':'비공개')+'</span>'}
 
@@ -875,7 +1052,7 @@ function renderCTable(){
   });
   r.sort(function(a,b){return a.cd<b.cd?-1:1});
   var h;
-  if(!r.length){ h='<div class="empty">조건에 맞는 커리큘럼이 없어요</div>'; }
+  if(!r.length){ h='<div class="empty">'+((q||gr||sub||op!=='')?'조건에 맞는 커리큘럼이 없어요':'아직 커리큘럼이 없어요. 오른쪽 위에서 생성할 수 있어요')+'</div>'; }
   else{
     h='<table class="ptable">'
      +'<col style="width:30%"><col style="width:8%"><col style="width:9%"><col style="width:13%"><col style="width:11%"><col style="width:11%"><col>'
@@ -975,7 +1152,7 @@ function renderCDet(){
   var ce=canEdit(c);
   h+='<div class="card">'
     +'<div class="card-head"><h3>커리큘럼 정보</h3>'
-    +(ce?'<button class="btn btn-out" style="margin-right:0" onclick="openCEdit()">정보 수정</button>':'')
+    +(ce?'<button class="btn btn-out" onclick="askCurrDelete()">삭제</button><button class="btn btn-out" style="margin-right:0" onclick="openCEdit()">정보 수정</button>':'')
     +'</div>'
     +'<div class="fgrid">'+fld('학년',c.gr)+fld('과목',c.sub)+fld('담당자',c.owner)
     +fld('공개 상태',opBadge(c.open))+fld('설명',c.desc||'—')+'</div>'
@@ -1156,12 +1333,36 @@ function lnSubmit(){
 
 // ── C4-5 강의 상세 (보기 전용: 검수 플레이어 + 정보 카드) ──
 var lCur=null;
+function askLectDelete(){
+  var l=lGet(lCur), c=cGet(l.cid), n=lBuyers(l);
+  if(n>0){
+    gConfirm('삭제할 수 없어요', '이 강의를 구매한 학생이 '+n+'명 있어요. 구매한 강의는 삭제할 수 없어요.', '비공개로 전환', function(){
+      l.open=false; renderLDet(); toast('비공개로 전환했어요');
+    }, '비공개로 전환하면 새 구매는 막히고 이미 구매한 학생은 계속 볼 수 있어요.');
+    return;
+  }
+  gConfirm('강의 삭제', l.nm+'을(를) 삭제할까요?', '삭제', function(){
+    lects=lects.filter(function(x){return x.id!==l.id});
+    cLects(c.id).forEach(function(x,i){x.ord=i+1});
+    renderCDet(); toast('강의를 삭제했어요');
+  }, '영상 파일도 함께 삭제되고 되돌릴 수 없어요.');
+}
+function askCurrDelete(){
+  var c=cGet(cCur), n=cLects(c.id).length;
+  if(n>0){
+    gConfirm('삭제할 수 없어요', '강의가 '+n+'개 있는 커리큘럼은 삭제할 수 없어요. 강의를 먼저 삭제하거나 커리큘럼을 비공개로 두세요.', '확인', function(){});
+    return;
+  }
+  gConfirm('커리큘럼 삭제', c.nm+'을(를) 삭제할까요?', '삭제', function(){
+    currs=currs.filter(function(x){return x.id!==c.id}); renderCList(); toast('커리큘럼을 삭제했어요');
+  });
+}
 function openLect(id){if(window._noClick)return; lCur=id; renderLDet();}
 function renderLDet(){
   var l=lGet(lCur), c=cGet(l.cid);
   var h='<div class="page-title">'+l.nm+'</div>'
     +'<div class="card"><div class="card-head"><h3>강의 정보</h3>'
-    +(canEdit(c)?'<button class="btn btn-out" style="margin-right:0" onclick="openLEdit()">정보 수정</button>':'')
+    +(canEdit(c)?'<button class="btn btn-out" onclick="askLectDelete()">삭제</button><button class="btn btn-out" style="margin-right:0" onclick="openLEdit()">정보 수정</button>':'')
     +'</div>'
     +'<div class="player-mock">▶</div>'
     +'<div class="upmeta">영상 미리보기 (검수 용도)</div>'
@@ -1182,6 +1383,7 @@ function renderSubList(){
   renderSubTable(); show('v-sub');
 }
 function renderSubTable(){
+  if(!SUBJECTS.length){ document.getElementById('subtbl').innerHTML='<div class="empty">아직 등록된 과목이 없어요</div>'; return; }
   var h='<table class="ptable"><col style="width:40%"><col>'
     +'<tr><th>과목명</th><th>생성일</th></tr>';
   SUBJECTS.forEach(function(nm){
@@ -1197,6 +1399,7 @@ function openSubNew(){
   document.getElementById('s-go').textContent='생성';
   document.getElementById('s-nm').value='';
   document.getElementById('s-note').classList.add('hide');
+  document.getElementById('s-del').classList.add('hide');
   subCheck();
   document.getElementById('sdim').classList.add('show');
 }
@@ -1206,6 +1409,7 @@ function openSubEdit(nm){
   document.getElementById('s-go').textContent='저장';
   document.getElementById('s-nm').value=nm;
   document.getElementById('s-note').classList.remove('hide');
+  document.getElementById('s-del').classList.remove('hide');
   subCheck();
   document.getElementById('sdim').classList.add('show');
 }
@@ -1228,6 +1432,21 @@ function subSubmit(){
   renameSubject(subEdit, v);
   closeSubModal(); renderSubTable(); toast('저장했어요');
 }
+function subUsage(nm){
+  return {curr:currs.filter(function(c){return c.sub===nm}).length, fee:fees.filter(function(f){return f.sub===nm}).length};
+}
+function subDelete(){
+  var nm=subEdit, u=subUsage(nm);
+  closeSubModal();
+  if(u.curr||u.fee){
+    var parts=[]; if(u.curr) parts.push('커리큘럼 '+u.curr+'개'); if(u.fee) parts.push('교습과정 '+u.fee+'개');
+    gConfirm('삭제할 수 없어요', nm+' 과목을 사용하는 '+parts.join(', ')+'이(가) 있어요. 먼저 다른 과목으로 바꾸거나 삭제해 주세요.', '확인', function(){});
+    return;
+  }
+  gConfirm('과목 삭제', nm+' 과목을 삭제할까요?', '삭제', function(){
+    SUBJECTS.splice(SUBJECTS.indexOf(nm),1); delete SUBJ_META[nm]; renderSubTable(); toast('삭제했어요');
+  });
+}
 function renameSubject(o,n){
   if(o===n) return;
   SUBJECTS[SUBJECTS.indexOf(o)]=n;
@@ -1246,11 +1465,11 @@ function renameSubject(o,n){
 
 // ═══════ C6 선생님 관리 ═══════
 var staff=[
- {id:1, email:'admin@koreaus.kr',   nm:'김원장', role:'ADMIN',    st:'ACTIVE',   inv:'2026-06-01', jd:'2026-06-01', kakao:true},
- {id:2, email:'math@koreaus.kr',    nm:'박수학', role:'EMPLOYEE', st:'ACTIVE',   inv:'2026-06-10', jd:'2026-06-11', kakao:true},
- {id:3, email:'english@koreaus.kr', nm:'이영어', role:'EMPLOYEE', st:'ACTIVE',   inv:'2026-06-12', jd:'2026-06-13', kakao:true},
- {id:4, email:'science@koreaus.kr', nm:'최과학', role:'EMPLOYEE', st:'INVITED',  inv:'2026-08-20', jd:'', kakao:false},
- {id:5, email:'manager@koreaus.kr', nm:'정관리', role:'ADMIN',    st:'INACTIVE', inv:'2026-07-05', jd:'2026-07-06', kakao:true}
+ {id:1, email:'admin@koreaus.kr',   nm:'김원장', role:'ADMIN',    st:'ACTIVE',   inv:'2026-06-01', jd:'2026-06-01', login:'kakao'},
+ {id:2, email:'math@koreaus.kr',    nm:'박수학', role:'EMPLOYEE', st:'ACTIVE',   inv:'2026-06-10', jd:'2026-06-11', login:'kakao'},
+ {id:3, email:'english@koreaus.kr', nm:'이영어', role:'EMPLOYEE', st:'ACTIVE',   inv:'2026-06-12', jd:'2026-06-13', login:'email'},
+ {id:4, email:'science@koreaus.kr', nm:'최과학', role:'EMPLOYEE', st:'INVITED',  inv:'2026-08-20', jd:'', login:null},
+ {id:5, email:'manager@koreaus.kr', nm:'정관리', role:'ADMIN',    st:'INACTIVE', inv:'2026-07-05', jd:'2026-07-06', login:'kakao'}
 ];
 function stGet(id){return staff.filter(function(x){return x.id===id})[0]}
 var ST_BG={INVITED:['wait','INVITED'], ACTIVE:['ok','ACTIVE'], INACTIVE:['no','INACTIVE']};
@@ -1274,11 +1493,12 @@ function renderStaffTable(){
   if(!r.length){ h='<div class="empty">조건에 맞는 선생님이 없어요</div>'; }
   else{
     h='<table class="ptable">'
-     +'<col style="width:26%"><col style="width:22%"><col style="width:22%"><col>'
-     +'<tr><th>이름</th><th>역할</th><th>상태</th><th>가입일</th></tr>';
+     +'<col style="width:22%"><col style="width:16%"><col style="width:16%"><col style="width:14%"><col>'
+     +'<tr><th>이름</th><th>역할</th><th>상태</th><th>로그인</th><th>가입일</th></tr>';
     r.forEach(function(s){
       h+='<tr class="rw" onclick="openStaff('+s.id+')"><td class="nm">'+s.nm+'</td><td>'+roleBadge(s.role)+'</td>'
         +'<td><span class="bg '+ST_BG[s.st][0]+'">'+ST_BG[s.st][1]+'</span></td>'
+        +'<td>'+(s.login?loginTag(s.login):'<span class="sub">—</span>')+'</td>'
         +'<td class="sub">'+(s.jd||'—')+'</td></tr>';
     });
     h+='</table>';
@@ -1298,20 +1518,41 @@ function renderStaffDet(){
       : '<button class="btn btn-out" style="margin-right:0" onclick="deactStaff()">비활성화</button>';
   } else if(s.st==='INACTIVE'){
     h += '<button class="btn btn-pri" onclick="actStaff()">활성화</button>';
+  } else if(s.st==='INVITED'){
+    h += '<button class="btn btn-out" onclick="cancelInvite()">초대 취소</button>'
+      +'<button class="btn btn-out" style="margin-right:0" onclick="resendInvite()">초대 다시 보내기</button>';
   }
   h+='</div></div>';
+  var canReset = s.login==='email' && s.st==='ACTIVE';
   h+='<div class="card"><div class="card-head"><h3>선생님 정보</h3>'
-    +'<button class="btn btn-out" style="margin-right:0" onclick="openNmEdit()">수정</button></div>'
+    +(canReset?'<button class="btn btn-out" onclick="askStaffPwReset()">비밀번호 재설정 메일 발송</button>':'')
+    +'<button class="btn btn-out" style="margin-right:0;margin-left:'+(canReset?'0':'auto')+'" onclick="openNmEdit()">수정</button></div>'
     +'<div class="fgrid" style="margin-top:14px">'
     +fld('초대 이메일',s.email)+fld('이름',s.nm||'—')
     +fld('역할',roleBadge(s.role))+fld('상태','<span class="bg '+ST_BG[s.st][0]+'">'+ST_BG[s.st][1]+'</span>')
-    +fld('가입일',s.jd||'—')+'</div>'
+    +fld('로그인',s.login?loginTag(s.login):'—')+fld('가입일',s.jd||'—')+'</div>'
     +(lastActiveAdmin(s)?'<div class="upmeta">마지막 관리자는 비활성화할 수 없어요.</div>':'')
-    +(s.st==='INVITED'?'<div class="upmeta">아직 계정을 연결하지 않았어요. 연결하면 이용할 수 있는 상태가 돼요.</div>':'')
+    +(s.st==='INVITED'?'<div class="upmeta">아직 계정을 연결하지 않았어요. '+s.inv+' 초대, 링크는 7일간 유효해요. 만료되었으면 초대를 다시 보내요.</div>':'')
     +'</div>';
   document.getElementById('v-stdet').innerHTML=h;
   crumb('<a onclick="renderStaffList()">선생님 관리</a> <span class="sep">›</span> <b>'+(s.nm||s.email)+'</b>');
   show('v-stdet');
+}
+function cancelInvite(){
+  var s=stGet(stCur);
+  gConfirm('초대 취소', s.email+'로 보낸 초대를 취소할까요?', '취소하기', function(){
+    staff=staff.filter(function(x){return x.id!==s.id}); renderStaffList(); toast('초대를 취소했어요');
+  }, '초대 링크가 즉시 무효화돼요. 다시 초대하려면 새로 보내야 해요.');
+}
+function resendInvite(){
+  var s=stGet(stCur);
+  gConfirm('초대 다시 보내기', s.email+'로 초대 메일을 다시 보낼까요?', '보내기', function(){
+    s.inv=TODAY; renderStaffDet(); toast('초대를 다시 보냈어요');
+  }, '이전 초대 링크는 사용할 수 없게 돼요.');
+}
+function askStaffPwReset(){
+  var s=stGet(stCur);
+  gConfirm('재설정 메일 발송', s.email+'로 비밀번호 재설정 메일을 보낼까요?', '발송', function(){ toast('재설정 메일을 보냈어요'); });
 }
 function openNmEdit(){
   var s=stGet(stCur);
@@ -1370,18 +1611,31 @@ function invCheck(){
 }
 function invSubmit(){
   staff.push({id:Date.now()%100000, email:document.getElementById('i-email').value.trim(),
-    nm:document.getElementById('i-nm').value.trim(), role:document.getElementById('i-role').value, st:'INVITED', inv:'2026-08-27', jd:'', kakao:false});
+    nm:document.getElementById('i-nm').value.trim(), role:document.getElementById('i-role').value, st:'INVITED', inv:'2026-08-27', jd:'', login:null});
   closeInvite(); renderStaffTable(); toast('초대를 보냈어요');
 }
 
-// ═══════ C8 서비스 설정 ═══════
-var settings={promoDate:'2027-03-01', phone:'02-1234-5678'};
+// ═══════ C8 진급 관리 ═══════
+var settings={promoDate:'2027-03-01', lastPromo:'2026-03-01'};
 var TODAY='2026-08-27';
 var GR_ORDER=['초1','초2','초3','초4','초5','초6','중1','중2','중3','고1','고2','고3','졸업'];
+var setEdit=false;
 function renderSet(){
-  crumb('<b>서비스 설정</b>');
-  document.getElementById('set-date').value=settings.promoDate;
-  document.getElementById('set-phone').value=settings.phone;
+  crumb('<b>진급 관리</b>');
+  var h='<div class="card">';
+  if(!setEdit){
+    h+='<div class="card-head"><h3>자동 진급</h3><button class="btn btn-out" style="margin-right:0" onclick="setEdit=true;renderSet()">수정</button></div>'
+      +'<div class="fgrid">'+fld('진급 기준일',settings.promoDate)+fld('마지막 진급 실행',settings.lastPromo||'—')+'</div>'
+      +'<div class="upmeta">기준일에 전체 재학생이 한 학년씩 진급해요. (초1 → … → 고3 → 졸업, 졸업은 유지)</div>';
+  } else {
+    h+='<div class="card-head"><h3>자동 진급</h3></div><div class="form-col" style="margin-top:14px">'
+      +'<div class="mfld" style="margin-top:0"><div class="lb">진급 기준일</div><input class="inp" type="date" id="set-date" value="'+settings.promoDate+'"></div>'
+      +'<div class="upmeta">기준일에 전체 재학생이 한 학년씩 진급해요. (초1 → … → 고3 → 졸업, 졸업은 유지)</div></div>'
+      +'<div style="display:flex;margin-top:16px"><button class="btn btn-cxl" onclick="setEdit=false;renderSet()">취소</button>'
+      +'<button class="btn btn-pri" style="margin-left:8px" onclick="savePromo()">저장</button></div>';
+  }
+  h+='</div>';
+  document.getElementById('set-promo').innerHTML=h;
   show('v-set');
 }
 function savePromo(){
@@ -1391,13 +1645,13 @@ function savePromo(){
     gConfirm('진급 확인','저장하면 지금 바로 전체 재학생이 진급돼요.','저장하고 진급하기',
       function(){
         settings.promoDate=d;
-        runPromotion();
-        toast('저장하고 진급했어요');
+        runPromotion(); settings.lastPromo=TODAY;
+        setEdit=false; renderSet(); toast('저장하고 진급했어요');
       },
       '되돌릴 수 없어요. 학년 오류는 학생 관리에서 개별 보정해요.');
   } else {
     settings.promoDate=d;
-    toast('저장했어요');
+    setEdit=false; renderSet(); toast('저장했어요');
   }
 }
 function runPromotion(){
@@ -1407,46 +1661,312 @@ function runPromotion(){
     if(i>-1 && i<GR_ORDER.length-1) s.gr=GR_ORDER[i+1];
   });
 }
-function savePhone(){
-  settings.phone=document.getElementById('set-phone').value.trim();
-  toast('저장했어요');
+
+// ═══════ C9 학원 정보 관리 ═══════
+var home={
+  name:'고려US 학원', addr:'경기 시흥시 정왕동', phone:'02-1234-5678', biz:'',
+  head:'고려US에서 학생의 꿈을 함께 이룹니다',
+  intro:'2008년 시흥시 정왕동에서 개원하여 지역내 우수한 후학들을 배출하였고 사회에 이바지할수 있는 많은 인재를 배출하고 있습니다. 학생의 꿈을 함께 이뤄주기 위해 함께 고민하고 해법을 찾아 원하는 바를 이룰수 있도록 최선의 노력을 다하고 있습니다.',
+  photo:false, rate:90, total:1200, since:2008, staffTxt:'명문대 출신', g1:'초1', g2:'고3',
+  cards:[
+    {t:'레벨별 분반 수업', b:'국어, 수학, 영어, 과학, 사회, 역사 과목을 과목별 전문 선생님이 교육하며, 학교별 시험 대비 및 영어, 수학의 레벨별 분반 수업을 진행중입니다.'},
+    {t:'수업 후 테스트·피드백', b:'수학, 영어, 국어, 과학 과목에 대한 이해도를 체크하기 위해 수업 후 테스트를 진행하고, 피드백을 담당 선생님에게 전달하여 부족한 부분을 채워갑니다.'},
+    {t:'무료 입시 컨설팅', b:'고등학생은 수행평가 및 학교의 모든 평가를 도와주며, 생기부 관리 및 1학년때부터 체계적인 입시 컨설팅을 무료로 진행하여 원서 작성, 면접, 논술, 수능까지 토탈 입시 준비를 진행합니다.'}
+  ]
+};
+var GRADES=['초1','초2','초3','초4','초5','초6','중1','중2','중3','고1','고2','고3'];
+var homeEdit=null;   // null | 'info' | 'hero' | 'cards'
+var homePhotoTmp=false;
+function renderHome(){
+  crumb("<b>학원 정보 관리</b>");
+  var v=function(x){return x===''||x===null||x===undefined?'—':x};
+  var cur=parseInt(TODAY.slice(0,4),10);
+  var h='<div class="page-title">학원 정보 관리</div>';
+  // 기본 정보
+  h+='<div class="card">';
+  if(homeEdit!=='info'){
+    h+='<div class="card-head"><h3>기본 정보</h3><button class="btn btn-out" style="margin-right:0" onclick="homeEditStart(\'info\')">수정</button></div>'
+      +'<div class="fgrid">'+fld('상호',home.name)+fld('주소',home.addr)+fld('전화번호',home.phone)+fld('사업자등록번호',v(home.biz))+'</div>'
+      +'<div class="upmeta">웹 푸터·교습비 안내 문구와 학생 서비스의 포인트 문의 안내에 노출돼요.</div>';
+  } else {
+    h+='<div class="card-head"><h3>기본 정보</h3></div><div class="form-col" style="margin-top:14px">'
+      +'<div class="mfld" style="margin-top:0"><div class="lb">상호</div><input class="inp" id="h-name" value="'+home.name+'"></div>'
+      +'<div class="mfld"><div class="lb">주소</div><input class="inp" id="h-addr" value="'+home.addr+'"></div>'
+      +'<div class="mrow2"><div class="mfld"><div class="lb">전화번호</div><input class="inp" id="h-phone" value="'+home.phone+'"></div>'
+      +'<div class="mfld"><div class="lb">사업자등록번호 <span class="opt">(선택)</span></div><input class="inp" id="h-biz" placeholder="000-00-00000" value="'+home.biz+'"></div></div>'
+      +'</div>'+homeActs('info');
+  }
+  h+='</div>';
+  // 홈 소개
+  h+='<div class="card">';
+  if(homeEdit!=='hero'){
+    h+='<div class="card-head"><h3>홈 소개</h3><button class="btn btn-out" style="margin-right:0" onclick="homeEditStart(\'hero\')">수정</button></div>'
+      +'<div class="fgrid">'
+      +'<div class="fld" style="width:100%"><div class="lb">헤드라인</div><div class="vl">'+home.head+'</div></div>'
+      +'<div class="fld" style="width:100%"><div class="lb">소개문</div><div class="vl" style="font-weight:400;line-height:1.6">'+home.intro+'</div></div>'
+      +'<div class="fld" style="width:100%"><div class="lb">학원 사진</div>'+(home.photo?'<div class="photo-ph" style="width:180px;height:101px">학원 사진</div>':'<div class="vl">—</div>')+'</div>'
+      +fld('졸업생 합격률',home.rate+'% 이상')+fld('누적 원생 수',Number(home.total).toLocaleString()+'명+')+fld('개원 연도',home.since+'년 · '+(cur-home.since)+'년의 노하우')
+      +fld('선생님 문구',home.staffTxt)+fld('대상 학년',home.g1+' – '+home.g2)+'</div>';
+  } else {
+    var gsel=function(id,val){var o='<select class="sel" id="'+id+'">';GRADES.forEach(function(g){o+='<option'+(g===val?' selected':'')+'>'+g+'</option>'});return o+'</select>'};
+    h+='<div class="card-head"><h3>홈 소개</h3></div><div class="form-col" style="margin-top:14px">'
+      +'<div class="mfld" style="margin-top:0"><div class="lb">헤드라인</div><input class="inp" id="h-head" value="'+home.head+'"></div>'
+      +'<div class="mfld"><div class="lb">소개문</div><textarea id="h-intro" style="min-height:110px">'+home.intro+'</textarea></div>'
+      +'<div class="mfld"><div class="lb">학원 사진</div><div id="h-photo"></div></div>'
+      +'<div class="mrow2"><div class="mfld"><div class="lb">졸업생 합격률 (%)</div><input class="inp" type="number" id="h-rate" min="0" max="100" value="'+home.rate+'"></div>'
+      +'<div class="mfld"><div class="lb">누적 원생 수 (명)</div><input class="inp" type="number" id="h-total" min="0" value="'+home.total+'"></div></div>'
+      +'<div class="mrow2"><div class="mfld"><div class="lb">개원 연도</div><input class="inp" type="number" id="h-since" value="'+home.since+'" oninput="homeCalc()"></div>'
+      +'<div class="mfld"><div class="lb">선생님 문구</div><input class="inp" id="h-staff" value="'+home.staffTxt+'"></div></div>'
+      +'<div class="calc" id="h-since-calc"></div>'
+      +'<div class="mrow2"><div class="mfld"><div class="lb">대상 학년 시작</div>'+gsel('h-g1',home.g1)+'</div>'
+      +'<div class="mfld"><div class="lb">대상 학년 끝</div>'+gsel('h-g2',home.g2)+'</div></div>'
+      +'</div>'+homeActs('hero');
+  }
+  h+='</div>';
+  // 학습 시스템 카드
+  h+='<div class="card">';
+  if(homeEdit!=='cards'){
+    h+='<div class="card-head"><h3>학원 학습 시스템</h3><button class="btn btn-out" style="margin-right:0" onclick="homeEditStart(\'cards\')">수정</button></div>'
+      +'<div class="fgrid">';
+    home.cards.forEach(function(c,i){
+      h+='<div class="fld" style="width:100%"><div class="lb">카드 '+(i+1)+'</div><div class="vl">'+c.t+'</div><div class="vl" style="font-weight:400;color:var(--sub);line-height:1.6;margin-top:2px">'+c.b+'</div></div>';
+    });
+    h+='</div>';
+  } else {
+    h+='<div class="card-head"><h3>학원 학습 시스템</h3></div><div class="form-col" style="margin-top:14px">';
+    home.cards.forEach(function(c,i){
+      h+='<div class="mfld"'+(i?'':' style="margin-top:0"')+'><div class="lb">카드 '+(i+1)+' 제목</div><input class="inp" id="h-ct'+i+'" value="'+c.t+'"></div>'
+        +'<div class="mfld"><div class="lb">카드 '+(i+1)+' 본문</div><textarea id="h-cb'+i+'">'+c.b+'</textarea></div>';
+    });
+    h+='</div>'+homeActs('cards');
+  }
+  h+='</div>';
+  document.getElementById('v-home').innerHTML=h;
+  if(homeEdit==='hero'){ homeCalc(); renderHomePhoto(); }
+  show('v-home');
+}
+function homeActs(part){
+  return '<div style="display:flex;margin-top:16px"><button class="btn btn-cxl" onclick="homeEdit=null;renderHome()">취소</button>'
+    +'<button class="btn btn-pri" style="margin-left:8px" onclick="saveHome(\''+part+'\')">저장</button></div>';
+}
+function homeEditStart(part){ homeEdit=part; homePhotoTmp=home.photo; renderHome(); }
+function homeCalc(){
+  var y=parseInt(document.getElementById('h-since').value,10);
+  var el=document.getElementById('h-since-calc');
+  var cur=parseInt(TODAY.slice(0,4),10);
+  el.innerHTML = (y&&y<=cur) ? '홈 표시: <b>'+(cur-y)+'년의 노하우</b> · '+y+'년 개원 (연차는 자동 계산돼요)' : '';
+}
+function renderHomePhoto(){
+  var z=document.getElementById('h-photo');
+  if(!homePhotoTmp){
+    z.innerHTML='<div class="upbox" style="padding:26px 0" onclick="homePhotoTmp=true;renderHomePhoto()">사진을 선택하거나 끌어다 놓으세요<div class="upmeta">홈 상단 오른쪽에 400×300 비율로 노출돼요 (데모)</div></div>';
+  } else {
+    z.innerHTML='<div class="photo-row"><div class="photo-ph">학원 사진</div>'
+      +'<button class="btn btn-out" style="margin-right:0" onclick="homePhotoTmp=false;renderHomePhoto()">사진 삭제</button></div>';
+  }
+}
+function saveHome(part){
+  var v=function(id){return document.getElementById(id).value.trim()};
+  if(part==='info'){ home.name=v('h-name'); home.addr=v('h-addr'); home.phone=v('h-phone'); home.biz=v('h-biz'); }
+  if(part==='hero'){
+    if(GRADES.indexOf(v('h-g1'))>GRADES.indexOf(v('h-g2'))){ toast('대상 학년 시작이 끝보다 늦어요'); return; }
+    home.head=v('h-head'); home.intro=v('h-intro'); home.rate=v('h-rate'); home.total=v('h-total');
+    home.since=v('h-since'); home.staffTxt=v('h-staff'); home.g1=v('h-g1'); home.g2=v('h-g2'); home.photo=homePhotoTmp;
+  }
+  if(part==='cards'){ home.cards.forEach(function(c,i){ c.t=v('h-ct'+i); c.b=v('h-cb'+i); }); }
+  homeEdit=null; renderHome(); toast('저장했어요');
+}
+
+// ═══════ C10 교습비 관리 ═══════
+// 온라인 강의 포인트 가격은 게시 대상이 아닌 것으로 보고 제외. 교육청 확인 결과 필요해지면 교습과정 행으로 등록 (대상 '전체', 과목 '온라인 강의' 옵션 추가)
+var feeMeta={org:'시흥교육지원청', month:'2026-09'};
+var fees=[
+ {id:1, nm:'중2 수학 내신반',   gr:'중2', sub:'수학', wk:2, min:90,  fee:280000, ex:'교재비 15,000원'},
+ {id:2, nm:'중2 영어 문법반',   gr:'중2', sub:'영어', wk:2, min:90,  fee:260000, ex:'교재비 12,000원'},
+ {id:3, nm:'중2 과학 개념·탐구', gr:'중2', sub:'과학', wk:1, min:120, fee:180000, ex:''},
+ {id:4, nm:'중1 수학 기초반',   gr:'중1', sub:'수학', wk:2, min:90,  fee:260000, ex:'교재비 15,000원'},
+ {id:5, nm:'중3 수학 고입 대비', gr:'중3', sub:'수학', wk:3, min:90,  fee:340000, ex:'교재비 18,000원'},
+ {id:6, nm:'중3 영어 독해반',   gr:'중3', sub:'영어', wk:2, min:90,  fee:280000, ex:'교재비 12,000원'}
+];
+var feeEdit=null;
+function feeMonthLabel(m){ var a=m.split('-'); return a[0]+'년 '+parseInt(a[1],10)+'월'; }
+function feeNote(org,m){ return '교습비는 '+org+'에 등록된 금액이며, '+feeMonthLabel(m)+' 기준입니다. 문의 '+home.phone; }
+function feeMetaPreview(){
+  var org=document.getElementById('fee-org').value.trim(), m=document.getElementById('fee-month').value;
+  document.getElementById('fee-preview').textContent = (org&&m)
+    ? '웹 표 하단 문구: '+feeNote(org,m)
+    : '기관명과 기준월을 입력하면 웹 표 하단 문구를 미리 볼 수 있어요.';
+}
+var feeMetaEdit=false;
+function renderFeeMeta(){
+  var h='<div class="card">';
+  if(!feeMetaEdit){
+    h+='<div class="card-head"><h3>게시 정보</h3><button class="btn btn-out" style="margin-right:0" onclick="feeMetaEdit=true;renderFeeMeta()">수정</button></div>'
+      +'<div class="fgrid">'+fld('등록 기관명',feeMeta.org)+fld('게시 기준월',feeMonthLabel(feeMeta.month))+'</div>'
+      +'<div class="upmeta">웹 표 하단 문구: '+feeNote(feeMeta.org,feeMeta.month)+'</div>';
+  } else {
+    h+='<div class="card-head"><h3>게시 정보</h3></div><div class="form-col" style="margin-top:14px">'
+      +'<div class="mrow2" style="margin-top:0"><div class="mfld"><div class="lb">등록 기관명</div><input class="inp" id="fee-org" oninput="feeMetaPreview()" placeholder="예: 시흥교육지원청" value="'+feeMeta.org+'"></div>'
+      +'<div class="mfld"><div class="lb">게시 기준월</div><input class="inp" type="month" id="fee-month" oninput="feeMetaPreview()" value="'+feeMeta.month+'"></div></div>'
+      +'<div class="upmeta" id="fee-preview"></div></div>'
+      +'<div style="display:flex;margin-top:16px"><button class="btn btn-cxl" onclick="feeMetaEdit=false;renderFeeMeta()">취소</button>'
+      +'<button class="btn btn-pri" style="margin-left:8px" onclick="saveFeeMeta()">저장</button></div>';
+  }
+  h+='</div>';
+  document.getElementById('fee-meta').innerHTML=h;
+  if(feeMetaEdit) feeMetaPreview();
+}
+function renderFeeList(){
+  crumb('<b>교습비 관리</b>');
+  renderFeeMeta();
+  var ss=document.getElementById('fee-sub'), cur=ss.value;
+  ss.innerHTML='<option value="">전체 과목</option>'+SUBJECTS.map(function(x){return '<option>'+x+'</option>'}).join('');
+  ss.value=cur; if(ss.selectedIndex<0) ss.selectedIndex=0;
+  renderFeeTable(); show('v-fee');
+}
+function saveFeeMeta(){
+  var org=document.getElementById('fee-org').value.trim(), m=document.getElementById('fee-month').value;
+  if(!org||!m){ toast('기관명과 기준월을 입력해 주세요'); return; }
+  feeMeta.org=org; feeMeta.month=m; feeMetaEdit=false; renderFeeMeta(); toast('저장했어요');
+}
+function renderFeeTable(){
+  var gr=document.getElementById('fee-gr').value, sub=document.getElementById('fee-sub').value;
+  var r=fees.filter(function(f){return (!gr||f.gr===gr)&&(!sub||f.sub===sub)});
+  r.sort(function(a,b){
+    var d=GRADES.indexOf(a.gr)-GRADES.indexOf(b.gr); if(d) return d;
+    d=SUBJECTS.indexOf(a.sub)-SUBJECTS.indexOf(b.sub); if(d) return d;
+    return a.id-b.id;
+  });
+  var h;
+  if(!r.length){ h='<div class="empty">'+(fees.length?'조건에 맞는 교습과정이 없어요':'아직 등록된 교습과정이 없어요')+'</div>'; }
+  else{
+    h='<table class="ptable"><col style="width:28%"><col style="width:9%"><col style="width:10%"><col style="width:11%"><col style="width:13%"><col style="width:14%"><col>'
+      +'<tr><th>교습과정</th><th>대상</th><th>과목</th><th>주당 횟수</th><th>회당 교습시간</th><th style="text-align:right">월 교습비</th><th>기타경비</th></tr>';
+    r.forEach(function(f){
+      h+='<tr class="rw" onclick="openFeeEdit('+f.id+')"><td class="nm">'+f.nm+'</td><td>'+f.gr+'</td><td>'+f.sub+'</td>'
+        +'<td class="sub">주 '+f.wk+'회</td><td class="sub">'+f.min+'분</td>'
+        +'<td style="color:var(--navy);font-weight:700;text-align:right">'+f.fee.toLocaleString()+'원</td><td class="sub">'+(f.ex||'—')+'</td></tr>';
+    });
+    h+='</table>';
+  }
+  document.getElementById('feetbl').innerHTML=h;
+}
+function feeFill(f){
+  document.getElementById('fe-nm').value=f?f.nm:'';
+  var gs=document.getElementById('fe-gr'); gs.innerHTML=(f?'':'<option value="">학년 선택</option>')+GRADES.map(function(g){return '<option>'+g+'</option>'}).join('');
+  gs.value=f?f.gr:'';
+  var ss=document.getElementById('fe-sub'); ss.innerHTML=(f?'':'<option value="">과목 선택</option>')+SUBJECTS.map(function(x){return '<option>'+x+'</option>'}).join('');
+  ss.value=f?f.sub:'';
+  document.getElementById('fe-wk').value=f?f.wk:'';
+  document.getElementById('fe-min').value=f?f.min:'';
+  document.getElementById('fe-fee').value=f?f.fee:'';
+  document.getElementById('fe-ex').value=f?f.ex:'';
+  document.getElementById('fe-err').classList.add('hide');
+}
+function openFeeNew(){
+  feeEdit=null;
+  document.getElementById('fe-title').textContent='교습과정 등록';
+  document.getElementById('fe-go').textContent='등록';
+  document.getElementById('fe-del').classList.add('hide');
+  feeFill(null); feeCheck();
+  document.getElementById('fdim').classList.add('show');
+}
+function openFeeEdit(id){
+  feeEdit=id;
+  var f=fees.filter(function(x){return x.id===id})[0];
+  document.getElementById('fe-title').textContent='교습과정 수정';
+  document.getElementById('fe-go').textContent='저장';
+  document.getElementById('fe-del').classList.remove('hide');
+  feeFill(f); feeCheck();
+  document.getElementById('fdim').classList.add('show');
+}
+function closeFeeModal(){document.getElementById('fdim').classList.remove('show')}
+function feeCheck(){
+  var v=function(id){return document.getElementById(id).value.trim()};
+  var ok=v('fe-nm')&&v('fe-gr')&&v('fe-sub')&&parseInt(v('fe-wk'),10)>0&&parseInt(v('fe-min'),10)>0&&v('fe-fee')!==''&&parseInt(v('fe-fee'),10)>=0;
+  document.getElementById('fe-go').disabled=!ok;
+}
+function feeSubmit(){
+  var v=function(id){return document.getElementById(id).value.trim()};
+  var o={nm:v('fe-nm'), gr:v('fe-gr'), sub:v('fe-sub'), wk:parseInt(v('fe-wk'),10), min:parseInt(v('fe-min'),10), fee:parseInt(v('fe-fee'),10), ex:v('fe-ex')};
+  if(feeEdit===null){
+    o.id=Date.now()%100000; fees.push(o);
+    closeFeeModal(); renderFeeTable(); toast('교습과정을 등록했어요'); return;
+  }
+  var f=fees.filter(function(x){return x.id===feeEdit})[0];
+  Object.keys(o).forEach(function(k){f[k]=o[k]});
+  closeFeeModal(); renderFeeTable(); toast('저장했어요');
+}
+function feeDelete(){
+  var f=fees.filter(function(x){return x.id===feeEdit})[0];
+  closeFeeModal();
+  gConfirm('교습과정 삭제', f.nm+'을(를) 교습비 안내에서 삭제할까요?', '삭제', function(){
+    fees=fees.filter(function(x){return x.id!==feeEdit}); renderFeeTable(); toast('삭제했어요');
+  }, '삭제하면 웹 교습비 안내 표에서 바로 사라져요.');
 }
 
 // ═══════ C7 졸업생 성과 관리 ═══════
 var grads=[
- {id:1, nm:'김서연', sc:'고려대학교', dept:'경영학과',     y1:'2019', y2:'2022', gy:'2023'},
- {id:2, nm:'이준호', sc:'연세대학교', dept:'컴퓨터과학과', y1:'2021', y2:'2024', gy:'2025'},
- {id:3, nm:'박지민', sc:'서울대학교', dept:'수학교육과',   y1:'2022', y2:'2025', gy:'2026'}
+ {id:1, nm:'김서연', high:'정왕고', sc:'고려대학교', dept:'경영학과',     y1:'2019', y2:'2022', gy:'2023', photo:true,  feat:true},
+ {id:2, nm:'이준호', high:'시흥고', sc:'연세대학교', dept:'컴퓨터과학과', y1:'2021', y2:'2024', gy:'2025', photo:false, feat:false},
+ {id:3, nm:'박지민', high:'함현고', sc:'서울대학교', dept:'수학교육과',   y1:'2022', y2:'2025', gy:'2026', photo:true,  feat:true}
 ];
-var gradEdit=null;
+var gradEdit=null, gPhoto=false, gFeat=false;
+var FEAT_MAX=4;
+function gradYears(y1,y2){ var a=parseInt(y1,10), b=parseInt(y2,10); return (a&&b&&b>=a) ? (b-a+1) : null; }
 function renderGradList(){
   crumb('<b>졸업생 성과 관리</b>');
   renderGradTable(); show('v-grad');
 }
 function renderGradTable(){
-  var r=grads.slice().sort(function(a,b){return b.gy-a.gy||a.id-b.id});
-  var h='<table class="ptable"><col style="width:14%"><col style="width:24%"><col style="width:24%"><col style="width:22%"><col>'
-    +'<tr><th>이름</th><th>학교</th><th>학과</th><th>학원 다닌 기간</th><th>졸업 연도</th></tr>';
+  var r=grads.slice().sort(function(a,b){return (b.feat?1:0)-(a.feat?1:0)||b.gy-a.gy||a.id-b.id});
+  if(!r.length){ document.getElementById('gradtbl').innerHTML='<div class="empty">아직 등록된 졸업생 성과가 없어요</div>'; return; }
+  var h='<table class="ptable"><col style="width:11%"><col style="width:12%"><col style="width:19%"><col style="width:19%"><col style="width:17%"><col style="width:10%"><col>'
+    +'<tr><th>이름</th><th>출신 고교</th><th>학교</th><th>학과</th><th>학원 다닌 기간</th><th>졸업 연도</th><th>홈 노출</th></tr>';
   r.forEach(function(g){
-    h+='<tr class="rw" onclick="openGradEdit('+g.id+')"><td class="nm">'+g.nm+'</td>'
-      +'<td>'+g.sc+'</td><td class="sub">'+g.dept+'</td><td class="sub">'+g.y1+'–'+g.y2+'</td><td class="sub">'+g.gy+'</td></tr>';
+    var yrs=gradYears(g.y1,g.y2);
+    h+='<tr class="rw" onclick="openGradEdit('+g.id+')"><td class="nm">'+g.nm+'</td><td class="sub">'+g.high+'</td>'
+      +'<td>'+g.sc+'</td><td class="sub">'+g.dept+'</td><td class="sub">'+g.y1+'–'+g.y2+(yrs?' · 지도 '+yrs+'년':'')+'</td><td class="sub">'+g.gy+'</td>'
+      +'<td>'+(g.feat?'<span class="bg ok">대표</span>':'')+'</td></tr>';
   });
   h+='</table>';
   document.getElementById('gradtbl').innerHTML=h;
 }
-function gradFill(nm,sc,dept,y1,y2,gy){
-  document.getElementById('g-nm').value=nm;
-  document.getElementById('g-sc').value=sc;
-  document.getElementById('g-dept').value=dept;
-  document.getElementById('g-y1').value=y1;
-  document.getElementById('g-y2').value=y2;
-  document.getElementById('g-gy').value=gy;
+function gradFill(g){
+  document.getElementById('g-nm').value=g?g.nm:'';
+  document.getElementById('g-high').value=g?g.high:'';
+  document.getElementById('g-sc').value=g?g.sc:'';
+  document.getElementById('g-dept').value=g?g.dept:'';
+  document.getElementById('g-y1').value=g?g.y1:'';
+  document.getElementById('g-y2').value=g?g.y2:'';
+  document.getElementById('g-gy').value=g?g.gy:'';
+  gPhoto=g?g.photo:false; gFeat=g?g.feat:false;
+  document.getElementById('g-feat').classList[gFeat?'add':'remove']('on');
+  document.getElementById('g-feat-err').classList.add('hide');
+  renderGradPhoto();
+}
+function renderGradPhoto(){
+  var z=document.getElementById('g-photo');
+  if(!gPhoto){
+    z.innerHTML='<div class="upbox" style="padding:18px 0" onclick="gPhoto=true;renderGradPhoto()">사진을 선택하거나 끌어다 놓으세요<div class="upmeta" style="margin-top:4px">카드 배경으로 노출돼요. 없으면 학교명이 대신 표시돼요 (데모)</div></div>';
+  } else {
+    z.innerHTML='<div class="photo-row"><div class="photo-ph" style="width:140px;height:80px">'+(document.getElementById('g-sc').value||'캠퍼스 사진')+'</div>'
+      +'<button class="btn btn-out" style="margin-right:0" onclick="gPhoto=false;renderGradPhoto()">사진 삭제</button></div>';
+  }
+}
+function gradFeatCount(){ return grads.filter(function(g){return g.feat && g.id!==gradEdit}).length; }
+function gradFeatToggle(){
+  var err=document.getElementById('g-feat-err');
+  if(!gFeat && gradFeatCount()>=FEAT_MAX){ err.classList.remove('hide'); return; }
+  err.classList.add('hide');
+  gFeat=!gFeat; document.getElementById('g-feat').classList[gFeat?'add':'remove']('on');
 }
 function openGradNew(){
   gradEdit=null;
   document.getElementById('g-title').textContent='성과 등록';
   document.getElementById('g-go').textContent='등록';
-  gradFill('','','','','','');
+  document.getElementById('g-del').classList.add('hide');
+  gradFill(null);
   gradCheck();
   document.getElementById('gdim').classList.add('show');
 }
@@ -1455,11 +1975,19 @@ function openGradEdit(id){
   var g=grads.filter(function(x){return x.id===id})[0];
   document.getElementById('g-title').textContent='성과 수정';
   document.getElementById('g-go').textContent='저장';
-  gradFill(g.nm,g.sc,g.dept,g.y1,g.y2,g.gy);
+  document.getElementById('g-del').classList.remove('hide');
+  gradFill(g);
   gradCheck();
   document.getElementById('gdim').classList.add('show');
 }
 function closeGradModal(){document.getElementById('gdim').classList.remove('show')}
+function gradDelete(){
+  var g=grads.filter(function(x){return x.id===gradEdit})[0];
+  closeGradModal();
+  gConfirm('성과 삭제', g.nm+' ('+g.sc+') 성과를 삭제할까요?', '삭제', function(){
+    grads=grads.filter(function(x){return x.id!==gradEdit}); renderGradTable(); toast('삭제했어요');
+  }, g.feat?'홈 대표로 노출 중이에요. 삭제하면 홈 카드가 최신 연도 순으로 채워져요.':'웹 졸업생 성과에서 바로 사라져요.');
+}
 function gradCheck(){
   var y1=document.getElementById('g-y1').value.trim();
   var y2=document.getElementById('g-y2').value.trim();
@@ -1469,7 +1997,10 @@ function gradCheck(){
   var bad = yrs && parseInt(y1,10)>parseInt(y2,10);
   if(bad){ err.textContent='시작 연도가 종료 연도보다 늦어요'; err.classList.remove('hide'); }
   else err.classList.add('hide');
+  var n=gradYears(y1,y2);
+  document.getElementById('g-calc').innerHTML = n ? '지도 <b>'+n+'년</b> (웹 카드에 자동 표시돼요)' : '';
   var ok=document.getElementById('g-nm').value.trim()
+    && document.getElementById('g-high').value.trim()
     && document.getElementById('g-sc').value.trim()
     && document.getElementById('g-dept').value.trim()
     && yrs && !bad;
@@ -1477,18 +2008,20 @@ function gradCheck(){
 }
 function gradSubmit(){
   var v={nm:document.getElementById('g-nm').value.trim(),
+         high:document.getElementById('g-high').value.trim(),
          sc:document.getElementById('g-sc').value.trim(),
          dept:document.getElementById('g-dept').value.trim(),
          y1:document.getElementById('g-y1').value.trim(),
          y2:document.getElementById('g-y2').value.trim(),
-         gy:document.getElementById('g-gy').value.trim()};
+         gy:document.getElementById('g-gy').value.trim(),
+         photo:gPhoto, feat:gFeat};
   if(gradEdit===null){
-    grads.push({id:Date.now()%100000, nm:v.nm, sc:v.sc, dept:v.dept, y1:v.y1, y2:v.y2, gy:v.gy});
+    v.id=Date.now()%100000; grads.push(v);
     closeGradModal(); renderGradTable(); toast('성과를 등록했어요');
     return;
   }
   var g=grads.filter(function(x){return x.id===gradEdit})[0];
-  g.nm=v.nm; g.sc=v.sc; g.dept=v.dept; g.y1=v.y1; g.y2=v.y2; g.gy=v.gy;
+  Object.keys(v).forEach(function(k){g[k]=v[k]});
   closeGradModal(); renderGradTable(); toast('저장했어요');
 }
 
@@ -1534,29 +2067,87 @@ function renderDashContent(){
 function showAuth(id){
   document.getElementById('v-auth').classList.remove('hide');
   document.querySelector('.console').classList.add('hide');
-  ['a-login','a-invite','a-block'].forEach(function(v){
+  ['a-login','a-invite','a-block','a-findpw','a-findpw-done','a-resetpw','a-resetpw-done','a-expired','a-resetpw-expired'].forEach(function(v){
     document.getElementById(v).className='auth-view'+(v===id?' on':'');
   });
 }
-var CUR={nm:'김원장', role:'ADMIN'};
+// ── 비밀번호 폼 공통 (웹 web.html 규칙과 동일) ──
+var PW_FORMS={
+  iv:{pw:'iv-pw', pw2:'iv-pw2', panel:'iv-panel', err:'iv-err', submit:'iv-go'},
+  rp:{pw:'rp-pw', pw2:'rp-pw2', panel:'rp-panel', err:'rp-err', submit:'rp-go'},
+  pc:{pw:'pc-pw', pw2:'pc-pw2', panel:'pc-panel', err:'pc-err', submit:'pc-go', cur:'pc-cur'}
+};
+var pwFocus={};
+function pwRules(p){
+  var t=p.replace(/\s/g,'');
+  var kinds=[/[a-zA-Z]/,/[0-9]/,/[^a-zA-Z0-9]/].filter(function(r){return r.test(t)}).length;
+  return [kinds>=2, t.length>=8&&t.length<=32, t.length>0&&!/(.)\1\1/.test(t)];
+}
+function pwFormValidate(k){
+  var c=PW_FORMS[k], p1=document.getElementById(c.pw).value, p2=document.getElementById(c.pw2).value;
+  var rules=pwRules(p1), pwOk=rules.every(Boolean), matchOk=p2!==''&&p1===p2;
+  var panel=document.getElementById(c.panel);
+  panel.classList[(pwFocus[k]||(p1!==''&&!pwOk))?'add':'remove']('show');
+  var rs=panel.querySelectorAll('.pw-rule');
+  for(var i=0;i<rs.length;i++) rs[i].classList[rules[i]?'add':'remove']('ok');
+  document.getElementById(c.err).classList[(p2!==''&&!matchOk)?'remove':'add']('hide');
+  var curOk = c.cur ? document.getElementById(c.cur).value!=='' : true;
+  document.getElementById(c.submit).disabled=!(pwOk&&matchOk&&curOk);
+}
+function pwFormReset(k){
+  var c=PW_FORMS[k];
+  [c.pw,c.pw2,c.cur].forEach(function(id){ if(id){ var el=document.getElementById(id); el.value=''; el.type='password'; } });
+  pwFocus[k]=false; pwFormValidate(k);
+  document.getElementById(c.err).classList.add('hide');
+}
+function togglePw(id,btn){
+  var i=document.getElementById(id), show=i.type==='password';
+  i.type=show?'text':'password'; btn.classList[show?'add':'remove']('on');
+}
+function emailLogin(){
+  var e=document.getElementById('lg-email').value.trim(), p=document.getElementById('lg-pw').value;
+  var err=document.getElementById('lg-err');
+  if(!e||!p){ toast('이메일과 비밀번호를 입력해 주세요'); return; }
+  if(p==='wrong'){ err.classList.remove('hide'); return; }   // 데모: 비밀번호 'wrong' → 실패 상태
+  err.classList.add('hide'); openBranch();
+}
+function openFindPw(){ document.getElementById('fp-email').value=document.getElementById('lg-email').value.trim(); showAuth('a-findpw'); }
+function findPwSubmit(){
+  var e=document.getElementById('fp-email').value.trim();
+  if(!e){ toast('이메일을 입력해 주세요'); return; }
+  document.getElementById('fp-msg').textContent=e+'(으)로 비밀번호 변경 링크를 보냈어요. 메일함을 확인해 주세요.';
+  showAuth('a-findpw-done');
+}
+function openResetPw(){ pwFormReset('rp'); showAuth('a-resetpw'); }
+function openPwChange(){ document.getElementById('pmenu').classList.remove('open'); pwFormReset('pc'); document.getElementById('pcdim').classList.add('show'); }
+function closePwChange(){ document.getElementById('pcdim').classList.remove('show'); document.getElementById('pc-cur-err').classList.add('hide'); }
+function pwChangeSubmit(){
+  var err=document.getElementById('pc-cur-err');
+  if(document.getElementById('pc-cur').value==='wrong'){ err.classList.remove('hide'); return; }   // 데모: 현재 비밀번호 'wrong' → 불일치
+  err.classList.add('hide'); closePwChange(); toast('비밀번호를 변경했어요');
+}
+var CUR={nm:'김원장', role:'ADMIN', login:'kakao'};
 function enterConsole(user){
   if(user) CUR=user;
   document.body.className = CUR.role==='EMPLOYEE' ? 'emp' : '';
+  document.getElementById('pm-pw').classList[CUR.login==='email'?'remove':'add']('hide');
   document.getElementById('pm-nm').textContent=CUR.nm;
   document.getElementById('pm-role').textContent=CUR.role;
   document.getElementById('v-auth').classList.add('hide');
   document.querySelector('.console').classList.remove('hide');
   if(CUR.role==='EMPLOYEE') renderCList(); else renderDash();
 }
-// 임시: 카카오 클릭 → 분기 선택 오버레이. 실제 구현 시 kakaoLogin을 실제 OAuth로 교체하고 branch 계열 제거
+// 임시: 카카오·이메일 로그인 클릭 → 분기 선택 오버레이. 실제 구현 시 kakaoLogin/emailLogin을 실제 인증으로 교체하고 branch 계열 제거
 function kakaoLogin(){ openBranch(); }
 function openBranch(){ document.getElementById('demoBranch').classList.add('on'); }
 function closeBranch(){ document.getElementById('demoBranch').classList.remove('on'); }
 function branchGo(k){
   closeBranch();
-  if(k==='admin') enterConsole({nm:'김원장', role:'ADMIN'});
-  if(k==='emp') enterConsole({nm:'박수학', role:'EMPLOYEE'});
-  if(k==='invite') showAuth('a-invite');
+  if(k==='admin') enterConsole({nm:'김원장', role:'ADMIN', login:'kakao'});
+  if(k==='emp') enterConsole({nm:'박수학', role:'EMPLOYEE', login:'kakao'});
+  if(k==='emp-email') enterConsole({nm:'이영어', role:'EMPLOYEE', login:'email'});
+  if(k==='invite'){ pwFormReset('iv'); showAuth('a-invite'); }
+  if(k==='expired') showAuth('a-expired');
   if(k==='none') demoBlock('none');
   if(k==='inactive') demoBlock('inactive');
 }
@@ -1567,11 +2158,11 @@ function demoBlock(reason){
     reason==='inactive' ? '궁금한 점은 학원에 문의해 주세요.' : '초대를 받았다면 초대 메일의 링크로 접속해 주세요.<br>초대받지 않았다면 학원에 문의해 주세요.';
   showAuth('a-block');
 }
-function connectInvite(){
+function connectInvite(kind){
   var s=staff.filter(function(x){return x.email==='science@koreaus.kr'})[0];
-  if(s && s.st==='INVITED'){ s.st='ACTIVE'; s.kakao=true; s.jd='2026-08-27'; }
-  enterConsole({nm:s?s.nm:'최과학', role:s?s.role:'EMPLOYEE'});
-  toast('계정을 연결했어요');
+  if(s && s.st==='INVITED'){ s.st='ACTIVE'; s.login=kind; s.jd='2026-08-27'; }
+  enterConsole({nm:s?s.nm:'최과학', role:s?s.role:'EMPLOYEE', login:kind});
+  toast(kind==='email'?'비밀번호를 설정했어요':'계정을 연결했어요');
 }
 function authLogout(){
   document.getElementById('pmenu').classList.remove('open');
