@@ -31,6 +31,8 @@
     --r-card: 8px;
     --r-btn: 6px;
     --r-badge: 4px;
+    --red: #D6362F;
+    --red-soft: #FBEBEA;
   }
 
   * { margin:0; padding:0; box-sizing:border-box; }
@@ -61,11 +63,10 @@
 
   .root-head { padding: 22px 16px 0; background:#fff; position: sticky; top:0; z-index: 5; }
   .root-title { font-size: 19px; font-weight: 700; padding-bottom: 18px; }
-  .root-head.no-filter .root-title { border-bottom: 1px solid var(--border); }
 
   .filter-bar {
     display:flex; align-items:center; gap: 8px;
-    padding-bottom: 12px; border-bottom: 1px solid var(--border);
+    padding-bottom: 12px;
     overflow-x: auto;
   }
   .grade-btn {
@@ -75,7 +76,7 @@
   }
   .grade-btn .caret { font-size: 9px; color: var(--text-sub); }
   .grade-btn.other { border-color: var(--navy); color: var(--navy); background: var(--navy-soft); }
-  .divider-v { flex:none; width:1px; height: 20px; background: var(--border); }
+  .divider-v { display:none; }
   .chip {
     flex:none; border:1px solid var(--border); background:#fff; color: var(--text-sub);
     border-radius: var(--r-btn); font: inherit; font-size: 13px; font-weight: 500;
@@ -117,15 +118,15 @@
 
   /* S2 */
   .appbar {
-    display:flex; align-items:center; gap: 10px;
+    display:grid; grid-template-columns: 1fr auto 1fr; align-items:center; gap: 10px;
     padding: 12px 16px;
-    border-bottom: 1px solid var(--border);
     background:#fff;
     position: sticky; top:0; z-index: 5;
   }
-  .appbar .back { width:22px; height:22px; flex:none; cursor:pointer; }
-  .appbar .title { font-size: 16px; font-weight: 600; flex:1; }
-  .cur-head { padding: 18px 16px 16px; border-bottom: 8px solid var(--section); }
+  .appbar .back { width:22px; height:22px; cursor:pointer; justify-self:start; }
+  .appbar .title { font-size: 16px; font-weight: 600; text-align:center; white-space:nowrap; }
+  .appbar > :nth-child(3) { justify-self:end; }
+  .cur-head { padding: 18px 16px 16px; }
   .cur-head h1 { font-size: 20px; font-weight: 700; line-height:1.3; margin: 10px 0 8px; }
   .cur-head p { font-size: 14px; color: var(--text-sub); line-height: 1.55; }
   .cur-head .cur-meta { margin-top: 12px; font-size: 13px; }
@@ -178,7 +179,6 @@
   .my-group-head {
     display:flex; align-items:center; gap: 8px;
     padding: 12px;
-    border-bottom: 1px solid var(--border);
     background: var(--section);
     cursor:pointer;
   }
@@ -187,9 +187,7 @@
   .my-lec-row {
     display:flex; align-items:center; gap: 10px;
     padding: 11px 12px;
-    border-bottom: 1px solid var(--section);
   }
-  .my-lec-row:last-child { border-bottom: 0; }
   .no-chip {
     flex:none; width: 28px; height: 20px;
     display:flex; align-items:center; justify-content:center;
@@ -234,19 +232,17 @@
     font-size: 10px; color: rgba(255,255,255,.85);
     background: rgba(255,255,255,.14); border-radius: 4px; padding: 2px 7px;
   }
-  .player-info { padding: 12px 16px; border-bottom: 1px solid var(--border); }
+  .player-info { padding: 12px 16px; }
   .player-info .pi-name { font-size: 15px; font-weight: 700; line-height:1.35; }
   .player-info .pi-meta { font-size: 12px; color: var(--text-sub); margin-top: 3px; }
   .ps-head {
     padding: 12px 16px 10px; font-size: 14px; font-weight: 700;
     display:flex; justify-content:space-between; align-items:center;
-    border-bottom: 1px solid var(--border);
   }
   .ps-head small { font-weight: 500; font-size: 12px; color: var(--text-sub); }
   .ps-row {
     display:flex; align-items:center; gap: 12px;
     padding: 10px 16px; cursor:pointer;
-    border-bottom: 1px solid var(--section);
     font-size: 14px;
   }
   .ps-thumb {
@@ -284,10 +280,9 @@
   .sec-block .sec-head .sec-title { margin-bottom: 0; }
   .point-row {
     display:flex; justify-content:space-between; align-items:center;
-    padding: 10px 0; border-bottom: 1px solid var(--section);
+    padding: 10px 0;
     font-size: 14px;
   }
-  .point-row:last-child { border-bottom: 0; }
   .point-row .subj { font-weight: 500; }
   .point-row .amt { font-weight: 700; color: var(--navy); }
   .point-row .amt.zero { color: var(--text-sub); font-weight: 600; }
@@ -297,20 +292,18 @@
   }
   .tel-box .t1 { font-size: 12px; color: var(--text-sub); }
   .tel-box .t2 { font-size: 14px; font-weight: 700; color: var(--navy); margin-top:2px; }
-  .tel-box .call { font-size: 12px; font-weight:600; color: var(--navy); background: var(--navy-soft); border-radius: var(--r-btn); padding: 7px 10px; }
+  .tel-box .call { font-size: 12px; font-weight:600; color: var(--navy); background: var(--navy-soft); border-radius: var(--r-btn); padding: 7px 10px; text-decoration:none; cursor:pointer; }
   .hist-row {
     display:flex; justify-content:space-between; align-items:center; gap: 10px;
-    padding: 10px 0; border-bottom: 1px solid var(--section);
+    padding: 10px 0;
   }
-  .hist-row:last-child { border-bottom: 0; }
   .hist-row .h-name { font-size: 13px; font-weight: 600; }
   .hist-row .h-meta { font-size: 11px; color: var(--text-sub); margin-top: 2px; }
   .hist-row .h-price { font-size: 13px; font-weight: 700; color: var(--navy); flex:none; }
   .info-row {
     display:flex; justify-content:space-between; align-items:center;
-    padding: 10px 0; border-bottom: 1px solid var(--section); font-size: 13px;
+    padding: 10px 0; font-size: 13px;
   }
-  .info-row:last-child { border-bottom: 0; }
   .info-row .k { color: var(--text-sub); }
   .info-row .v { font-weight: 500; display:flex; align-items:center; gap: 6px; }
   .lock-tag {
@@ -325,7 +318,6 @@
   /* 탭바 */
   .tabbar {
     flex:none; display:flex; align-items:flex-start;
-    border-top: 1px solid var(--border);
     background:#fff;
     padding: 12px 0 0;
     height: 84px;
@@ -451,6 +443,73 @@
   .form-notice { font-size: 12px; color: var(--text-sub); line-height: 1.6; margin-top: 18px; }
   .form-cta { margin-top: 14px; }
 
+  /* ===== S0 계정: 이메일 로그인 · 회원가입 · 아이디/비밀번호 찾기 · 재설정 (v0.8, 웹과 공통) ===== */
+  .login-wrap { flex:1; overflow-y:auto; padding: 52px 24px 32px; display:flex; flex-direction:column; }
+  .login-wrap .logo { display:flex; justify-content:center; margin-bottom: 32px; }
+  .login-wrap .logo img { height: 34px; width:auto; display:block; }
+  .lm-input {
+    width: 100%; height: 44px; padding: 0 12px; font: inherit; font-size: 14px; color: var(--text);
+    border: 1px solid var(--border); border-radius: var(--r-btn); background:#fff; outline:none; margin-bottom: 10px;
+  }
+  .lm-input:focus { border-color: var(--navy); }
+  .lm-input::placeholder { color: #9CA3AF; }
+  .lm-pw { position: relative; }
+  .lm-pw .lm-input { padding-right: 40px; }
+  .lm-eye { position:absolute; right: 8px; top: 22px; transform: translateY(-50%); width: 28px; height: 28px; border:0; background:transparent; color: #9CA3AF; cursor:pointer; display:flex; align-items:center; justify-content:center; }
+  .lm-eye svg { width: 18px; height: 18px; }
+  .lm-eye.on { color: var(--navy); }
+  .lm-submit { width: 100%; padding: 12px 0; font-size: 14px; margin-top: 2px; }
+  .lm-links { display:flex; justify-content:center; align-items:center; gap: 12px; margin: 16px 0 22px; font-size: 12px; }
+  .lm-links a { color: var(--text-sub); cursor:pointer; text-decoration: underline; text-underline-offset: 3px; }
+  .lm-links i { width:1px; height: 11px; background: var(--border); }
+  .lm-divider { display:flex; align-items:center; gap: 12px; margin-bottom: 14px; font-size: 12px; color: var(--text-sub); }
+  .lm-divider::before, .lm-divider::after { content:''; flex:1; height:1px; background: var(--border); }
+  .auth-page { text-align:center; padding-top: 8px; }
+  .auth-page h1 { font-size: 20px; font-weight: 700; margin: 0 0 8px; }
+  .auth-page p { font-size: 13px; color: var(--text-sub); line-height: 1.6; margin: 0 0 22px; }
+  .ap-field { text-align:left; margin-bottom: 14px; }
+  .ap-field label { display:block; font-size: 12px; font-weight: 600; margin-bottom: 6px; }
+  .ap-field .lm-input { margin-bottom: 0; }
+  .ap-timer { position:absolute; right: 12px; top: 50%; transform: translateY(-50%); font-size: 12px; color: var(--red); font-variant-numeric: tabular-nums; }
+  .ap-resend { font-size: 12px; color: var(--text-sub); margin-top: 8px; }
+  .ap-resend a { color: var(--navy); text-decoration: underline; cursor:pointer; margin-left: 4px; }
+  .ap-demo { margin-top: 18px; font-size: 12px; color: #9CA3AF; }
+  .ap-demo a { text-decoration: underline; cursor:pointer; }
+  .ap-err { display:none; font-size: 12px; color: var(--red); margin-top: 6px; text-align:left; }
+  .ap-err::before { content:'✕'; margin-right: 6px; font-weight: 700; }
+  .ap-field.invalid .lm-input { border-color: var(--red); color: var(--red); }
+  .ap-field.invalid .lm-input::placeholder { color: var(--red); opacity: .8; }
+  .ap-field.invalid .ap-err { display:block; }
+  .pw-panel { display:none; margin-top: 8px; padding: 12px 14px; border:1px solid var(--border); border-radius: var(--r-card); background:#fff; box-shadow: 0 6px 18px rgba(17,24,39,.08); text-align:left; }
+  .pw-panel.show { display:block; }
+  .pw-rule { font-size: 12px; color: var(--red); padding: 3px 0; display:flex; align-items:center; gap: 8px; }
+  .pw-rule b::before { content:'✕'; font-weight: 700; }
+  .pw-rule.ok { color: #2FB36B; }
+  .pw-rule.ok b::before { content:'✓'; }
+  .ap-agree { text-align:left; margin: 6px 0 20px; }
+  .ap-agree label { display:flex; align-items:center; gap: 10px; font-size: 13px; cursor:pointer; }
+  .ap-agree input[type=checkbox] { width: 18px; height: 18px; accent-color: var(--navy); margin:0; flex:none; }
+  .ag-all { font-weight: 600; }
+  .ag-note { font-size: 11px; color: var(--text-sub); line-height: 1.5; margin: 6px 0 0 28px; }
+  .ag-line { height: 8px; }
+  .ag-item { padding: 7px 0; }
+  .ag-item i { margin-left:auto; font-style:normal; color: var(--text-sub); font-size: 15px; }
+  .ap-submit { width: 100%; padding: 12px 0; font-size: 14px; margin-top: 2px; }
+  .ap-submit:disabled, .sheet .btn:disabled { background: #EEF0F3; color: #A5ABB5; cursor: default; opacity: 1; }
+  .ap-divider { margin: 24px 0 14px; }
+  .ap-result { font-size: 16px; font-weight: 700; color: var(--navy); background: var(--navy-soft); border-radius: var(--r-card); padding: 14px; margin-bottom: 14px; }
+  .btn-kakao.lm-kakao { width: 100%; padding: 12px 0; font-size: 14px; }
+  .sheet .ap-field { margin-bottom: 12px; }
+  .sheet .pw-panel { box-shadow: none; background: var(--section); }
+  .acc-withdraw { margin-top: 24px; }
+  .acc-sub { font-size: 12px; color: var(--text-sub); line-height: 1.5; }
+  .lm-err { display:none; font-size: 12px; color: var(--red); margin: -2px 0 10px; text-align:left; }
+  .lm-err::before { content:'✕'; margin-right: 6px; font-weight: 700; }
+  .lm-err.show { display:block; }
+  .lm-input:disabled { background: var(--section); color: var(--text-sub); }
+  .terms-body { padding: 20px 16px 28px; font-size: 13px; line-height: 1.7; color: var(--text-sub); }
+  .terms-body .ph { border: 1px dashed var(--border); border-radius: var(--r-card); padding: 40px 16px; text-align:center; color: #9CA3AF; }
+
   /* ===== 앱 구매 (v0.6) ===== */
   .sheet .row { display:flex; justify-content:space-between; font-size: 14px; padding: 7px 0; }
   .sheet .row .k { color: var(--text-sub); }
@@ -474,10 +533,8 @@
   .bulk-row {
     display:flex; align-items:center; gap: 9px;
     padding: 11px 12px; cursor:pointer;
-    border-bottom: 1px solid var(--section);
     font-size: 13px;
   }
-  .bulk-row:last-child { border-bottom: 0; }
   .bulk-row .no-chip {
     flex:none; width: 28px; height: 21px;
     display:flex; align-items:center; justify-content:center;
@@ -501,11 +558,9 @@
   }
 
   /* ===== S6 마이페이지 — 리스트 4행 + 푸시 (v0.7) ===== */
-  .my-menu { border-top: 1px solid var(--section); }
   .my-menu .mm-row {
     display:flex; align-items:center; justify-content:space-between;
     padding: 15px 16px; cursor:pointer;
-    border-bottom: 1px solid var(--section);
     font-size: 15px; font-weight: 500;
   }
   .my-menu .mm-row:active { background: var(--section); }
@@ -540,23 +595,159 @@
 </head>
 <body>
 
-<div class="mock-note">※ S0 + 앱 구매(v0.6): 로그인 → 입학 신청 → [승인 처리 (임시)] → S1. 앱에서도 구매 가능 — S2 [구매하기]/[일괄 구매하기] 시트, 강의실 잠금 → S2 + 구매 시트. 지갑: 중2 수학 300P / 중2 영어 50P(부족 시연) / 중1 수학 100P</div>
+<div class="mock-note">※ S0 계정(v0.8, 웹과 공통): 이메일·카카오 로그인, 회원가입, 아이디/비밀번호 찾기, 비밀번호 재설정(메일 링크 데모), 마이페이지 전화번호 수정·비밀번호 변경 시트(이메일 계정만), 전화하기는 tel 링크 / 앱 구매(v0.6): 로그인 → 입학 신청 → [승인 처리 (임시)] → S1. 앱에서도 구매 가능 — S2 [구매하기]/[일괄 구매하기] 시트, 강의실 잠금 → S2 + 구매 시트. 지갑: 중2 수학 300P / 중2 영어 50P(부족 시연) / 중1 수학 100P</div>
 
 <div class="phone" id="phone">
   <div class="screen" id="screen">
 
-    <!-- S0-2 로그인 -->
+    <!-- S0-2 로그인 (이메일 + 카카오) -->
     <div class="view auth-view on" id="viewS02">
-      <div class="login-body">
+      <div class="login-wrap">
         <div class="logo"><img class="logo-svg" src="logo.svg" alt="고려US"></div>
-        <div class="sub">학원 수업을 언제든 다시 볼 수 있어요.</div>
+        <input class="lm-input" type="email" id="lmId" placeholder="이메일" autocomplete="username">
+        <div class="lm-pw">
+          <input class="lm-input" type="password" id="lmPw" placeholder="비밀번호" autocomplete="current-password">
+          <button type="button" class="lm-eye" onclick="togglePw('lmPw', this)" aria-label="비밀번호 표시"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></button>
+        </div>
+        <div class="lm-err" id="lmErr"></div>
+        <button class="btn btn-primary lm-submit" onclick="loginEmail()">로그인</button>
+        <div class="lm-links"><a onclick="goAuth('s83')">비밀번호 찾기</a><i></i><a onclick="goAuth('s81')">회원가입</a><i></i><a onclick="goAuth('s82')">아이디 찾기</a></div>
+        <div class="lm-divider"><span>간편 로그인</span></div>
+        <button class="btn-kakao lm-kakao" onclick="startKakao()"><svg width="17" height="17" viewBox="0 0 18 18" fill="none"><path d="M9 1.5C4.58 1.5 1 4.31 1 7.78c0 2.22 1.47 4.17 3.68 5.28l-.94 3.46c-.08.3.26.54.52.37l4.1-2.72c.21.02.42.03.64.03 4.42 0 8-2.81 8-6.28S13.42 1.5 9 1.5Z" fill="rgba(0,0,0,.85)"/></svg>카카오 로그인</button>
       </div>
-      <div class="login-cta">
-        <button class="btn-kakao" onclick="startKakao()">
-          <svg width="17" height="17" viewBox="0 0 18 18" fill="none"><path d="M9 1.5C4.58 1.5 1 4.31 1 7.78c0 2.22 1.47 4.17 3.68 5.28l-.94 3.46c-.08.3.26.54.52.37l4.1-2.72c.21.02.42.03.64.03 4.42 0 8-2.81 8-6.28S13.42 1.5 9 1.5Z" fill="rgba(0,0,0,.85)"/></svg>
-          카카오로 시작하기
-        </button>
+    </div>
+
+    <!-- S0-6 회원가입 (이메일) -->
+    <div class="view auth-view" id="viewS81">
+      <div class="appbar">
+        <div class="back" onclick="goAuth('s02')" aria-label="뒤로"><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M14 4L7 11L14 18" stroke="#111827" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="title">회원가입</div>
       </div>
+      <div class="form-scroll">
+        <div class="auth-page">
+          <p>고려US에서 학원 수업을 언제든 다시 보세요</p>
+          <div class="ap-field" id="fEmail"><label>이메일</label><input class="lm-input" type="email" id="suEmail" placeholder="이메일 입력" oninput="suTouch('email');suValidate()" onblur="suTouch('email');suValidate()"><div class="ap-err" id="suEmailErr">이메일 형식이 올바르지 않습니다.</div></div>
+          <div class="ap-field" id="fPw"><label>비밀번호</label><div class="lm-pw"><input class="lm-input" type="password" id="suPw" placeholder="비밀번호 입력" oninput="suTouch('pw');suValidate()" onfocus="suPwFocus=true;suValidate()" onblur="suPwFocus=false;suTouch('pw');suValidate()"><button type="button" class="lm-eye" onclick="togglePw('suPw', this)" aria-label="비밀번호 표시"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></button></div>
+            <div class="pw-panel" id="pwPanel"><div class="pw-rule"><b></b>영문/숫자/특수문자 중, 2가지 이상 포함</div><div class="pw-rule"><b></b>8자 이상 32자 이하 입력 (공백 제외)</div><div class="pw-rule"><b></b>연속 3자 이상 동일한 문자/숫자 제외</div></div>
+          </div>
+          <div class="ap-field" id="fPw2"><label>비밀번호 확인</label><div class="lm-pw"><input class="lm-input" type="password" id="suPw2" placeholder="비밀번호 입력" oninput="suTouch('pw2');suValidate()" onblur="suTouch('pw2');suValidate()"><button type="button" class="lm-eye" onclick="togglePw('suPw2', this)" aria-label="비밀번호 표시"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></button></div><div class="ap-err">비밀번호가 일치하지 않습니다.</div></div>
+          <div class="ap-agree">
+            <label class="ag-all"><input type="checkbox" id="agAll" onchange="suAgreeAll(this.checked)"><span>전체 동의</span></label>
+            <div class="ag-note">선택항목에 대해 동의하지 않아도 회원가입 및 일반적인 서비스를 이용할 수 있습니다.</div>
+            <div class="ag-line"></div>
+            <label class="ag-item"><input type="checkbox" class="ag-req" onchange="suValidate()"><span>(필수) 만 14세 이상입니다</span></label>
+            <label class="ag-item"><input type="checkbox" class="ag-req" onchange="suValidate()"><span>(필수) 서비스 이용약관 동의</span><i onclick="event.preventDefault();goAuth('s85')">›</i></label>
+            <label class="ag-item"><input type="checkbox" class="ag-req" onchange="suValidate()"><span>(필수) 개인정보 수집 이용 동의</span><i onclick="event.preventDefault();goAuth('s86')">›</i></label>
+            <label class="ag-item"><input type="checkbox" class="ag-opt" onchange="suValidate()"><span>(선택) 광고성 정보 수신 동의</span></label>
+          </div>
+          <button class="btn btn-primary ap-submit" id="suSubmit" onclick="signupDemo()" disabled>시작하기</button>
+          <div class="ap-demo">이미 가입된 이메일 보기: <a onclick="document.getElementById('suEmail').value='haneul0412@gmail.com';suTouch('email');suValidate()">haneul0412@gmail.com (데모)</a></div>
+          <div class="lm-divider ap-divider"><span>간편 회원가입</span></div>
+          <button class="btn-kakao lm-kakao" onclick="startKakao()"><svg width="17" height="17" viewBox="0 0 18 18" fill="none"><path d="M9 1.5C4.58 1.5 1 4.31 1 7.78c0 2.22 1.47 4.17 3.68 5.28l-.94 3.46c-.08.3.26.54.52.37l4.1-2.72c.21.02.42.03.64.03 4.42 0 8-2.81 8-6.28S13.42 1.5 9 1.5Z" fill="rgba(0,0,0,.85)"/></svg>카카오로 시작하기</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- S0-7 아이디 찾기 (휴대폰 인증번호) -->
+    <div class="view auth-view" id="viewS82">
+      <div class="appbar">
+        <div class="back" onclick="goAuth('s02')" aria-label="뒤로"><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M14 4L7 11L14 18" stroke="#111827" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="title">아이디 찾기</div>
+      </div>
+      <div class="form-scroll">
+        <div class="auth-page" id="findIdPage">
+          <h1>아이디(이메일)</h1>
+          <p>계정에 등록된 휴대폰 번호를 인증하시면<br>사용중인 계정의 이메일 주소를 알려드립니다.</p>
+          <div class="ap-field" id="fiPhoneField"><label>휴대폰 번호 (숫자만 입력)</label><input class="lm-input" type="tel" id="fiPhone" placeholder="휴대폰 번호 입력" inputmode="numeric" oninput="this.value=this.value.replace(/\D/g,'');this.closest('.ap-field').classList.remove('invalid')"><div class="ap-err">등록되지 않은 휴대폰 번호입니다.</div></div>
+          <button class="btn btn-outline ap-submit" onclick="findIdDemo()">인증 요청</button>
+          <div class="ap-demo">미등록 번호 보기: <a onclick="document.getElementById('fiPhone').value='01000000000'">01000000000 (데모)</a></div>
+        </div>
+        <div class="auth-page" id="findIdCode" style="display:none">
+          <h1>아이디(이메일)</h1>
+          <p><b id="fiPhoneShown"></b>로 보낸<br>인증번호 6자리를 입력해 주세요.</p>
+          <div class="ap-field" id="fiCodeField"><label>인증번호</label>
+            <div class="lm-pw"><input class="lm-input" type="text" id="fiCode" placeholder="인증번호 입력" inputmode="numeric" maxlength="6" oninput="fiCodeInput()"><span class="ap-timer" id="fiTimer">03:00</span></div>
+            <div class="ap-err" id="fiCodeErr">인증번호가 일치하지 않습니다.</div>
+            <div class="ap-resend">인증번호를 받지 못했나요? <a onclick="fiResend()">재전송</a></div>
+          </div>
+          <button class="btn btn-primary ap-submit" id="fiVerifyBtn" onclick="findIdVerify()" disabled>확인</button>
+          <div class="ap-demo">인증번호 123456 / 만료 상태: <a onclick="fiExpireDemo()">바로 만료시키기 (데모)</a></div>
+        </div>
+        <div class="auth-page" id="findIdDone" style="display:none">
+          <h1>아이디(이메일)</h1>
+          <p>인증한 휴대폰 번호로 가입된 이메일입니다.</p>
+          <div class="ap-result" id="fiResult"></div>
+          <button class="btn btn-primary ap-submit" onclick="goAuth('s02')">로그인</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- S0-8 비밀번호 찾기 (메일로 변경 링크) -->
+    <div class="view auth-view" id="viewS83">
+      <div class="appbar">
+        <div class="back" onclick="goAuth('s02')" aria-label="뒤로"><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M14 4L7 11L14 18" stroke="#111827" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="title">비밀번호 찾기</div>
+      </div>
+      <div class="form-scroll">
+        <div class="auth-page" id="findPwPage">
+          <h1>비밀번호 찾기</h1>
+          <p>가입한 이메일을 입력해 주세요.<br>이메일을 통해 비밀번호 변경 링크가 전송됩니다</p>
+          <div class="ap-field" id="fpField"><input class="lm-input" type="email" id="fpEmail" placeholder="이메일 입력" oninput="this.closest('.ap-field').classList.remove('invalid')"><div class="ap-err">가입되지 않은 이메일입니다.</div></div>
+          <button class="btn btn-primary ap-submit" onclick="findPwDemo()">변경 링크 전송하기</button>
+          <div class="ap-demo">미가입 이메일 보기: <a onclick="document.getElementById('fpEmail').value='none@test.com'">none@test.com (데모)</a></div>
+        </div>
+        <div class="auth-page" id="findPwDone" style="display:none">
+          <h1>메일을 보냈어요</h1>
+          <p id="fpDoneMsg"></p>
+          <button class="btn btn-outline ap-submit" onclick="goAuth('s02')">로그인으로</button>
+          <div class="ap-demo"><a onclick="goAuth('s84')">메일의 변경 링크 열기 (데모)</a> · <a onclick="goAuth('s84');rpShow('resetPwExpired')">만료된 링크 열기 (데모)</a></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- S0-9 비밀번호 재설정 (메일 링크 진입) -->
+    <div class="view auth-view" id="viewS84">
+      <div class="appbar">
+        <div class="back" onclick="goAuth('s02')" aria-label="뒤로"><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M14 4L7 11L14 18" stroke="#111827" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="title">비밀번호 재설정</div>
+      </div>
+      <div class="form-scroll">
+        <div class="auth-page" id="resetPwPage">
+          <h1>비밀번호 재설정</h1>
+          <p>새로운 비밀번호를 입력해 주세요.</p>
+          <div class="ap-field" id="rpF1"><label>새 비밀번호</label><div class="lm-pw"><input class="lm-input" type="password" id="rpPw" placeholder="비밀번호 입력" oninput="pwFormValidate('rp')" onfocus="pwFocus.rp=true;pwFormValidate('rp')" onblur="pwFocus.rp=false;pwFormValidate('rp')"><button type="button" class="lm-eye" onclick="togglePw('rpPw', this)" aria-label="비밀번호 표시"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></button></div>
+            <div class="pw-panel" id="rpPanel"><div class="pw-rule"><b></b>영문/숫자/특수문자 중, 2가지 이상 포함</div><div class="pw-rule"><b></b>8자 이상 32자 이하 입력 (공백 제외)</div><div class="pw-rule"><b></b>연속 3자 이상 동일한 문자/숫자 제외</div></div>
+          </div>
+          <div class="ap-field" id="rpF2"><label>새 비밀번호 확인</label><div class="lm-pw"><input class="lm-input" type="password" id="rpPw2" placeholder="비밀번호 입력" oninput="pwFormValidate('rp')" onblur="pwFormValidate('rp')"><button type="button" class="lm-eye" onclick="togglePw('rpPw2', this)" aria-label="비밀번호 표시"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></button></div><div class="ap-err">비밀번호가 일치하지 않습니다.</div></div>
+          <button class="btn btn-primary ap-submit" id="rpSubmit" onclick="resetPwDemo()" disabled>비밀번호 변경</button>
+        </div>
+        <div class="auth-page" id="resetPwDone" style="display:none">
+          <h1>비밀번호를 변경했어요</h1>
+          <p>새 비밀번호로 로그인해 주세요.</p>
+          <button class="btn btn-primary ap-submit" onclick="goAuth('s02')">로그인</button>
+        </div>
+        <div class="auth-page" id="resetPwExpired" style="display:none">
+          <h1>링크가 만료됐어요</h1>
+          <p>비밀번호 찾기에서 변경 링크를 다시 요청해 주세요.</p>
+          <button class="btn btn-primary ap-submit" onclick="goAuth('s83')">비밀번호 찾기</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- S0-10 서비스 이용약관 / S0-11 개인정보 처리방침 (본문은 관리 방식 결정 후 삽입) -->
+    <div class="view auth-view" id="viewS85">
+      <div class="appbar">
+        <div class="back" onclick="goAuth('s81')" aria-label="뒤로"><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M14 4L7 11L14 18" stroke="#111827" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="title">서비스 이용약관</div>
+      </div>
+      <div class="form-scroll terms-body"><div class="ph">이용약관 본문 자리</div></div>
+    </div>
+    <div class="view auth-view" id="viewS86">
+      <div class="appbar">
+        <div class="back" onclick="goAuth('s81')" aria-label="뒤로"><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M14 4L7 11L14 18" stroke="#111827" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="title">개인정보 처리방침</div>
+      </div>
+      <div class="form-scroll terms-body"><div class="ph">개인정보 처리방침 본문 자리</div></div>
     </div>
 
     <!-- S0-3 회원가입 = 입학 신청 -->
@@ -573,7 +764,7 @@
         <div class="field"><label>학교</label><input type="text" id="f3School" placeholder="학교 이름을 입력해주세요"></div>
         <div class="field"><label>학년</label><select id="f3Grade" class="ph"><option value="" selected>학년을 선택해주세요</option></select></div>
         <div class="field"><label>학생 전화번호</label><input type="tel" id="f3Phone" placeholder="010-0000-0000"></div>
-        <div class="field"><label>보호자 전화번호</label><input type="tel" id="f3Parent" placeholder="010-0000-0000"></div>
+        <div class="field"><label>보호자 전화번호 (선택)</label><input type="tel" id="f3Parent" placeholder="010-0000-0000"></div>
         <div class="form-notice">입력한 정보는 학원 승인에 사용돼요. 가입 후에는 전화번호만 직접 수정할 수 있어요.</div>
         <div class="form-cta"><button class="btn btn-primary btn-full" id="f3Submit" disabled onclick="submitApply()">입학 신청하기</button></div>
       </div>
@@ -593,7 +784,7 @@
         <div class="field"><label>학교</label><input type="text" id="f4School" value="고려중학교"></div>
         <div class="field"><label>학년</label><select id="f4Grade"></select></div>
         <div class="field"><label>학생 전화번호</label><input type="tel" id="f4Phone" value="010-2345-6789"></div>
-        <div class="field"><label>보호자 전화번호</label><input type="tel" id="f4Parent" value="010-9876-5432"></div>
+        <div class="field"><label>보호자 전화번호 (선택)</label><input type="tel" id="f4Parent" value="010-9876-5432"></div>
         <div class="form-notice">입력한 정보는 학원 승인에 사용돼요. 가입 후에는 전화번호만 직접 수정할 수 있어요.</div>
         <div class="form-cta"><button class="btn btn-primary btn-full" onclick="submitReapply()">다시 신청하기</button></div>
       </div>
@@ -689,14 +880,14 @@
       <div class="appbar">
         <div class="back" onclick="popMy()" aria-label="뒤로"><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M14 4L7 11L14 18" stroke="#111827" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
         <div class="title">프로필</div>
-        <span class="edit-link" onclick="toast('전화번호 수정 (이름·학교·학년은 학원 문의)')">수정</span>
+        <span class="edit-link" onclick="openPhoneEdit()">수정</span>
       </div>
       <div class="list-pad">
         <div class="info-row"><span class="k">이름</span><span class="v">김하늘 <span class="lock-tag">학원 문의</span></span></div>
         <div class="info-row"><span class="k">학교</span><span class="v">고려중학교 <span class="lock-tag">학원 문의</span></span></div>
         <div class="info-row"><span class="k">현재 학년</span><span class="v">중2 <span class="lock-tag">학원 문의</span></span></div>
-        <div class="info-row"><span class="k">학생 전화번호</span><span class="v">010-1234-5678</span></div>
-        <div class="info-row"><span class="k">보호자 전화번호</span><span class="v">010-9876-5432</span></div>
+        <div class="info-row"><span class="k">학생 전화번호</span><span class="v" id="pfStudentTel">010-1234-5678</span></div>
+        <div class="info-row"><span class="k">보호자 전화번호</span><span class="v" id="pfParentTel">010-9876-5432</span></div>
       </div>
     </div>
 
@@ -714,7 +905,7 @@
             <div class="t1">포인트 충전은 학원으로 문의해주세요</div>
             <div class="t2">02-1234-5678</div>
           </div>
-          <span class="call" onclick="toast('전화 연결')">전화하기</span>
+          <a class="call" href="tel:0212345678">전화하기</a>
         </div>
       </div>
     </div>
@@ -739,9 +930,13 @@
       <div class="list-pad">
         <div class="account-row">
           <div class="acc-info">
-            <div class="acc-email">haneul0412@kakao.com</div>
-            <div class="acc-provider"><span class="kakao-dot"></span>카카오 계정 연결됨</div>
+            <div class="acc-email" id="accEmail"></div>
+            <div class="acc-provider" id="accProvider"></div>
           </div>
+          <span class="edit-link" id="accPwLink" onclick="openPwChange()">비밀번호 변경</span>
+        </div>
+        <div class="account-row acc-withdraw">
+          <div class="acc-info"><div class="acc-sub">탈퇴하면 포인트와 구매한 강의가 모두 사라져요.</div></div>
           <span class="withdraw-link" onclick="openWithdraw()">계정 탈퇴</span>
         </div>
       </div>
@@ -809,7 +1004,7 @@
     <div class="row"><span class="k">현재 포인트</span><span class="v" id="lackNow"></span></div>
     <div class="row"><span class="k">필요 포인트</span><span class="v" id="lackNeed"></span></div>
     <div class="notice">포인트 충전은 학원으로 문의해주세요.</div>
-    <div class="tel-box"><div><div class="t1">학원 문의</div><div class="t2">02-1234-5678</div></div><span class="call" onclick="toast('전화 연결 (데모)')">전화하기</span></div>
+    <div class="tel-box"><div><div class="t1">학원 문의</div><div class="t2">02-1234-5678</div></div><a class="call" href="tel:0212345678">전화하기</a></div>
     <div class="actions">
       <button class="btn btn-cancel" onclick="closeSheets()">확인</button>
     </div>
@@ -826,6 +1021,30 @@
     </div>
   </div>
 
+  <div class="sheet" data-sheet="phoneEdit">
+    <h2>전화번호 수정</h2>
+    <div class="ap-field"><label>학생 전화번호</label><input class="lm-input" type="tel" id="peStudent" placeholder="010-0000-0000"></div>
+    <div class="ap-field"><label>보호자 전화번호 (선택)</label><input class="lm-input" type="tel" id="peParent" placeholder="010-0000-0000"></div>
+    <div class="notice">이름·학교·학년 변경은 학원으로 문의해 주세요.</div>
+    <div class="actions">
+      <button class="btn btn-cancel" onclick="closeSheets()">취소</button>
+      <button class="btn btn-primary" onclick="savePhoneEdit()">저장</button>
+    </div>
+  </div>
+
+  <div class="sheet" data-sheet="pwChange">
+    <h2>비밀번호 변경</h2>
+    <div class="ap-field"><label>현재 비밀번호</label><div class="lm-pw"><input class="lm-input" type="password" id="pcCur" placeholder="현재 비밀번호 입력" oninput="pwFormValidate('pc')"><button type="button" class="lm-eye" onclick="togglePw('pcCur', this)" aria-label="비밀번호 표시"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></button></div></div>
+    <div class="ap-field" id="pcF1"><label>새 비밀번호</label><div class="lm-pw"><input class="lm-input" type="password" id="pcPw" placeholder="새 비밀번호 입력" oninput="pwFormValidate('pc')" onfocus="pwFocus.pc=true;pwFormValidate('pc')" onblur="pwFocus.pc=false;pwFormValidate('pc')"><button type="button" class="lm-eye" onclick="togglePw('pcPw', this)" aria-label="비밀번호 표시"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></button></div>
+      <div class="pw-panel" id="pcPanel"><div class="pw-rule"><b></b>영문/숫자/특수문자 중, 2가지 이상 포함</div><div class="pw-rule"><b></b>8자 이상 32자 이하 입력 (공백 제외)</div><div class="pw-rule"><b></b>연속 3자 이상 동일한 문자/숫자 제외</div></div>
+    </div>
+    <div class="ap-field" id="pcF2"><label>새 비밀번호 확인</label><div class="lm-pw"><input class="lm-input" type="password" id="pcPw2" placeholder="새 비밀번호 입력" oninput="pwFormValidate('pc')" onblur="pwFormValidate('pc')"><button type="button" class="lm-eye" onclick="togglePw('pcPw2', this)" aria-label="비밀번호 표시"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></button></div><div class="ap-err">비밀번호가 일치하지 않습니다.</div></div>
+    <div class="actions">
+      <button class="btn btn-cancel" onclick="closeSheets()">취소</button>
+      <button class="btn btn-primary" id="pcSubmit" onclick="savePwChange()" disabled>변경</button>
+    </div>
+  </div>
+
   <div class="sheet" data-sheet="withdraw">
     <div class="lack-head">
       <div class="ico">!</div>
@@ -834,6 +1053,18 @@
     <div class="row"><span class="k">남은 포인트</span><span class="v" id="wdPoints"></span></div>
     <div class="row"><span class="k">구매한 강의</span><span class="v" id="wdLecs"></span></div>
     <div class="notice">남은 포인트와 수강 권한은 모두 사라져요. 구매·포인트 기록은 익명으로 보관돼요.</div>
+    <div class="actions">
+      <button class="btn btn-cancel" onclick="closeSheets()">취소</button>
+      <button class="btn btn-primary" onclick="openSheet('withdraw2')">탈퇴하기</button>
+    </div>
+  </div>
+
+  <div class="sheet" data-sheet="withdraw2">
+    <div class="lack-head">
+      <div class="ico">!</div>
+      <div class="lack-title">정말 탈퇴할까요?</div>
+    </div>
+    <div class="notice">탈퇴 즉시 로그아웃되며, 다시 이용하려면 새로 가입하고 입학 신청을 해야 해요.</div>
     <div class="actions">
       <button class="btn btn-cancel" onclick="closeSheets()">취소</button>
       <button class="btn btn-primary" onclick="confirmWithdraw()">탈퇴하기</button>
@@ -886,7 +1117,7 @@
       ]},
   ];
   const DUR = { c1l1:'21:04', c1l2:'17:32', c1l3:'14:08', c1l4:'19:45', c2l1:'11:20', c2l2:'09:47', c2l3:'15:03', c3l1:'13:26', c3l2:'10:52', c4l1:'16:11', c4l2:'12:40', c4l3:'14:57', c5l1:'18:22', c5l2:'15:36', c6l1:'13:19' };
-  const LEC_INDEX = {};
+  const LEC_INDEX = { };
   CURRICULA.forEach(c => c.lectures.forEach(l => LEC_INDEX[l.id] = { lec: l, cur: c }));
 
   const state = {
@@ -899,6 +1130,8 @@
     playing: null,
     gradeTarget: 's1',
     auth: 'unregistered', // unregistered | pending | rejected | approved
+    provider: 'kakao', // kakao | email
+    email: '',
     selected: new Set(),
     pendingBuy: null,
     lastBought: null,
@@ -909,6 +1142,7 @@
     ],
   };
   const phone = document.getElementById('phone');
+  function hideAllViews() { phone.querySelectorAll('.view').forEach(v => v.classList.remove('on')); }
 
   /* ── S1 ── */
   function renderS1() {
@@ -1085,7 +1319,7 @@
     phone.classList.remove('auth');
     phone.classList.remove('pushed');
     closeSheets();
-    ['S02','S03','S04','S05','S1','S2','S4','S42','S6','S6P','S6W','S6H','S6A'].forEach(x => document.getElementById('view'+x).classList.remove('on'));
+    hideAllViews();
     document.getElementById('view' + v.toUpperCase()).classList.add('on');
     ['s1','s4','s6'].forEach(t => document.getElementById('tab' + t.toUpperCase().slice(0,2) + t.slice(1).toUpperCase().slice(1)));
     document.getElementById('tabS1').classList.toggle('on', v === 's1');
@@ -1128,8 +1362,9 @@
   /* ── S6 마이페이지 (v0.7: 리스트 4행 → 푸시) ── */
   function pushMy(v) {
     if (v === 's6w' || v === 's6h') renderS6();
+    if (v === 's6a') renderAccount();
     phone.classList.add('pushed');
-    ['S02','S03','S04','S05','S1','S2','S4','S42','S6','S6P','S6W','S6H','S6A'].forEach(x => document.getElementById('view'+x).classList.remove('on'));
+    hideAllViews();
     document.getElementById('view' + v.toUpperCase()).classList.add('on');
   }
   function popMy() {
@@ -1290,9 +1525,11 @@
   function goAuth(id) {
     phone.classList.add('auth');
     phone.classList.remove('pushed');
-    ['S02','S03','S04','S05','S1','S2','S4','S42','S6','S6P','S6W','S6H','S6A'].forEach(x => document.getElementById('view'+x).classList.remove('on'));
+    hideAllViews();
     document.getElementById('view' + id.toUpperCase()).classList.add('on');
     if (id === 's05') renderLimit();
+    if (id !== 's82') clearInterval(fiTimerId);
+    if (id === 's84') rpShow('resetPwPage');
   }
   function renderLimit() {
     const body = document.getElementById('limitBody');
@@ -1301,23 +1538,37 @@
         '<div class="ico wait">⏳</div>' +
         '<div class="lt-title">입학 신청을 확인하고 있어요</div>' +
         '<div class="lt-sub">학원에서 승인한 후<br>강의를 이용할 수 있어요.</div>' +
-        '';
+        '<button class="btn btn-outline btn-full" style="margin-top:20px" onclick="refreshStatus()">승인 상태 새로고침</button>';
     } else {
       body.innerHTML =
         '<div class="ico warn">!</div>' +
         '<div class="lt-title">입학 신청이 승인되지 않았어요</div>' +
         '<div class="lt-sub">궁금한 점은 학원으로 문의해주세요.</div>' +
         '<button class="btn btn-primary btn-full" style="margin-top:20px" onclick="goReapply()">다시 신청하기</button>' +
-        '<div class="tel-box"><div><div class="t1">학원 문의</div><div class="t2">' + ACADEMY_TEL + '</div></div><span class="call" onclick="toast(\'전화 연결 (데모)\')">전화하기</span></div>';
+        '<div class="tel-box"><div><div class="t1">학원 문의</div><div class="t2">' + ACADEMY_TEL + '</div></div><a class="call" href="tel:' + ACADEMY_TEL.replace(/-/g, '') + '">전화하기</a></div>';
     }
   }
 
   // 임시: 카카오 클릭 → 분기 선택 오버레이. 실제 구현 시 startKakao를 실제 OAuth로 교체하고 branch 계열 제거
-  function startKakao() { openBranch(); }
-  function openBranch() { document.getElementById('demoBranch').classList.add('on'); }
+  function startKakao() { state.provider = 'kakao'; openBranch(); }
+  function lmShowErr(msg) { const e = document.getElementById('lmErr'); e.textContent = msg; e.classList.toggle('show', !!msg); }
+  function loginEmail() {
+    const id = document.getElementById('lmId').value.trim(), pw = document.getElementById('lmPw').value;
+    if (!id || !pw) { lmShowErr('이메일과 비밀번호를 입력해 주세요.'); return; }
+    lmShowErr(''); state.provider = 'email'; state.email = id; openBranch();
+  }
+  function refreshStatus() { toast('아직 승인 전이에요'); }
+  const DEMO_EXISTING_EMAIL = 'haneul0412@gmail.com';
+  function fmtTel(el) {
+    const d = el.value.replace(/\D/g, '').slice(0, 11);
+    el.value = d.length > 7 ? d.slice(0,3) + '-' + d.slice(3,7) + '-' + d.slice(7) : d.length > 3 ? d.slice(0,3) + '-' + d.slice(3) : d;
+  }
+  ['f3Phone','f3Parent','f4Phone','f4Parent','peStudent','peParent'].forEach(id => document.getElementById(id).addEventListener('input', e => fmtTel(e.target)));
+  function openBranch() { document.getElementById('dbFail').style.display = state.provider === 'email' ? '' : 'none'; document.getElementById('demoBranch').classList.add('on'); }
   function closeBranch() { document.getElementById('demoBranch').classList.remove('on'); }
   function branchGo(k) {
     closeBranch();
+    if (k === 'fail') { lmShowErr('이메일 또는 비밀번호가 올바르지 않습니다.'); return; }
     if (k === 'new') { state.auth = 'unregistered'; toast('카카오 로그인 — 최초 사용자 (데모)'); goAuth('s03'); }
     if (k === 'pending') { state.auth = 'pending'; goAuth('s05'); }
     if (k === 'rejected') { state.auth = 'rejected'; goAuth('s05'); }
@@ -1346,13 +1597,129 @@
     toast('입학 신청을 접수했어요');
   }
 
+  // ===== 계정 (v0.8, 웹과 공통): 비밀번호 규칙 · 회원가입 · 아이디/비밀번호 찾기 · 재설정 · 전화번호 수정 · 비밀번호 변경 =====
+  function togglePw(id, btn) {
+    const i = document.getElementById(id); const show = i.type === 'password';
+    i.type = show ? 'text' : 'password'; btn.classList.toggle('on', show);
+  }
+  function pwRules(p) {
+    const s = p.replace(/\s/g, '');
+    const kinds = [/[a-zA-Z]/, /[0-9]/, /[^a-zA-Z0-9]/].filter(r => r.test(s)).length;
+    return [kinds >= 2, s.length >= 8 && s.length <= 32, s.length > 0 && !/(.)\1\1/.test(s)];
+  }
+  function suAgreeAll(on) { document.querySelectorAll('.ag-req, .ag-opt').forEach(c => c.checked = on); suValidate(); }
+  const suTouched = { }; let suPwFocus = false;
+  function suTouch(k) { suTouched[k] = true; }
+  function suValidate() {
+    const e = document.getElementById('suEmail').value.trim(), p1 = document.getElementById('suPw').value, p2 = document.getElementById('suPw2').value;
+    const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e);
+    const rules = pwRules(p1), pwOk = rules.every(Boolean), matchOk = p2 !== '' && p1 === p2;
+    document.getElementById('suEmailErr').textContent = '이메일 형식이 올바르지 않습니다.';
+    document.getElementById('fEmail').classList.toggle('invalid', !!suTouched.email && !emailOk);
+    const panel = document.getElementById('pwPanel');
+    panel.classList.toggle('show', suPwFocus || (p1 !== '' && !pwOk));
+    panel.querySelectorAll('.pw-rule').forEach((el, i) => el.classList.toggle('ok', rules[i]));
+    document.getElementById('fPw').classList.toggle('invalid', !!suTouched.pw && p1 !== '' && !pwOk);
+    document.getElementById('fPw2').classList.toggle('invalid', !!suTouched.pw2 && p2 !== '' && !matchOk);
+    const req = [...document.querySelectorAll('.ag-req')].every(c => c.checked);
+    document.getElementById('agAll').checked = [...document.querySelectorAll('.ag-req, .ag-opt')].every(c => c.checked);
+    document.getElementById('suSubmit').disabled = !(emailOk && pwOk && matchOk && req);
+  }
+  function signupDemo() {
+    const em = document.getElementById('suEmail').value.trim();
+    if (em === DEMO_EXISTING_EMAIL) {
+      document.getElementById('suEmailErr').textContent = '이미 가입된 이메일입니다.';
+      document.getElementById('fEmail').classList.add('invalid'); return;
+    }
+    state.provider = 'email'; state.email = em;
+    state.auth = 'unregistered'; goAuth('s03'); toast('가입했어요. 입학 신청을 진행해 주세요');
+  }
+  // 아이디 찾기
+  let fiTimerId, fiLeft = 180;
+  function fiShow(id) {
+    ['findIdPage','findIdCode','findIdDone'].forEach(x => document.getElementById(x).style.display = x === id ? '' : 'none');
+    clearInterval(fiTimerId);
+  }
+  function fiStartTimer() {
+    clearInterval(fiTimerId); fiLeft = 180;
+    const t = document.getElementById('fiTimer');
+    document.getElementById('fiCode').disabled = false; fiSetCodeErr('');
+    const tick = () => { t.textContent = String(Math.floor(fiLeft / 60)).padStart(2,'0') + ':' + String(fiLeft % 60).padStart(2,'0'); if (fiLeft-- <= 0) { clearInterval(fiTimerId); fiExpire(); } };
+    tick(); fiTimerId = setInterval(tick, 1000);
+  }
+  function fiSetCodeErr(msg) { const f = document.getElementById('fiCodeField'); document.getElementById('fiCodeErr').textContent = msg; f.classList.toggle('invalid', !!msg); }
+  function fiExpire() { document.getElementById('fiCode').disabled = true; document.getElementById('fiVerifyBtn').disabled = true; fiSetCodeErr('인증 시간이 만료되었습니다. 재전송해 주세요.'); }
+  function fiExpireDemo() { clearInterval(fiTimerId); fiLeft = 0; document.getElementById('fiTimer').textContent = '00:00'; fiExpire(); }
+  function findIdDemo() {
+    const ph = document.getElementById('fiPhone').value.trim();
+    if (!ph) { toast('휴대폰 번호를 입력해 주세요'); return; }
+    if (/0000$/.test(ph)) { document.getElementById('fiPhoneField').classList.add('invalid'); return; }
+    document.getElementById('fiPhoneShown').textContent = ph;
+    document.getElementById('fiCode').value = ''; document.getElementById('fiVerifyBtn').disabled = true;
+    fiShow('findIdCode'); fiStartTimer();
+  }
+  function fiCodeInput() { const i = document.getElementById('fiCode'); i.value = i.value.replace(/\D/g, ''); fiSetCodeErr(''); document.getElementById('fiVerifyBtn').disabled = i.value.length !== 6; }
+  function fiResend() { fiStartTimer(); toast('인증번호를 다시 보냈어요'); }
+  function findIdVerify() {
+    if (document.getElementById('fiCode').value !== '123456') { fiSetCodeErr('인증번호가 일치하지 않습니다.'); return; }
+    document.getElementById('fiResult').textContent = 'ha***@gmail.com'; fiShow('findIdDone');
+  }
+  // 비밀번호 찾기 · 재설정
+  function findPwDemo() {
+    const e = document.getElementById('fpEmail').value.trim();
+    if (!e) { toast('이메일을 입력해 주세요'); return; }
+    if (/^none@/.test(e)) { document.getElementById('fpField').classList.add('invalid'); return; }
+    document.getElementById('fpDoneMsg').textContent = e + '(으)로 비밀번호 변경 링크를 보냈어요. 메일함을 확인해 주세요.';
+    document.getElementById('findPwPage').style.display = 'none'; document.getElementById('findPwDone').style.display = '';
+  }
+  // 비밀번호 폼 공통 검증: 재설정(rp) / 변경(pc)
+  const pwFocus = { };
+  const PW_FORMS = { rp: { pw:'rpPw', pw2:'rpPw2', f1:'rpF1', f2:'rpF2', panel:'rpPanel', submit:'rpSubmit' },
+                     pc: { pw:'pcPw', pw2:'pcPw2', f1:'pcF1', f2:'pcF2', panel:'pcPanel', submit:'pcSubmit', cur:'pcCur' } };
+  function pwFormValidate(k) {
+    const c = PW_FORMS[k]; const p1 = document.getElementById(c.pw).value, p2 = document.getElementById(c.pw2).value;
+    const rules = pwRules(p1), pwOk = rules.every(Boolean), matchOk = p2 !== '' && p1 === p2;
+    const panel = document.getElementById(c.panel); panel.classList.toggle('show', !!pwFocus[k] || (p1 !== '' && !pwOk));
+    panel.querySelectorAll('.pw-rule').forEach((el, i) => el.classList.toggle('ok', rules[i]));
+    document.getElementById(c.f1).classList.toggle('invalid', p1 !== '' && !pwOk && !pwFocus[k]);
+    document.getElementById(c.f2).classList.toggle('invalid', p2 !== '' && !matchOk);
+    const curOk = c.cur ? document.getElementById(c.cur).value !== '' : true;
+    document.getElementById(c.submit).disabled = !(pwOk && matchOk && curOk);
+  }
+  function rpShow(id) { ['resetPwPage','resetPwDone','resetPwExpired'].forEach(x => document.getElementById(x).style.display = x === id ? '' : 'none'); }
+  function resetPwDemo() { rpShow('resetPwDone'); }
+  // 마이페이지: 전화번호 수정 시트 · 계정 탭 · 비밀번호 변경 시트
+  function openPhoneEdit() {
+    document.getElementById('peStudent').value = document.getElementById('pfStudentTel').textContent;
+    document.getElementById('peParent').value = document.getElementById('pfParentTel').textContent;
+    openSheet('phoneEdit');
+  }
+  function savePhoneEdit() {
+    const st = document.getElementById('peStudent').value.trim(), pr = document.getElementById('peParent').value.trim();
+    if (!st) { toast('학생 전화번호를 입력해 주세요'); return; }
+    document.getElementById('pfStudentTel').textContent = st; document.getElementById('pfParentTel').textContent = pr;
+    closeSheets(); toast('전화번호를 수정했어요');
+  }
+  function renderAccount() {
+    const kakao = state.provider === 'kakao';
+    document.getElementById('accEmail').textContent = kakao ? 'haneul0412@kakao.com' : (state.email || 'haneul0412@gmail.com');
+    document.getElementById('accProvider').innerHTML = kakao ? '<span class="kakao-dot"></span>카카오 계정 연결됨' : '이메일 계정';
+    document.getElementById('accPwLink').style.display = kakao ? 'none' : '';
+  }
+  function openPwChange() {
+    ['pcCur','pcPw','pcPw2'].forEach(id => document.getElementById(id).value = '');
+    pwFormValidate('pc');
+    openSheet('pwChange');
+  }
+  function savePwChange() { closeSheets(); toast('비밀번호를 변경했어요'); }
+
   function s0FillGrades(id, selected) {
     const sel = document.getElementById(id);
     const keep = sel.options.length && sel.options[0].value === '' ? '<option value="" selected>학년을 선택해주세요</option>' : '';
     sel.innerHTML = keep + S0_GRADES.map(g => '<option value="' + g + '"' + (g === selected ? ' selected' : '') + '>' + g + '</option>').join('');
   }
   function s0Validate() {
-    const ok = ['f3Name','f3School','f3Phone','f3Parent'].every(id => document.getElementById(id).value.trim() !== '')
+    const ok = ['f3Name','f3School','f3Phone'].every(id => document.getElementById(id).value.trim() !== '')
       && document.getElementById('f3Grade').value !== '';
     document.getElementById('f3Submit').disabled = !ok;
     const g = document.getElementById('f3Grade');
@@ -1371,7 +1738,7 @@
   <div class="db-card">
     <div class="db-badge">임시 화면 · 실제 구현 시 제거</div>
     <div class="db-title">어떤 사용자로 들어갈까요?</div>
-<div class="db-opt" onclick="branchGo('new')"><div><b>최초 사용자</b><small>가입(입학 신청)부터 시작해요</small></div><span class="chv">›</span></div><div class="db-opt" onclick="branchGo('pending')"><div><b>김하늘 · 승인 대기</b><small>신청 접수 후 학원 승인을 기다려요</small></div><span class="chv">›</span></div><div class="db-opt" onclick="branchGo('rejected')"><div><b>김하늘 · 신청 거절</b><small>거절 안내와 재신청 흐름</small></div><span class="chv">›</span></div><div class="db-opt" onclick="branchGo('approved')"><div><b>김하늘 · 재학생</b><small>승인된 회원으로 바로 이용해요</small></div><span class="chv">›</span></div>
+<div class="db-opt" id="dbFail" onclick="branchGo('fail')"><div><b>로그인 실패</b><small>이메일 또는 비밀번호 불일치</small></div><span class="chv">›</span></div><div class="db-opt" onclick="branchGo('new')"><div><b>최초 사용자</b><small>가입(입학 신청)부터 시작해요</small></div><span class="chv">›</span></div><div class="db-opt" onclick="branchGo('pending')"><div><b>김하늘 · 승인 대기</b><small>신청 접수 후 학원 승인을 기다려요</small></div><span class="chv">›</span></div><div class="db-opt" onclick="branchGo('rejected')"><div><b>김하늘 · 신청 거절</b><small>거절 안내와 재신청 흐름</small></div><span class="chv">›</span></div><div class="db-opt" onclick="branchGo('approved')"><div><b>김하늘 · 재학생</b><small>승인된 회원으로 바로 이용해요</small></div><span class="chv">›</span></div>
     <div class="db-cancel" onclick="closeBranch()">취소</div>
   </div>
 </div>
