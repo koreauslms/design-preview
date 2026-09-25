@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>고려US Web — S1·S2·S4·S6 프로토타입</title>
+<title>고려US 학생 웹 — 디자인 시안</title>
 <style>
   @font-face {
     font-family: 'Pretendard';
@@ -319,11 +319,33 @@
     border-radius: var(--r-btn); padding: 10px 18px;
   }
   .buy-in-player:active { filter: brightness(.95); }
-  .video-ph .resume-tag {
-    position:absolute; left: 14px; bottom: 12px;
-    font-size: 11px; color: rgba(255,255,255,.85);
-    background: rgba(255,255,255,.14); border-radius: 4px; padding: 3px 8px;
-  }
+  /* 플레이어 컨트롤 */
+  .video-ph:has(.vstage) { flex-direction:column; align-items:stretch; justify-content:flex-start; }
+  .vstage { flex:1; display:flex; align-items:center; justify-content:center; cursor:pointer; min-height:0; }
+  .vstage .play-big { transition: opacity .15s; }
+  .vstage .play-big svg { width: 26px; height: 26px; }
+  .vstage.playing .play-big { opacity: 0; }
+  .vstage.playing:hover .play-big { opacity: 1; }
+  .vbar { flex:none; padding: 0 14px 10px; background: linear-gradient(to top, rgba(0,0,0,.45), rgba(0,0,0,0)); }
+  .vprog { position:relative; height: 14px; display:flex; align-items:center; cursor:pointer; }
+  .vprog::before { content:''; position:absolute; left:0; right:0; height: 3px; background: rgba(255,255,255,.28); border-radius: 2px; }
+  .vprog:hover::before { height: 5px; }
+  .vfill { position:absolute; left:0; height: 3px; background: #fff; border-radius: 2px; }
+  .vprog:hover .vfill { height: 5px; }
+  .vknob { position:absolute; width: 12px; height: 12px; margin-left: -6px; border-radius: 50%; background:#fff; opacity:0; transition: opacity .15s; }
+  .vprog:hover .vknob { opacity: 1; }
+  .vctl { display:flex; align-items:center; gap: 4px; margin-top: 2px; color:#fff; }
+  .vbtn { position:relative; border:0; background:transparent; color:#fff; width: 34px; height: 30px; display:flex; align-items:center; justify-content:center; cursor:pointer; border-radius: 4px; padding:0; }
+  .vbtn:hover { background: rgba(255,255,255,.14); }
+  .vbtn svg { width: 20px; height: 20px; }
+  .vbtn i { position:absolute; font-style:normal; font-size: 7px; font-weight: 700; top: 12px; }
+  .vtime { font-size: 12px; margin-left: 6px; font-variant-numeric: tabular-nums; color: rgba(255,255,255,.9); }
+  .vsp { margin-left:auto; font-size: 12px; font-weight: 600; padding: 4px 8px; border-radius: 4px; cursor:pointer; }
+  .vsp:hover { background: rgba(255,255,255,.14); }
+  .ps-row .dur.live { display:flex; align-items:center; gap: 3px; color: var(--navy); font-weight: 600; }
+  .ps-row .dur.live i { width: 2px; height: 9px; background: var(--navy); border-radius: 1px; animation: eq .9s ease-in-out infinite; }
+  .ps-row .dur.live i:nth-child(2) { animation-delay: .3s; } .ps-row .dur.live i:nth-child(3) { animation-delay: .6s; margin-right: 3px; }
+  @keyframes eq { 0%,100% { transform: scaleY(.4); } 50% { transform: scaleY(1); } }
   .player-info { padding: 14px 16px; border-top: 1px solid var(--border); }
   .player-info .pi-name { font-size: 15px; font-weight: 700; }
   .player-info .pi-meta { font-size: 12px; color: var(--text-sub); margin-top: 3px; }
@@ -651,6 +673,8 @@
   .status-strip .st-body { flex:1; }
   .status-strip .st-title { font-size: 15px; font-weight: 700; }
   .status-strip .st-sub { font-size: 13px; color: var(--text-sub); margin-top: 2px; }
+  .status-strip .st-reason { display:flex; align-items:center; gap: 6px; font-size: 13px; color: var(--text); margin-top: 6px; }
+  .status-strip .st-reason-tag { font-size: 11px; font-weight: 700; color: var(--red); background: var(--red-soft); border-radius: var(--r-badge); padding: 2px 6px; }
   .status-strip .btn { padding: 9px 16px; font-size: 13px; }
   .btn-kakao {
     border:0; font:inherit; cursor:pointer;
@@ -773,7 +797,7 @@
 </head>
 <body>
 
-<div class="mock-note">※ S0 연결: 랜딩 → 카카오(최초 사용자 데모) → 입학 신청 → 승인 대기 화면의 [승인 처리 (임시)]로 S1 진입 / [승인 실패 (임시)]로 거절 → 재신청. 승인 전에는 회원 영역 접근 차단. 이후 동작은 기존과 동일 — 커리큘럼/내 학습/마이페이지, 구매·강의실·일괄 구매. 지갑: 중2 수학 300P / 중2 영어 50P / 중1 수학 100P</div>
+<div class="mock-note">※ 데모: [로그인] 또는 카카오 → 분기 선택(로그인 실패 / 최초 사용자 / 승인 대기 / 거절 / 재학생). 승인 전에는 회원 영역 접근 차단. 커리큘럼/내 학습/마이페이지, 구매·강의실·일괄 구매. 지갑: 중2 수학 300P / 중2 영어 50P / 중1 수학 100P</div>
 
 <div class="web-frame" id="frame">
   <div class="web-gnb">
@@ -809,11 +833,11 @@
           <h1>고려US에서 학생의 꿈을 함께 이룹니다</h1>
           <p>2008년 시흥시 정왕동에서 개원하여 지역내 우수한 후학들을 배출하였고 사회에 이바지할수 있는 많은 인재를 배출하고 있습니다. 학생의 꿈을 함께 이뤄주기 위해 함께 고민하고 해법을 찾아 원하는 바를 이룰수 있도록 최선의 노력을 다하고 있습니다.</p>
           <div class="hero-stats">
-            <div class="stat"><b>90% 이상</b><span>졸업생 합격률</span></div>
-            <div class="stat"><b>1,200명+</b><span>누적 원생</span></div>
-            <div class="stat"><b>18년의 노하우</b><span>2008년 개원</span></div>
-            <div class="stat"><b>명문대 출신</b><span>졸업생 선생님 재직</span></div>
-            <div class="stat"><b>초1 – 고3</b><span>대상 학년</span></div>
+            <div class="stat"><b id="hsRate"></b><span>졸업생 합격률</span></div>
+            <div class="stat"><b id="hsTotal"></b><span>누적 원생</span></div>
+            <div class="stat"><b id="hsYears"></b><span id="hsSince"></span></div>
+            <div class="stat"><b id="hsStaff"></b><span>졸업생 선생님 재직</span></div>
+            <div class="stat"><b id="hsGrades"></b><span>대상 학년</span></div>
           </div>
         </div>
         <!-- 학원 사진: 실제 사진이 오면 <img>로 교체 -->
@@ -1167,7 +1191,7 @@
     <footer class="web-footer">
       <div class="ft-inner">
         <img class="ft-logo" src="logo.svg" alt="고려US">
-        <div class="ft-info">고려US 학원 · 경기 시흥시 정왕동 · 02-1234-5678
+        <div class="ft-info"><span id="ftInfo"></span>
           <div class="ft-links"><a onclick="goTab('s85')">서비스 이용약관</a><a onclick="goTab('s86')">개인정보 처리방침</a></div>
         </div>
         <div class="ft-copy">© 2026 고려US</div>
@@ -1328,9 +1352,10 @@
 <script>
   const MY_GRADE = '중2';
   const GRADES = ['초1','초2','초3','초4','초5','초6','중1','중2','중3','고1','고2','고3'];
-  const SUBJECTS = ['전체','국어','수학','영어','과학','사회','역사'];
-  const SUBJ_ONLY = ['수학','영어','과학'];
-  const SYM = { '수학':'Σ', '영어':'Aa', '과학':'⚛' };
+  // 과목 목록: 콘솔 > 과목 관리 값 (구현 시 API로 읽어옴)
+  const SUBJ_ONLY = ['수학','영어','국어','과학'];
+  const SUBJECTS = ['전체'].concat(SUBJ_ONLY);
+  const SYM = { '수학':'Σ', '영어':'Aa', '국어':'가', '과학':'⚛' };
   const PRICE = 100;
 
   const CURRICULA = [
@@ -1390,6 +1415,7 @@
     ],
     pending: null,
     auth: 'guest', // guest | pre | pending | rejected | approved
+    rejectReason: '정보 불일치', // 콘솔에서 거절 시 선택한 정형 사유 (메모는 노출 안 함)
     provider: 'kakao', // kakao | email
     email: '',
   };
@@ -1602,8 +1628,22 @@
           <button class="buy-in-player" onclick="goBuyFromClass('${c.id}','${cur.id}')">100P 구매하기</button>
         </span>`;
     } else {
-      /* 시청 이력이 있으면 저장된 위치에서 자동 이어재생 — 별도 표시 없음 */
-      vi.innerHTML = `<span class="play-big" onclick="toast('재생 — ${cur.name}')">▶</span>`;
+      if (player.lecId !== cur.id) playerLoad(cur);
+      vi.innerHTML = `
+        <div class="vstage" id="vStage" onclick="playerToggle()">
+          <span class="play-big" id="vBig"></span>
+        </div>
+        <div class="vbar" onclick="event.stopPropagation()">
+          <div class="vprog" onclick="playerSeek(event)"><div class="vfill" id="vFill"></div><div class="vknob" id="vKnob"></div></div>
+          <div class="vctl">
+            <button class="vbtn" id="vPlay" onclick="playerToggle()" aria-label="재생/일시정지"></button>
+            <button class="vbtn" onclick="playerSkip(-10)" aria-label="10초 뒤로"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12a8 8 0 1 0 2.3-5.7"/><path d="M4 4v5h5"/></svg><i>10</i></button>
+            <button class="vbtn" onclick="playerSkip(10)" aria-label="10초 앞으로"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12a8 8 0 1 1-2.3-5.7"/><path d="M20 4v5h-5"/></svg><i>10</i></button>
+            <span class="vtime" id="vTime"></span>
+            <span class="vsp" onclick="playerSpeed()" id="vSpeed">1.0x</span>
+          </div>
+        </div>`;
+      playerPaint();
     }
 
     document.getElementById('psList').innerHTML = c.lectures.map((lec, i) => {
@@ -1613,9 +1653,62 @@
       <div class="ps-row ${now?'now':''}" onclick="state.playing='${lec.id}';renderS42();">
         <span class="no-chip">${no}</span>
         <span class="ml-name">${lec.name}</span>
-        <span class="dur">${DUR[lec.id]}</span>
+        <span class="dur" data-lec="${lec.id}">${DUR[lec.id]}</span>
       </div>`;
     }).join('');
+    playerPaintRow();
+  }
+
+  /* 플레이어 상태 (데모: 1초 간격으로 진행. 실제로는 video 엘리먼트 이벤트로 대체) */
+  const player = { lecId: null, on: false, pos: 0, dur: 0, speed: 1, timer: null };
+  const SPEEDS = [1, 1.25, 1.5, 2];
+  const toSec = s => { const [m, x] = s.split(':').map(Number); return m * 60 + x; };
+  const fmtSec = n => String(Math.floor(n / 60)).padStart(2, '0') + ':' + String(Math.floor(n % 60)).padStart(2, '0');
+  function playerLoad(lec) {
+    playerStop();
+    player.lecId = lec.id; player.dur = toSec(DUR[lec.id]);
+    player.pos = lec.resumeAt ? toSec(lec.resumeAt) : 0; // 시청 이력이 있으면 저장된 위치에서 이어재생
+  }
+  function playerStop() { clearInterval(player.timer); player.timer = null; player.on = false; }
+  function playerToggle() { player.on ? playerPause() : playerPlay(); }
+  function playerPlay() {
+    if (player.pos >= player.dur) player.pos = 0;
+    player.on = true;
+    player.timer = setInterval(() => {
+      player.pos = Math.min(player.dur, player.pos + player.speed);
+      if (player.pos >= player.dur) playerPause(); else playerPaint();
+    }, 1000);
+    playerPaint();
+  }
+  function playerPause() { playerStop(); playerPaint(); }
+  function playerSkip(d) { player.pos = Math.max(0, Math.min(player.dur, player.pos + d)); playerPaint(); }
+  function playerSeek(e) {
+    e.stopPropagation();
+    const r = e.currentTarget.getBoundingClientRect();
+    player.pos = Math.round(Math.max(0, Math.min(1, (e.clientX - r.left) / r.width)) * player.dur);
+    playerPaint();
+  }
+  function playerSpeed() { player.speed = SPEEDS[(SPEEDS.indexOf(player.speed) + 1) % SPEEDS.length]; playerPaint(); }
+  const ICO_PLAY = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13l11-6.5z"/></svg>';
+  const ICO_PAUSE = '<svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>';
+  function playerPaint() {
+    const st = document.getElementById('vStage'); if (!st) return;
+    const pct = player.dur ? player.pos / player.dur * 100 : 0;
+    st.classList.toggle('playing', player.on);
+    document.getElementById('vBig').innerHTML = player.on ? ICO_PAUSE : ICO_PLAY;
+    document.getElementById('vPlay').innerHTML = player.on ? ICO_PAUSE : ICO_PLAY;
+    document.getElementById('vFill').style.width = pct + '%';
+    document.getElementById('vKnob').style.left = pct + '%';
+    document.getElementById('vTime').textContent = fmtSec(player.pos) + ' / ' + fmtSec(player.dur);
+    document.getElementById('vSpeed').textContent = (player.speed % 1 ? String(player.speed) : player.speed.toFixed(1)) + 'x';
+    playerPaintRow();
+  }
+  function playerPaintRow() {
+    document.querySelectorAll('#psList .dur').forEach(el => {
+      const live = player.on && el.dataset.lec === player.lecId;
+      el.classList.toggle('live', live);
+      el.innerHTML = live ? '<i></i><i></i><i></i>재생 중' : DUR[el.dataset.lec];
+    });
   }
 
   /* ── S6 마이페이지 ── */
@@ -1666,6 +1759,7 @@
     openModal('withdraw');
   }
   function confirmWithdraw() {
+    // 서버: 학생 상태를 WITHDRAWN으로 전환하고 탈퇴일을 기록 → 콘솔 학생 관리에 '탈퇴'로 남음 (구매·포인트 기록은 익명 보관)
     closeModals();
     state.auth = 'guest';
     applyAuthUi();
@@ -1686,6 +1780,7 @@
     document.querySelector('.web-body').scrollTop = 0;
     if (v !== 's2') state.selected.clear();
     frame.classList.toggle('classroom', v === 's42');
+    if (v !== 's42') playerStop();
     document.querySelectorAll('.web-body > .view, .web-body .view').forEach(x => x.classList.remove('on'));
     if (v === 's84') rpShow('resetPwPage');
     document.getElementById('view' + v.toUpperCase()).classList.add('on');
@@ -1780,7 +1875,21 @@
 
 
   // ===== S0 인증/온보딩 (v0.5) =====
-  const ACADEMY_TEL = '02-1234-5678';
+  // 학원 정보: 콘솔 > 학원 정보 관리 값 (필드명은 console.html의 home과 동일)
+  const ACADEMY = { name:'고려US 학원', addr:'경기 시흥시 정왕동', phone:'02-1234-5678', biz:'', rate:90, total:1200, since:2008, staffTxt:'명문대 출신', g1:'초1', g2:'고3' };
+  const ACADEMY_TEL = ACADEMY.phone;
+  // 교습비 게시 정보: 콘솔 > 교습비 관리 > 게시 정보 값
+  const FEE_META = { org:'시흥교육지원청', month:'2026-09' };
+  function renderAcademyInfo() {
+    const a = ACADEMY, yrs = new Date().getFullYear() - a.since;
+    document.getElementById('hsRate').textContent = a.rate + '% 이상';
+    document.getElementById('hsTotal').textContent = a.total.toLocaleString() + '명+';
+    document.getElementById('hsYears').textContent = yrs + '년의 노하우';
+    document.getElementById('hsSince').textContent = a.since + '년 개원';
+    document.getElementById('hsStaff').textContent = a.staffTxt;
+    document.getElementById('hsGrades').textContent = a.g1 + ' – ' + a.g2;
+    document.getElementById('ftInfo').textContent = [a.name, a.addr, a.phone].concat(a.biz ? ['사업자등록번호 ' + a.biz] : []).join(' · ');
+  }
   const S0_GRADES = ['초1','초2','초3','초4','초5','초6','중1','중2','중3','고1','고2','고3'];
   // 데모 졸업생 데이터: 2010~2025, 연 20명 내외. photo에 캠퍼스 사진 경로를 넣으면 카드 배경으로 표시
   const GRADS = (() => {
@@ -1793,18 +1902,21 @@
     const out = [];
     for (let y = 2025; y >= 2010; y--) {
       const n = 17 + rnd(7);
-      for (let i = 0; i < n; i++) out.push({ name: fam[rnd(fam.length)] + giv[rnd(giv.length)], school: schools[Math.min(rnd(schools.length), rnd(schools.length))], major: majors[rnd(majors.length)], gy: String(y), high: highs[rnd(highs.length)], years: 1 + rnd(6), photo: '' });
+      for (let i = 0; i < n; i++) out.push({ name: fam[rnd(fam.length)] + giv[rnd(giv.length)], school: schools[Math.min(rnd(schools.length), rnd(schools.length))], major: majors[rnd(majors.length)], gy: String(y), high: highs[rnd(highs.length)], y1: String(y - 1 - rnd(6)), y2: String(y - 1), photo: '', feat: false });
     }
+    out[1].feat = true; out[27].feat = true; // 데모: 콘솔에서 '홈 대표 노출' 지정된 졸업생
     return out;
   })();
-  const S0_GRADS = GRADS.slice(0, 4); // 홈 대표 카드: 최신 연도 앞 4명
+  const gradYears = g => Number(g.y2) - Number(g.y1) + 1; // 콘솔과 동일: 종료 − 시작 + 1
+  // 홈 대표 카드: 콘솔 대표 노출(feat) 우선, 부족분은 최신 연도 순으로 채움 (최대 4명)
+  const S0_GRADS = GRADS.filter(g => g.feat).concat(GRADS.filter(g => !g.feat)).slice(0, 4);
   const maskName = n => n.length < 2 ? n : n[0] + 'O'.repeat(n.length - 2) + n[n.length - 1];
   const gradCard = g =>
     '<div class="grad-card">' +
       (g.photo ? '<img class="gc-photo" src="' + g.photo + '" alt="">' : '<div class="gc-photo ph"><span>' + g.school + '</span></div>') +
       '<div class="gc-body"><div class="gc-school">' + g.school + '</div><div class="gc-major">' + g.major + '</div>' +
       '<div class="gc-meta">' + g.high + ' ' + maskName(g.name) + '</div>' +
-      '<div class="gc-meta">' + g.gy + ' 졸업 · ' + g.years + '년 지도</div></div>' +
+      '<div class="gc-meta">' + g.gy + ' 졸업 · ' + gradYears(g) + '년 지도</div></div>' +
     '</div>';
 
   function applyAuthUi() {
@@ -1991,13 +2103,15 @@
     if (state.auth === 'pending') {
       box.innerHTML = '<div class="status-strip"><div class="ico">⏳</div><div class="st-body"><div class="st-title">입학 신청을 확인하고 있어요</div><div class="st-sub">학원에서 승인한 후 커리큘럼과 강의를 이용할 수 있어요.</div></div></div>';
     } else if (state.auth === 'rejected') {
-      box.innerHTML = '<div class="status-strip"><div class="ico warn">!</div><div class="st-body"><div class="st-title">입학 신청이 승인되지 않았어요</div><div class="st-sub">궁금한 점은 학원으로 문의해주세요. ' + ACADEMY_TEL + '</div></div>' +
+      box.innerHTML = '<div class="status-strip"><div class="ico warn">!</div><div class="st-body"><div class="st-title">입학 신청이 승인되지 않았어요</div>' +
+        (state.rejectReason ? '<div class="st-reason"><span class="st-reason-tag">거절 사유</span>' + state.rejectReason + '</div>' : '') +
+        '<div class="st-sub">궁금한 점은 학원으로 문의해주세요. ' + ACADEMY_TEL + '</div></div>' +
         '<button class="btn btn-outline" onclick="copyTel()">번호 복사</button><button class="btn btn-primary" onclick="goReapply()">다시 신청하기</button></div>';
     } else {
       box.innerHTML = '';
     }
   }
-  // 교습비 (데모): 커리큘럼(교습과정)별 월 교습비. 실제로는 콘솔의 커리큘럼 생성·수정 화면에서 입력
+  // 교습비 (데모): 교습과정별 월 교습비. 콘솔 > 교습비 관리에서 입력 (온라인 커리큘럼과 별개 엔티티)
   const FEES = [
     { name:'중2 수학 2학기 내신 완성', grade:'중2', subject:'수학', perWeek:2, minutes:90, monthly:280000, extra:'교재비 15,000원' },
     { name:'중2 영어 문법 마스터', grade:'중2', subject:'영어', perWeek:2, minutes:90, monthly:260000, extra:'교재비 12,000원' },
@@ -2007,6 +2121,9 @@
     { name:'중3 영어 독해 트레이닝', grade:'중3', subject:'영어', perWeek:2, minutes:90, monthly:280000, extra:'교재비 12,000원' },
   ];
   const s9 = { grade: '전체' };
+  // 콘솔 feeNote()와 동일 형식
+  const feeMonthLabel = m => { const a = m.split('-'); return a[0] + '년 ' + parseInt(a[1], 10) + '월'; };
+  const feeNote = (org, m) => '교습비는 ' + org + '에 등록된 금액이며, ' + feeMonthLabel(m) + ' 기준입니다. 문의 ' + ACADEMY.phone;
   const renderS9Grade = bindGradeSelect('s9GradeBtn','s9GradeMenu','s9GradeLabel',
     () => s9.grade, g => { s9.grade = g; renderS9(); }, true);
   function renderS9() {
@@ -2018,7 +2135,7 @@
         <td>주 ${f.perWeek}회</td><td>${f.minutes}분</td>
         <td class="num"><b>${f.monthly.toLocaleString()}원</b></td><td class="num">${f.extra}</td>
       </tr>`).join('') : '<tr><td colspan="7" class="fee-empty">해당 학년의 교습과정이 없어요</td></tr>';
-    document.getElementById('feeNote').textContent = '교습비는 시흥교육지원청에 등록된 금액이며, 2026년 9월 기준입니다. 문의 ' + ACADEMY_TEL;
+    document.getElementById('feeNote').textContent = feeNote(FEE_META.org, FEE_META.month);
   }
   let g7Year = null;
   (function () {
@@ -2043,6 +2160,7 @@
     document.getElementById('g7Grid').innerHTML = list.map(gradCard).join('');
   }
   function renderS0() {
+    renderAcademyInfo();
     renderHomeStatus();
     renderHomeContinue();
     renderHomeCur();

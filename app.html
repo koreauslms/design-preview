@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>고려US App — S1·S2·S4·S6 프로토타입</title>
+<title>고려US 학생 앱 — 디자인 시안</title>
 <style>
   @font-face {
     font-family: 'Pretendard';
@@ -1077,9 +1077,10 @@
 <script>
   const MY_GRADE = '중2';
   const GRADES = ['초1','초2','초3','초4','초5','초6','중1','중2','중3','고1','고2','고3'];
-  const SUBJECTS = ['전체','수학','영어','과학'];
-  const SUBJ_ONLY = ['수학','영어','과학'];
-  const SYM = { '수학':'Σ', '영어':'Aa', '과학':'⚛' };
+  // 과목 목록: 콘솔 > 과목 관리 값 (구현 시 API로 읽어옴)
+  const SUBJ_ONLY = ['수학','영어','국어','과학'];
+  const SUBJECTS = ['전체'].concat(SUBJ_ONLY);
+  const SYM = { '수학':'Σ', '영어':'Aa', '국어':'가', '과학':'⚛' };
 
   const CURRICULA = [
     { id:'c1', grade:'중2', subject:'수학', name:'중2 수학 2학기 내신 완성', desc:'일차함수부터 확률까지, 2학기 내신 범위를 개념 → 유형 → 기출 순서로 완성하는 커리큘럼입니다.', teacher:'김수학',
