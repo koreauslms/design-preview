@@ -352,7 +352,7 @@
     display:none; flex-direction:column; align-items:center; justify-content:center; gap: 16px; cursor:default;
   }
   .vstage.ended .vend { display:flex; }
-  #vEndNext { text-align:center; }
+  .vend .ve-head { text-align:center; }
   .vend .ve-next { font-size: 13px; color: rgba(255,255,255,.7); }
   .vend .ve-name { font-size: 16px; font-weight: 700; color:#fff; margin-top: 4px; text-align:center; }
   .vend .ve-btns { display:flex; gap: 8px; }
@@ -1722,7 +1722,7 @@
           <span class="play-big" id="vBig"></span>
           <span class="vflash" id="vFlash"></span>
           <div class="vend" onclick="event.stopPropagation()">
-            <div id="vEndNext"></div>
+            <div class="ve-head" id="vEndNext"></div>
             <div class="ve-btns">
               <button class="ve-replay" onclick="playerReplay()">다시 보기</button>
               <button class="ve-go" id="vEndGo" onclick="playerNext()">다음 강의 보기</button>
