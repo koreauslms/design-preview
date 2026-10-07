@@ -324,29 +324,112 @@
     border-radius: var(--r-btn); padding: 10px 18px;
   }
   .buy-in-player:active { filter: brightness(.95); }
-  /* 플레이어 컨트롤 */
-  .video-ph:has(.vstage) { flex-direction:column; align-items:stretch; justify-content:flex-start; }
-  .vstage { flex:1; display:flex; align-items:center; justify-content:center; cursor:pointer; min-height:0; }
-  .vstage .play-big { transition: opacity .15s; }
-  .vstage .play-big svg { width: 26px; height: 26px; }
-  .vstage.playing .play-big { opacity: 0; }
-  .vstage.playing:hover .play-big { opacity: 1; }
-  .vbar { flex:none; padding: 0 14px 10px; background: linear-gradient(to top, rgba(0,0,0,.45), rgba(0,0,0,0)); }
-  .vprog { position:relative; height: 14px; display:flex; align-items:center; cursor:pointer; }
-  .vprog::before { content:''; position:absolute; left:0; right:0; height: 3px; background: rgba(255,255,255,.28); border-radius: 2px; }
-  .vprog:hover::before { height: 5px; }
-  .vfill { position:absolute; left:0; height: 3px; background: #fff; border-radius: 2px; }
-  .vprog:hover .vfill { height: 5px; }
-  .vknob { position:absolute; width: 12px; height: 12px; margin-left: -6px; border-radius: 50%; background:#fff; opacity:0; transition: opacity .15s; }
-  .vprog:hover .vknob { opacity: 1; }
-  .vctl { display:flex; align-items:center; gap: 4px; margin-top: 2px; color:#fff; }
-  .vbtn { position:relative; border:0; background:transparent; color:#fff; width: 34px; height: 30px; display:flex; align-items:center; justify-content:center; cursor:pointer; border-radius: 4px; padding:0; }
+  /* 플레이어 컨트롤 — YouTube·인프런 공통 구성: 영상 위 오버레이 바, 재생 중 무입력 시 숨김 */
+  .video-ph:has(.vstage) { display:block; overflow:hidden; }
+  .vstage { position:absolute; inset:0; cursor:pointer; user-select:none; }
+  .vstage.idle { cursor:none; }
+  .vstage .play-big {
+    position:absolute; left:50%; top:50%; width: 64px; height: 64px; margin: -32px 0 0 -32px;
+    background: rgba(17,12,48,.55); border: 0; backdrop-filter: blur(4px);
+    transition: opacity .15s, transform .15s;
+  }
+  .vstage .play-big:hover { transform: scale(1.06); }
+  .vstage .play-big svg { width: 28px; height: 28px; margin-left: 3px; }
+  .vstage.playing .play-big, .vstage.ended .play-big { opacity:0; pointer-events:none; }
+  /* 클릭·단축키로 재생 상태가 바뀔 때 가운데 아이콘이 잠깐 떴다 사라진다 */
+  .vflash {
+    position:absolute; left:50%; top:50%; width: 60px; height: 60px; margin: -30px 0 0 -30px;
+    border-radius:50%; background: rgba(0,0,0,.45); color:#fff;
+    display:flex; align-items:center; justify-content:center; opacity:0; pointer-events:none;
+  }
+  .vflash svg { width: 26px; height: 26px; }
+  .vflash b { font-size: 14px; font-weight: 700; }
+  .vflash.go { animation: vflash .6s ease-out; }
+  @keyframes vflash { 0% { opacity:1; transform: scale(.85); } 100% { opacity:0; transform: scale(1.25); } }
+  /* 끝까지 본 뒤 — 인프런: [다시 보기] [다음 강의] */
+  .vend {
+    position:absolute; inset:0; background: rgba(11,7,36,.72);
+    display:none; flex-direction:column; align-items:center; justify-content:center; gap: 16px; cursor:default;
+  }
+  .vstage.ended .vend { display:flex; }
+  #vEndNext { text-align:center; }
+  .vend .ve-next { font-size: 13px; color: rgba(255,255,255,.7); }
+  .vend .ve-name { font-size: 16px; font-weight: 700; color:#fff; margin-top: 4px; text-align:center; }
+  .vend .ve-btns { display:flex; gap: 8px; }
+  .vend button { border:0; font:inherit; cursor:pointer; font-size: 14px; font-weight: 700; border-radius: var(--r-btn); padding: 10px 18px; }
+  .vend .ve-replay { background: rgba(255,255,255,.14); color:#fff; }
+  .vend .ve-replay:hover { background: rgba(255,255,255,.22); }
+  .vend .ve-go { background:#fff; color: var(--navy); }
+  .vbar {
+    position:absolute; left:0; right:0; bottom:0; padding: 28px 16px 10px; cursor:default;
+    background: linear-gradient(to top, rgba(0,0,0,.62), rgba(0,0,0,0));
+    transition: opacity .25s;
+  }
+  .vstage.idle .vbar { opacity:0; }
+  .vstage.ended .vbar { display:none; }
+  .vprog { position:relative; height: 16px; display:flex; align-items:center; cursor:pointer; }
+  .vrail, .vhover, .vfill { position:absolute; left:0; height: 4px; border-radius: 2px; transition: height .12s; }
+  .vrail { right:0; background: rgba(255,255,255,.25); }
+  .vhover { background: rgba(255,255,255,.35); width:0; opacity:0; }
+  .vfill { background:#fff; }
+  .vprog:hover .vrail, .vprog:hover .vhover, .vprog:hover .vfill { height: 6px; }
+  .vprog:hover .vhover { opacity:1; }
+  .vknob { position:absolute; width: 14px; height: 14px; margin-left: -7px; border-radius: 50%; background:#fff; transform: scale(0); transition: transform .12s; box-shadow: 0 0 0 4px rgba(255,255,255,.18); }
+  .vprog:hover .vknob { transform: scale(1); }
+  .vtip {
+    position:absolute; bottom: 20px; transform: translateX(-50%);
+    background: rgba(17,12,48,.9); color:#fff; font-size: 12px; font-weight: 600;
+    padding: 4px 8px; border-radius: 4px; font-variant-numeric: tabular-nums; pointer-events:none; opacity:0; white-space:nowrap;
+  }
+  .vprog:hover .vtip { opacity:1; }
+  /* 버튼 간격은 모두 같게 — 재생과 이전 강의 사이를 넓혀 잘못 누르지 않게 한 간격을 전체에 쓴다 */
+  .vctl { display:flex; align-items:center; gap: 12px; margin-top: 4px; color:#fff; }
+  .vctl .vgap { flex:1; }
+  .vbtn { position:relative; border:0; background:transparent; color:#fff; width: 38px; height: 36px; display:flex; align-items:center; justify-content:center; cursor:pointer; border-radius: 6px; padding:0; flex:none; }
   .vbtn:hover { background: rgba(255,255,255,.14); }
-  .vbtn svg { width: 20px; height: 20px; }
-  .vbtn i { position:absolute; font-style:normal; font-size: 7px; font-weight: 700; top: 12px; }
-  .vtime { font-size: 12px; margin-left: 6px; font-variant-numeric: tabular-nums; color: rgba(255,255,255,.9); }
-  .vsp { margin-left:auto; font-size: 12px; font-weight: 600; padding: 4px 8px; border-radius: 4px; cursor:pointer; }
+  /* 비활성화 — 첫 강의의 이전, 마지막 강의의 다음. 자리는 그대로 두고 흐리게 */
+  .vbtn:disabled { opacity:.35; cursor:default; }
+  .vbtn:disabled:hover { background:transparent; }
+  .vbtn:disabled:hover::after { display:none; }
+  .vbtn svg { width: 22px; height: 22px; }
+  /* 버튼 위 툴팁 — 기능 + 단축키 */
+  .vbtn[data-tip]:hover::after, .vsp[data-tip]:hover::after {
+    content: attr(data-tip); position:absolute; bottom: calc(100% + 8px); left:50%; transform: translateX(-50%);
+    background: rgba(17,12,48,.9); color:#fff; font-size: 12px; font-weight: 500; white-space:nowrap;
+    padding: 5px 8px; border-radius: 4px; pointer-events:none;
+  }
+  .vctl .vbtn:first-child[data-tip]:hover::after { left:0; transform:none; }
+  .vctl .vbtn:last-child[data-tip]:hover::after { left:auto; right:0; transform:none; }
+  /* 음량 — 아이콘에 마우스를 올리면 슬라이더가 펼쳐진다 */
+  .vvol { display:flex; align-items:center; }
+  .vvol input {
+    width: 0; opacity: 0; margin: 0; transition: width .18s, opacity .18s, margin .18s;
+    accent-color: #fff; height: 4px; cursor:pointer;
+  }
+  .vvol:hover input, .vvol input:focus { width: 72px; opacity: 1; margin: 0 0 0 8px; }
+  .vtime { font-size: 13px; font-variant-numeric: tabular-nums; color: rgba(255,255,255,.92); white-space:nowrap; }
+  .vtime span { color: rgba(255,255,255,.6); }
+  .vspw { position:relative; }
+  .vsp {
+    position:relative; border:0; font:inherit; color:#fff; background:transparent;
+    font-size: 13px; font-weight: 700; height: 36px; padding: 0 10px; border-radius: 6px; cursor:pointer; font-variant-numeric: tabular-nums;
+  }
   .vsp:hover { background: rgba(255,255,255,.14); }
+  .vmenu {
+    position:absolute; right:0; bottom: calc(100% + 8px); min-width: 132px;
+    background: rgba(17,12,48,.94); border-radius: 8px; padding: 6px; display:none;
+    box-shadow: 0 8px 24px rgba(0,0,0,.3);
+  }
+  .vmenu.open { display:block; }
+  .vmenu .vm-head { font-size: 12px; color: rgba(255,255,255,.6); padding: 6px 10px 4px; }
+  .vmenu button {
+    display:flex; align-items:center; width:100%; border:0; background:transparent; color:#fff; font:inherit;
+    font-size: 13px; padding: 8px 10px; border-radius: 5px; cursor:pointer; text-align:left; font-variant-numeric: tabular-nums;
+  }
+  .vmenu button:hover { background: rgba(255,255,255,.12); }
+  .vmenu button .ck { width: 18px; flex:none; }
+  .vmenu button.on { font-weight: 700; }
+  .video-ph:fullscreen { width:100%; height:100%; aspect-ratio:auto; background:#000; }
   .ps-row .dur.live { display:flex; align-items:center; gap: 3px; color: var(--navy); font-weight: 600; }
   .ps-row .dur.live i { width: 2px; height: 9px; background: var(--navy); border-radius: 1px; animation: eq .9s ease-in-out infinite; }
   .ps-row .dur.live i:nth-child(2) { animation-delay: .3s; } .ps-row .dur.live i:nth-child(3) { animation-delay: .6s; margin-right: 3px; }
@@ -1447,7 +1530,7 @@
     return renderMenu;
   }
   function closeAllMenus(except) {
-    document.querySelectorAll('.grade-menu, .profile-menu').forEach(m => { if (m !== except) m.classList.remove('open'); });
+    document.querySelectorAll('.grade-menu, .profile-menu, .vmenu').forEach(m => { if (m !== except) m.classList.remove('open'); });
   }
 
   /* ── S1 ── */
@@ -1635,17 +1718,37 @@
     } else {
       if (player.lecId !== cur.id) playerLoad(cur);
       vi.innerHTML = `
-        <div class="vstage" id="vStage" onclick="playerToggle()">
+        <div class="vstage" id="vStage" onclick="playerToggle(true)" onmousemove="playerWake()" onmouseleave="playerWake(true)">
           <span class="play-big" id="vBig"></span>
-        </div>
-        <div class="vbar" onclick="event.stopPropagation()">
-          <div class="vprog" onclick="playerSeek(event)"><div class="vfill" id="vFill"></div><div class="vknob" id="vKnob"></div></div>
-          <div class="vctl">
-            <button class="vbtn" id="vPlay" onclick="playerToggle()" aria-label="재생/일시정지"></button>
-            <button class="vbtn" onclick="playerSkip(-10)" aria-label="10초 뒤로"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12a8 8 0 1 0 2.3-5.7"/><path d="M4 4v5h5"/></svg><i>10</i></button>
-            <button class="vbtn" onclick="playerSkip(10)" aria-label="10초 앞으로"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12a8 8 0 1 1-2.3-5.7"/><path d="M20 4v5h-5"/></svg><i>10</i></button>
-            <span class="vtime" id="vTime"></span>
-            <span class="vsp" onclick="playerSpeed()" id="vSpeed">1.0x</span>
+          <span class="vflash" id="vFlash"></span>
+          <div class="vend" onclick="event.stopPropagation()">
+            <div id="vEndNext"></div>
+            <div class="ve-btns">
+              <button class="ve-replay" onclick="playerReplay()">다시 보기</button>
+              <button class="ve-go" id="vEndGo" onclick="playerNext()">다음 강의 보기</button>
+            </div>
+          </div>
+          <div class="vbar" onclick="event.stopPropagation()">
+            <div class="vprog" onclick="playerSeek(event)" onmousemove="playerHover(event)">
+              <div class="vrail"></div><div class="vhover" id="vHover"></div><div class="vfill" id="vFill"></div><div class="vknob" id="vKnob"></div>
+              <span class="vtip" id="vTip"></span>
+            </div>
+            <div class="vctl">
+              <button class="vbtn" id="vPlay" onclick="playerToggle()" aria-label="재생/일시정지"></button>
+              <button class="vbtn" id="vPrevBtn" onclick="playerPrev()" aria-label="이전 강의" data-tip="이전 강의"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M18 6.5v11l-8.5-5.5z"/><rect x="5.8" y="6" width="2.2" height="12" rx="1"/></svg></button>
+              <button class="vbtn" id="vNextBtn" onclick="playerNext()" aria-label="다음 강의" data-tip="다음 강의"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 6.5v11l8.5-5.5z"/><rect x="16" y="6" width="2.2" height="12" rx="1"/></svg></button>
+              <div class="vvol">
+                <button class="vbtn" id="vMute" onclick="playerMute()" aria-label="음소거" data-tip="음소거 (M)"></button>
+                <input type="range" id="vVol" min="0" max="1" step="0.05" aria-label="음량" oninput="playerVolume(this.value)">
+              </div>
+              <span class="vtime" id="vTime"></span>
+              <span class="vgap"></span>
+              <div class="vspw">
+                <button class="vsp" id="vSpeed" onclick="playerSpeedMenu(event)" aria-label="재생 속도" data-tip="재생 속도 (&lt; &gt;)"></button>
+                <div class="vmenu" id="vSpeedMenu" onclick="event.stopPropagation()"></div>
+              </div>
+              <button class="vbtn" id="vFull" onclick="playerFull()" aria-label="전체 화면" data-tip="전체 화면 (F)"></button>
+            </div>
           </div>
         </div>`;
       playerPaint();
@@ -1664,48 +1767,163 @@
     playerPaintRow();
   }
 
-  /* 플레이어 상태 (데모: 1초 간격으로 진행. 실제로는 video 엘리먼트 이벤트로 대체) */
-  const player = { lecId: null, on: false, pos: 0, dur: 0, speed: 1, timer: null };
+  /* 플레이어 상태 (데모: 1초 간격으로 진행. 실제로는 video 엘리먼트 이벤트로 대체)
+     배속·음량은 강의를 옮겨도 유지한다 (인프런: 다음 강의에서도 배속 유지) */
+  const player = { lecId: null, on: false, pos: 0, dur: 0, speed: 1, vol: 1, muted: false, ended: false, timer: null, idle: null };
   const SPEEDS = [1, 1.25, 1.5, 2];
   const toSec = s => { const [m, x] = s.split(':').map(Number); return m * 60 + x; };
   const fmtSec = n => String(Math.floor(n / 60)).padStart(2, '0') + ':' + String(Math.floor(n % 60)).padStart(2, '0');
+  const fmtSpeed = v => (v % 1 ? String(v) : v.toFixed(1)) + 'x';
   function playerLoad(lec) {
     playerStop();
-    player.lecId = lec.id; player.dur = toSec(DUR[lec.id]);
+    player.lecId = lec.id; player.dur = toSec(DUR[lec.id]); player.ended = false;
     player.pos = lec.resumeAt ? toSec(lec.resumeAt) : 0; // 시청 이력이 있으면 저장된 위치에서 이어재생
   }
-  function playerStop() { clearInterval(player.timer); player.timer = null; player.on = false; }
-  function playerToggle() { player.on ? playerPause() : playerPlay(); }
+  function playerStop() { clearInterval(player.timer); player.timer = null; player.on = false; clearTimeout(player.idle); }
+  function playerToggle(flash) {
+    player.on ? playerPause() : playerPlay();
+    if (flash) playerFlash(player.on ? ICO_PLAY : ICO_PAUSE);
+  }
   function playerPlay() {
     if (player.pos >= player.dur) player.pos = 0;
-    player.on = true;
+    player.on = true; player.ended = false;
     player.timer = setInterval(() => {
       player.pos = Math.min(player.dur, player.pos + player.speed);
-      if (player.pos >= player.dur) playerPause(); else playerPaint();
+      if (player.pos >= player.dur) { player.ended = true; playerPause(); } else playerPaint();
     }, 1000);
+    playerWake();
     playerPaint();
   }
-  function playerPause() { playerStop(); playerPaint(); }
-  function playerSkip(d) { player.pos = Math.max(0, Math.min(player.dur, player.pos + d)); playerPaint(); }
+  function playerPause() { playerStop(); playerWake(); playerPaint(); }
+  function playerReplay() { player.pos = 0; playerPlay(); }
+  function playerSkip(d) {
+    player.pos = Math.max(0, Math.min(player.dur, player.pos + d));
+    if (player.pos < player.dur) player.ended = false;
+    playerPaint();
+  }
   function playerSeek(e) {
     e.stopPropagation();
     const r = e.currentTarget.getBoundingClientRect();
     player.pos = Math.round(Math.max(0, Math.min(1, (e.clientX - r.left) / r.width)) * player.dur);
+    player.ended = false;
     playerPaint();
   }
-  function playerSpeed() { player.speed = SPEEDS[(SPEEDS.indexOf(player.speed) + 1) % SPEEDS.length]; playerPaint(); }
+  /* 진행 바 위에 마우스를 올리면 그 지점의 시각을 보여준다 */
+  function playerHover(e) {
+    const r = e.currentTarget.getBoundingClientRect();
+    const x = Math.max(0, Math.min(1, (e.clientX - r.left) / r.width));
+    const tip = document.getElementById('vTip');
+    tip.textContent = fmtSec(x * player.dur);
+    tip.style.left = Math.max(22, Math.min(r.width - 22, x * r.width)) + 'px';
+    document.getElementById('vHover').style.width = x * 100 + '%';
+  }
+  function playerSetSpeed(v) {
+    player.speed = v;
+    document.getElementById('vSpeedMenu').classList.remove('open');
+    playerPaint();
+  }
+  function playerSpeedStep(d) {
+    const i = Math.max(0, Math.min(SPEEDS.length - 1, SPEEDS.indexOf(player.speed) + d));
+    player.speed = SPEEDS[i]; playerFlash('<b>' + fmtSpeed(player.speed) + '</b>'); playerPaint();
+  }
+  function playerSpeedMenu(e) {
+    e.stopPropagation();
+    const m = document.getElementById('vSpeedMenu');
+    const open = !m.classList.contains('open');
+    closeAllMenus();
+    m.innerHTML = '<div class="vm-head">재생 속도</div>' + SPEEDS.slice().reverse().map(v =>
+      `<button class="${v === player.speed ? 'on' : ''}" onclick="playerSetSpeed(${v})"><span class="ck">${v === player.speed ? '✓' : ''}</span>${fmtSpeed(v)}</button>`).join('');
+    m.classList.toggle('open', open);
+    playerWake();
+  }
+  function playerVolume(v) { player.vol = Number(v); player.muted = player.vol === 0; playerPaint(); }
+  function playerMute() {
+    if (player.muted || player.vol === 0) { player.muted = false; if (player.vol === 0) player.vol = 0.5; }
+    else player.muted = true;
+    playerPaint();
+  }
+  function playerFull() {
+    const el = document.getElementById('videoInner');
+    if (document.fullscreenElement) document.exitFullscreen(); else el.requestFullscreen && el.requestFullscreen();
+  }
+  document.addEventListener('fullscreenchange', () => playerPaint());
+  /* 이전·다음 강의 — 목록의 앞뒤 순서. 미보유면 강의실의 잠금 화면으로 넘어간다 */
+  function playerSibling(d) {
+    const lecs = state.currentClass ? state.currentClass.lectures : [];
+    const i = lecs.findIndex(l => l.id === player.lecId);
+    return i >= 0 ? lecs[i + d] || null : null;
+  }
+  const playerNextLec = () => playerSibling(1);
+  function playerGo(d) {
+    const n = playerSibling(d); if (!n) return;
+    state.playing = n.id; renderS42();
+  }
+  const playerNext = () => playerGo(1);
+  const playerPrev = () => playerGo(-1);
+  function playerFlash(html) {
+    const f = document.getElementById('vFlash'); if (!f) return;
+    f.innerHTML = html; f.classList.remove('go'); void f.offsetWidth; f.classList.add('go');
+  }
+  /* 재생 중 2.5초 동안 입력이 없으면 컨트롤과 커서를 숨긴다. 일시정지·메뉴 열림이면 계속 보인다 */
+  function playerWake(leave) {
+    const st = document.getElementById('vStage'); if (!st) return;
+    st.classList.remove('idle');
+    clearTimeout(player.idle);
+    if (!player.on) return;
+    player.idle = setTimeout(() => {
+      if (player.on && !document.getElementById('vSpeedMenu').classList.contains('open')) st.classList.add('idle');
+    }, leave ? 600 : 2500);
+  }
+  /* 단축키 — 인프런 기준: Space 재생, ←/→ 10초, ↑/↓ 음량, M 음소거, F 전체 화면, < > 배속 */
+  document.addEventListener('keydown', e => {
+    if (state.view !== 's42' || !document.getElementById('vStage')) return;
+    if (/INPUT|TEXTAREA|SELECT/.test(e.target.tagName) && e.target.type !== 'range') return;
+    const k = e.key;
+    if (k === ' ' || k === 'k') playerToggle(true);
+    else if (k === 'ArrowLeft') { playerSkip(-10); playerFlash('<b>-10초</b>'); }
+    else if (k === 'ArrowRight') { playerSkip(10); playerFlash('<b>+10초</b>'); }
+    else if (k === 'ArrowUp') { playerVolume(Math.min(1, (player.muted ? 0 : player.vol) + 0.1).toFixed(2)); playerFlash('<b>' + Math.round(player.vol * 100) + '%</b>'); }
+    else if (k === 'ArrowDown') { playerVolume(Math.max(0, player.vol - 0.1).toFixed(2)); playerFlash('<b>' + Math.round(player.vol * 100) + '%</b>'); }
+    else if (k === 'm' || k === 'M') playerMute();
+    else if (k === 'f' || k === 'F') playerFull();
+    else if (k === '>') playerSpeedStep(1);
+    else if (k === '<') playerSpeedStep(-1);
+    else return;
+    e.preventDefault(); playerWake();
+  });
   const ICO_PLAY = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13l11-6.5z"/></svg>';
   const ICO_PAUSE = '<svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>';
+  const ICO_VOL = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z" fill="currentColor" stroke="none"/><path d="M15.5 9a4 4 0 0 1 0 6"/><path d="M18 6.5a7.5 7.5 0 0 1 0 11"/></svg>';
+  const ICO_VOL_LOW = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z" fill="currentColor" stroke="none"/><path d="M15.5 9a4 4 0 0 1 0 6"/></svg>';
+  const ICO_MUTE = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z" fill="currentColor" stroke="none"/><path d="M16 9.5l5 5M21 9.5l-5 5"/></svg>';
+  const ICO_FULL = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"/></svg>';
+  const ICO_FULL_EXIT = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4v5H4M20 9h-5V4M15 20v-5h5M4 15h5v5"/></svg>';
   function playerPaint() {
     const st = document.getElementById('vStage'); if (!st) return;
     const pct = player.dur ? player.pos / player.dur * 100 : 0;
+    const vol = player.muted ? 0 : player.vol;
+    const next = playerNextLec();
     st.classList.toggle('playing', player.on);
-    document.getElementById('vBig').innerHTML = player.on ? ICO_PAUSE : ICO_PLAY;
-    document.getElementById('vPlay').innerHTML = player.on ? ICO_PAUSE : ICO_PLAY;
+    st.classList.toggle('ended', player.ended);
+    document.getElementById('vBig').innerHTML = ICO_PLAY;
+    const pb = document.getElementById('vPlay');
+    pb.innerHTML = player.on ? ICO_PAUSE : ICO_PLAY;
+    pb.dataset.tip = (player.on ? '일시정지' : '재생') + ' (Space)';
     document.getElementById('vFill').style.width = pct + '%';
     document.getElementById('vKnob').style.left = pct + '%';
-    document.getElementById('vTime').textContent = fmtSec(player.pos) + ' / ' + fmtSec(player.dur);
-    document.getElementById('vSpeed').textContent = (player.speed % 1 ? String(player.speed) : player.speed.toFixed(1)) + 'x';
+    document.getElementById('vTime').innerHTML = fmtSec(player.pos) + ' <span>/ ' + fmtSec(player.dur) + '</span>';
+    document.getElementById('vSpeed').textContent = fmtSpeed(player.speed);
+    document.getElementById('vMute').innerHTML = vol === 0 ? ICO_MUTE : vol < 0.5 ? ICO_VOL_LOW : ICO_VOL;
+    document.getElementById('vMute').dataset.tip = (vol === 0 ? '음소거 해제' : '음소거') + ' (M)';
+    const vr = document.getElementById('vVol'); vr.value = vol;
+    const full = !!document.fullscreenElement;
+    document.getElementById('vFull').innerHTML = full ? ICO_FULL_EXIT : ICO_FULL;
+    document.getElementById('vFull').dataset.tip = (full ? '전체 화면 종료' : '전체 화면') + ' (F)';
+    document.getElementById('vPrevBtn').disabled = !playerSibling(-1);
+    document.getElementById('vNextBtn').disabled = !next;
+    document.getElementById('vEndNext').innerHTML = next
+      ? `<div class="ve-next">다음 강의</div><div class="ve-name">${next.name}</div>` : '<div class="ve-name">마지막 강의까지 들었어요</div>';
+    document.getElementById('vEndGo').style.display = next ? '' : 'none';
     playerPaintRow();
   }
   function playerPaintRow() {

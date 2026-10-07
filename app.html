@@ -237,6 +237,71 @@
     font-size: 10px; color: rgba(255,255,255,.85);
     background: rgba(255,255,255,.14); border-radius: 4px; padding: 2px 7px;
   }
+  /* 플레이어 컨트롤 — YouTube 앱 패턴: 탭하면 컨트롤 표시, 좌우 두 번 탭으로 10초 이동 */
+  .aplayer { position:absolute; inset:0; user-select:none; -webkit-tap-highlight-color: transparent; }
+  .ap-shade { position:absolute; inset:0; background: rgba(0,0,0,.42); opacity:0; transition: opacity .2s; pointer-events:none; }
+  .ap-ui { position:absolute; inset:0; opacity:0; pointer-events:none; transition: opacity .2s; }
+  .aplayer.show .ap-shade, .aplayer.show .ap-ui { opacity:1; }
+  .aplayer.show .ap-ui { pointer-events:auto; }
+  .app-video:has(.aplayer) .vback { z-index: 3; transition: opacity .2s; }
+  .app-video:has(.aplayer:not(.show)) .vback { opacity:0; pointer-events:none; }
+  /* 가운데 — 이전 · 재생 · 다음. 간격을 같게 두고 넓혀 잘못 누르지 않게 한다 */
+  .ap-center { position:absolute; left:50%; top:50%; transform: translate(-50%,-50%); display:flex; align-items:center; gap: 40px; }
+  .ap-btn { border:0; background:transparent; color:#fff; padding:0; cursor:pointer; display:flex; align-items:center; justify-content:center; }
+  .ap-btn.side { width: 44px; height: 44px; }
+  .ap-btn.side svg { width: 26px; height: 26px; }
+  .ap-btn.main { width: 58px; height: 58px; border-radius: 50%; background: rgba(0,0,0,.32); }
+  .ap-btn.main svg { width: 30px; height: 30px; }
+  .ap-btn:disabled { opacity:.35; cursor:default; }
+  .ap-speed {
+    position:absolute; right: 12px; top: 12px; height: 30px; padding: 0 11px; border-radius: 15px;
+    border:0; background: rgba(0,0,0,.28); color:#fff; font: inherit; font-size: 12px; font-weight: 700; cursor:pointer;
+    font-variant-numeric: tabular-nums;
+  }
+  .ap-bottom { position:absolute; left: 14px; right: 6px; bottom: 6px; display:flex; align-items:center; }
+  .ap-time { flex:1; font-size: 12px; color:#fff; font-variant-numeric: tabular-nums; }
+  .ap-time span { color: rgba(255,255,255,.65); }
+  .ap-full { width: 40px; height: 36px; }
+  .ap-full svg { width: 20px; height: 20px; }
+  /* 진행 바 — 컨트롤이 보이면 손잡이와 함께 굵게, 숨으면 아래 가장자리에 얇은 선만 */
+  .ap-prog { position:absolute; left: 14px; right: 14px; bottom: 40px; height: 20px; display:flex; align-items:center; cursor:pointer; }
+  .ap-prog .rail, .ap-prog .fill { position:absolute; left:0; height: 3px; border-radius: 2px; }
+  .ap-prog .rail { right:0; background: rgba(255,255,255,.3); }
+  .ap-prog .fill { background:#fff; }
+  .ap-prog .knob { position:absolute; width: 13px; height: 13px; margin-left: -6.5px; border-radius:50%; background:#fff; }
+  .ap-mini { position:absolute; left:0; right:0; bottom:0; height: 2px; background: rgba(255,255,255,.25); transition: opacity .2s; }
+  .ap-mini i { display:block; height:100%; background:#fff; }
+  .aplayer.show .ap-mini { opacity:0; }
+  /* 두 번 탭 — 누른 쪽 절반에 물결과 "10초" */
+  .ap-seek {
+    position:absolute; top:0; bottom:0; width: 42%; display:flex; flex-direction:column; align-items:center; justify-content:center; gap: 4px;
+    color:#fff; font-size: 12px; font-weight: 700; opacity:0; pointer-events:none;
+    background: rgba(255,255,255,.12);
+  }
+  .ap-seek.l { left:0; border-radius: 0 50% 50% 0 / 0 50% 50% 0; }
+  .ap-seek.r { right:0; border-radius: 50% 0 0 50% / 50% 0 0 50%; }
+  .ap-seek svg { width: 22px; height: 22px; }
+  .ap-seek.go { animation: apseek .6s ease-out; }
+  @keyframes apseek { 0% { opacity:1; } 70% { opacity:1; } 100% { opacity:0; } }
+  /* 끝까지 본 뒤 — 인프런: [다시 보기] [다음 강의 보기] */
+  .ap-end { position:absolute; inset:0; background: rgba(11,7,36,.78); display:none; flex-direction:column; align-items:center; justify-content:center; gap: 12px; z-index: 2; }
+  .aplayer.ended .ap-end { display:flex; }
+  .aplayer.ended .ap-ui, .aplayer.ended .ap-shade, .aplayer.ended .ap-mini { display:none; }
+  .ap-end .ve-next { font-size: 11px; color: rgba(255,255,255,.7); text-align:center; }
+  .ap-end .ve-name { font-size: 14px; font-weight: 700; color:#fff; margin-top: 2px; text-align:center; padding: 0 20px; }
+  .ap-end .ve-btns { display:flex; gap: 8px; }
+  .ap-end button { border:0; font:inherit; cursor:pointer; font-size: 13px; font-weight: 700; border-radius: var(--r-btn); padding: 9px 14px; }
+  .ap-end .ve-replay { background: rgba(255,255,255,.16); color:#fff; }
+  .ap-end .ve-go { background:#fff; color: var(--navy); }
+  .app-video:fullscreen { aspect-ratio:auto; width:100%; height:100%; background:#000; }
+  /* 배속 시트 */
+  .speed-list button {
+    display:flex; align-items:center; width:100%; border:0; background:transparent; font:inherit; color: var(--text);
+    font-size: 15px; padding: 13px 4px; cursor:pointer; text-align:left; border-bottom: 1px solid var(--border);
+  }
+  .speed-list button:last-child { border-bottom:0; }
+  .speed-list button .ck { width: 26px; color: var(--navy); font-weight: 700; }
+  .speed-list button.on { color: var(--navy); font-weight: 700; }
   .player-info { padding: 12px 16px; }
   .player-info .pi-name { font-size: 15px; font-weight: 700; line-height:1.35; }
   .player-info .pi-meta { font-size: 12px; color: var(--text-sub); margin-top: 3px; }
@@ -972,6 +1037,11 @@
 
   <div class="dim" onclick="closeSheets()"></div>
 
+  <div class="sheet" data-sheet="speed">
+    <h2>재생 속도</h2>
+    <div class="speed-list" id="speedList"></div>
+  </div>
+
   <div class="sheet" data-sheet="grade">
     <h2>학년 선택</h2>
     <div class="grade-grid" id="gradeGrid"></div>
@@ -1252,6 +1322,108 @@
       </div>`).join('');
   }
 
+  /* ── S4-2 플레이어 (데모: 1초 간격 진행. 실제로는 expo-video 이벤트로 대체)
+     배속은 강의를 옮겨도 유지한다 (인프런) ── */
+  const player = { lecId: null, on: false, pos: 0, dur: 0, speed: 1, ended: false, timer: null, hide: null, tap: null };
+  const SPEEDS = [1, 1.25, 1.5, 2];
+  const toSec = v => { const [m, x] = v.split(':').map(Number); return m * 60 + x; };
+  const fmtSec = n => String(Math.floor(n / 60)).padStart(2, '0') + ':' + String(Math.floor(n % 60)).padStart(2, '0');
+  const fmtSpeed = v => (v % 1 ? String(v) : v.toFixed(1)) + 'x';
+  const ICO_PLAY = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13l11-6.5z"/></svg>';
+  const ICO_PAUSE = '<svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>';
+  function playerLoad(lec) {
+    playerStop();
+    player.lecId = lec.id; player.dur = toSec(DUR[lec.id]); player.ended = false;
+    player.pos = lec.resumeAt ? toSec(lec.resumeAt) : 0; // 시청 이력이 있으면 저장된 위치에서 이어재생
+  }
+  function playerStop() { clearInterval(player.timer); player.timer = null; player.on = false; clearTimeout(player.hide); }
+  function playerToggle() { player.on ? playerPause() : playerPlay(); }
+  function playerPlay() {
+    if (player.pos >= player.dur) player.pos = 0;
+    player.on = true; player.ended = false;
+    player.timer = setInterval(() => {
+      player.pos = Math.min(player.dur, player.pos + player.speed);
+      if (player.pos >= player.dur) { player.ended = true; playerPause(); } else playerPaint();
+    }, 1000);
+    playerShow(); playerPaint();
+  }
+  function playerPause() { playerStop(); playerShow(); playerPaint(); }
+  function playerReplay() { player.pos = 0; playerPlay(); }
+  function playerSkip(d) {
+    player.pos = Math.max(0, Math.min(player.dur, player.pos + d));
+    if (player.pos < player.dur) player.ended = false;
+    playerPaint();
+  }
+  function playerSeek(e) {
+    const r = e.currentTarget.getBoundingClientRect();
+    player.pos = Math.round(Math.max(0, Math.min(1, (e.clientX - r.left) / r.width)) * player.dur);
+    player.ended = false; playerShow(); playerPaint();
+  }
+  /* 컨트롤 표시 — 재생 중이면 3초 뒤 숨긴다 */
+  function playerShow() {
+    const ap = document.getElementById('aPlayer'); if (!ap) return;
+    ap.classList.add('show');
+    clearTimeout(player.hide);
+    if (player.on) player.hide = setTimeout(() => ap.classList.remove('show'), 3000);
+  }
+  /* 한 번 탭: 컨트롤 표시/숨김. 두 번 탭: 누른 쪽 절반으로 10초 이동 */
+  function playerTap(e) {
+    const ap = e.currentTarget;
+    const r = ap.getBoundingClientRect();
+    const side = e.clientX - r.left < r.width / 2 ? -1 : 1;
+    if (player.tap) {
+      clearTimeout(player.tap); player.tap = null;
+      playerSkip(side * 10);
+      const el = document.getElementById(side < 0 ? 'apSeekL' : 'apSeekR');
+      el.classList.remove('go'); void el.offsetWidth; el.classList.add('go');
+      return;
+    }
+    player.tap = setTimeout(() => {
+      player.tap = null;
+      if (ap.classList.contains('show') && player.on) { ap.classList.remove('show'); clearTimeout(player.hide); }
+      else playerShow();
+    }, 260);
+  }
+  function playerSpeedSheet() {
+    document.getElementById('speedList').innerHTML = SPEEDS.slice().reverse().map(v =>
+      `<button class="${v === player.speed ? 'on' : ''}" onclick="playerSetSpeed(${v})"><span class="ck">${v === player.speed ? '✓' : ''}</span>${fmtSpeed(v)}</button>`).join('');
+    clearTimeout(player.hide);
+    openSheet('speed');
+  }
+  function playerSetSpeed(v) { player.speed = v; closeSheets(); playerShow(); playerPaint(); }
+  /* 전체 화면 — 실제 앱은 expo-video 의 네이티브 전체 화면(가로 회전) */
+  function playerFull() {
+    const el = document.querySelector('#viewS42 .app-video');
+    if (document.fullscreenElement) document.exitFullscreen(); else el.requestFullscreen && el.requestFullscreen();
+  }
+  /* 이전·다음 강의 — 목록의 앞뒤 순서. 미보유면 강의실 잠금 화면으로 */
+  function playerSibling(d) {
+    const lecs = state.currentClass ? state.currentClass.lectures : [];
+    const i = lecs.findIndex(l => l.id === player.lecId);
+    return i >= 0 ? lecs[i + d] || null : null;
+  }
+  function playerGo(d) {
+    const n = playerSibling(d); if (!n) return;
+    state.playing = n.id; renderS42();
+  }
+  function playerPaint() {
+    const ap = document.getElementById('aPlayer'); if (!ap) return;
+    const pct = player.dur ? player.pos / player.dur * 100 : 0;
+    const next = playerSibling(1);
+    ap.classList.toggle('ended', player.ended);
+    document.getElementById('apPlay').innerHTML = player.on ? ICO_PAUSE : ICO_PLAY;
+    document.getElementById('apPrev').disabled = !playerSibling(-1);
+    document.getElementById('apNext').disabled = !next;
+    document.getElementById('apSpeed').textContent = fmtSpeed(player.speed);
+    document.getElementById('apFill').style.width = pct + '%';
+    document.getElementById('apKnob').style.left = pct + '%';
+    document.getElementById('apMini').style.width = pct + '%';
+    document.getElementById('apTime').innerHTML = fmtSec(player.pos) + ' <span>/ ' + fmtSec(player.dur) + '</span>';
+    document.getElementById('apEndNext').innerHTML = next
+      ? `<div class="ve-next">다음 강의</div><div class="ve-name">${next.name}</div>` : '<div class="ve-name">마지막 강의까지 들었어요</div>';
+    document.getElementById('apEndGo').style.display = next ? '' : 'none';
+  }
+
   /* ── S4-2 강의실 렌더 ── */
   function renderS42() {
     const c = state.currentClass;
@@ -1275,7 +1447,35 @@
         </span>`;
     } else {
       /* 시청 이력이 있으면 저장된 위치에서 자동 이어재생 — 별도 표시 없음 */
-      vi.innerHTML = `<span class="play-big" onclick="toast('재생 — ${cur.name}')">▶</span>`;
+      if (player.lecId !== cur.id) playerLoad(cur);
+      vi.innerHTML = `
+        <div class="aplayer show" id="aPlayer" onclick="playerTap(event)">
+          <div class="ap-shade"></div>
+          <div class="ap-seek l" id="apSeekL"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 6.5v11L4 12zM20 6.5v11L12 12z"/></svg>10초</div>
+          <div class="ap-seek r" id="apSeekR"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 6.5v11l8-5.5zM12 6.5v11l8-5.5z"/></svg>10초</div>
+          <div class="ap-ui">
+            <button class="ap-speed" id="apSpeed" onclick="event.stopPropagation();playerSpeedSheet()"></button>
+            <div class="ap-center">
+              <button class="ap-btn side" id="apPrev" onclick="event.stopPropagation();playerGo(-1)" aria-label="이전 강의"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M18 6.5v11l-8.5-5.5z"/><rect x="5.8" y="6" width="2.2" height="12" rx="1"/></svg></button>
+              <button class="ap-btn main" id="apPlay" onclick="event.stopPropagation();playerToggle()" aria-label="재생/일시정지"></button>
+              <button class="ap-btn side" id="apNext" onclick="event.stopPropagation();playerGo(1)" aria-label="다음 강의"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 6.5v11l8.5-5.5z"/><rect x="16" y="6" width="2.2" height="12" rx="1"/></svg></button>
+            </div>
+            <div class="ap-prog" onclick="event.stopPropagation();playerSeek(event)"><div class="rail"></div><div class="fill" id="apFill"></div><div class="knob" id="apKnob"></div></div>
+            <div class="ap-bottom">
+              <span class="ap-time" id="apTime"></span>
+              <button class="ap-btn ap-full" onclick="event.stopPropagation();playerFull()" aria-label="전체 화면"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"/></svg></button>
+            </div>
+          </div>
+          <div class="ap-mini"><i id="apMini"></i></div>
+          <div class="ap-end" onclick="event.stopPropagation()">
+            <div id="apEndNext"></div>
+            <div class="ve-btns">
+              <button class="ve-replay" onclick="playerReplay()">다시 보기</button>
+              <button class="ve-go" id="apEndGo" onclick="playerGo(1)">다음 강의 보기</button>
+            </div>
+          </div>
+        </div>`;
+      playerPaint();
     }
 
     document.getElementById('psList').innerHTML = c.lectures.map((lec, i) => {
@@ -1324,6 +1524,7 @@
   /* ── 내비게이션 ── */
   function goRoot(v) {
     if (state.auth !== 'approved') { toast('학원에서 승인한 후 이용할 수 있어요'); return; }
+    playerStop();
     state.root = v;
     phone.classList.remove('auth');
     phone.classList.remove('pushed');
